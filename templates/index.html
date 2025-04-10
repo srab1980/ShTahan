@@ -321,36 +321,30 @@
                 <h2>معرض الصور</h2>
                 <div class="separator"></div>
             </div>
-            <div class="simple-gallery-container">
-                <div class="simple-gallery-slider">
-                    <div class="simple-gallery-current">
-                        <img id="current-gallery-image" src="/static/img/gallery/gallery1.jpg" alt="صورة معرض">
-                        <div class="simple-gallery-caption" id="gallery-caption">الشيخ مصطفى الطحان مع وقف دار السلام</div>
-                    </div>
-                    <div class="simple-gallery-arrows">
-                        <button class="simple-gallery-prev" id="gallery-prev"><i class="fas fa-chevron-right"></i></button>
-                        <button class="simple-gallery-next" id="gallery-next"><i class="fas fa-chevron-left"></i></button>
-                    </div>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='img/gallery/gallery1.jpg') }}" alt="الشيخ مصطفى الطحان">
+                    <div class="gallery-caption">الشيخ مصطفى الطحان مع وقف دار السلام</div>
                 </div>
-                <div class="simple-gallery-thumbs" id="gallery-thumbs">
-                    <div class="simple-gallery-thumb active" data-index="0">
-                        <img src="/static/img/gallery/gallery1.jpg" alt="thumbnail">
-                    </div>
-                    <div class="simple-gallery-thumb" data-index="1">
-                        <img src="/static/img/gallery/gallery2.jpg" alt="thumbnail">
-                    </div>
-                    <div class="simple-gallery-thumb" data-index="2">
-                        <img src="/static/img/gallery/gallery3.jpg" alt="thumbnail">
-                    </div>
-                    <div class="simple-gallery-thumb" data-index="3">
-                        <img src="/static/img/gallery/gallery4.jpg" alt="thumbnail">
-                    </div>
-                    <div class="simple-gallery-thumb" data-index="4">
-                        <img src="/static/img/gallery/gallery5.jpg" alt="thumbnail">
-                    </div>
-                    <div class="simple-gallery-thumb" data-index="5">
-                        <img src="/static/img/gallery/gallery6.jpg" alt="thumbnail">
-                    </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='img/gallery/gallery2.jpg') }}" alt="الشيخ مصطفى الطحان">
+                    <div class="gallery-caption">الشيخ مصطفى الطحان في مكتبه</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='img/gallery/gallery3.jpg') }}" alt="الشيخ مصطفى الطحان">
+                    <div class="gallery-caption">الشيخ مصطفى الطحان خلال اجتماع مهم</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='img/gallery/gallery4.jpg') }}" alt="الشيخ مصطفى الطحان">
+                    <div class="gallery-caption">الشيخ مصطفى الطحان في لقاء خاص</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='img/gallery/gallery5.jpg') }}" alt="الشيخ مصطفى الطحان">
+                    <div class="gallery-caption">الشيخ مصطفى الطحان مع الزعيم التركي</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="{{ url_for('static', filename='img/gallery/gallery6.jpg') }}" alt="الشيخ مصطفى الطحان">
+                    <div class="gallery-caption">الشيخ مصطفى الطحان مع مجموعة من العلماء</div>
                 </div>
             </div>
         </div>
