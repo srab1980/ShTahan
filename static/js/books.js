@@ -370,6 +370,134 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
     
+    // Handle book cover file upload
+    async function uploadBookCover(file) {
+        if (!file) return null;
+        
+        // Create form data
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+            // Show progress bar
+            if (coverProgress) {
+                coverProgress.style.display = 'block';
+                coverProgress.querySelector('.progress-bar').style.width = '50%';
+            }
+            
+            // Send the file to the server
+            const response = await fetch('/api/upload/book-cover', {
+                method: 'POST',
+                body: formData
+            });
+            
+            // Update progress bar to 100%
+            if (coverProgress) {
+                coverProgress.querySelector('.progress-bar').style.width = '100%';
+            }
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                // Show success notification
+                showNotification('تم رفع صورة الغلاف بنجاح', 'success');
+                
+                // Show preview
+                if (coverPreview) {
+                    coverPreview.style.display = 'block';
+                    coverPreview.innerHTML = `<img src="${result.file_url}" alt="Cover Preview" style="max-width: 100%; max-height: 150px; border-radius: 5px;">`;
+                }
+                
+                // Update the cover URL field
+                document.getElementById('book-cover').value = result.file_url;
+                
+                // Hide progress bar after a delay
+                setTimeout(() => {
+                    if (coverProgress) coverProgress.style.display = 'none';
+                }, 1000);
+                
+                return result.file_url;
+            } else {
+                // Show error notification
+                showNotification(`خطأ: ${result.error || 'حدث خطأ أثناء رفع الصورة'}`, 'error');
+                
+                // Hide progress bar
+                if (coverProgress) coverProgress.style.display = 'none';
+                
+                return null;
+            }
+        } catch (error) {
+            console.error('Error uploading book cover:', error);
+            showNotification('حدث خطأ أثناء رفع الصورة، يرجى المحاولة مرة أخرى', 'error');
+            
+            // Hide progress bar
+            if (coverProgress) coverProgress.style.display = 'none';
+            
+            return null;
+        }
+    }
+    
+    // Handle book PDF file upload
+    async function uploadBookPDF(file) {
+        if (!file) return null;
+        
+        // Create form data
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+            // Show progress bar
+            if (pdfProgress) {
+                pdfProgress.style.display = 'block';
+                pdfProgress.querySelector('.progress-bar').style.width = '50%';
+            }
+            
+            // Send the file to the server
+            const response = await fetch('/api/upload/book-pdf', {
+                method: 'POST',
+                body: formData
+            });
+            
+            // Update progress bar to 100%
+            if (pdfProgress) {
+                pdfProgress.querySelector('.progress-bar').style.width = '100%';
+            }
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                // Show success notification
+                showNotification('تم رفع ملف PDF بنجاح', 'success');
+                
+                // Update the download URL field
+                document.getElementById('book-download').value = result.file_url;
+                
+                // Hide progress bar after a delay
+                setTimeout(() => {
+                    if (pdfProgress) pdfProgress.style.display = 'none';
+                }, 1000);
+                
+                return result.file_url;
+            } else {
+                // Show error notification
+                showNotification(`خطأ: ${result.error || 'حدث خطأ أثناء رفع الملف'}`, 'error');
+                
+                // Hide progress bar
+                if (pdfProgress) pdfProgress.style.display = 'none';
+                
+                return null;
+            }
+        } catch (error) {
+            console.error('Error uploading book PDF:', error);
+            showNotification('حدث خطأ أثناء رفع الملف، يرجى المحاولة مرة أخرى', 'error');
+            
+            // Hide progress bar
+            if (pdfProgress) pdfProgress.style.display = 'none';
+            
+            return null;
+        }
+    }
+    
     // Add event listeners
     if (languageFilter && categoryFilter) {
         languageFilter.addEventListener('change', filterBooks);
@@ -378,6 +506,23 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (addBookForm) {
         addBookForm.addEventListener('submit', handleAddBook);
+    }
+    
+    // Add file upload event listeners
+    if (bookCoverUpload) {
+        bookCoverUpload.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                uploadBookCover(e.target.files[0]);
+            }
+        });
+    }
+    
+    if (bookPdfUpload) {
+        bookPdfUpload.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                uploadBookPDF(e.target.files[0]);
+            }
+        });
     }
     
     // Initialize the module

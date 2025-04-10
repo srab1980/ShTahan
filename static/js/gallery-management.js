@@ -5,104 +5,119 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     // References to DOM elements
-    const galleryContainer = document.querySelector('.gallery-container');
-    const galleryGrid = document.querySelector('.gallery-grid');
+    const galleryGrid = document.getElementById('gallery-grid');
     const gallerySection = document.getElementById('gallery');
+    let galleryData = [];
+    let currentEditingImageId = null;
     
-    // Add a container for the "Add New Image" button if gallery section exists
-    if (gallerySection) {
+    // Check if we're on the gallery page
+    const isGalleryPage = window.location.pathname.includes('/gallery');
+    
+    // Create gallery management controls if on the gallery page
+    if (isGalleryPage && galleryGrid) {
+        // Add gallery management UI
+        createGalleryManagementUI();
+    }
+    
+    // Create gallery management UI
+    function createGalleryManagementUI() {
+        // Create add image form
+        const managementSection = document.createElement('div');
+        managementSection.className = 'gallery-management';
+        managementSection.innerHTML = `
+            <h3>إدارة معرض الصور</h3>
+            <form id="add-image-form" class="gallery-form">
+                <div class="form-group">
+                    <label for="image-caption">عنوان الصورة:</label>
+                    <input type="text" id="image-caption" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image-url">رابط الصورة:</label>
+                    <input type="url" id="image-url" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image-upload">أو رفع صورة جديدة:</label>
+                    <input type="file" id="image-upload" accept="image/*">
+                    <div class="upload-preview" id="image-preview" style="margin-top: 10px; display: none;"></div>
+                    <div class="upload-progress" id="image-progress" style="display: none; margin-top: 5px;">
+                        <div class="progress-bar" style="background-color: #d4af37; height: 5px; width: 0%;"></div>
+                    </div>
+                </div>
+                
+                <input type="hidden" id="image-id">
+                <div class="form-actions">
+                    <button type="button" id="cancel-edit-image" class="btn btn-secondary" style="display: none; margin-right: 10px;">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">إضافة الصورة</button>
+                </div>
+            </form>
+        `;
+        
+        // Insert the management section after the section title
         const sectionTitle = gallerySection.querySelector('.section-title');
         if (sectionTitle) {
-            const addButtonContainer = document.createElement('div');
-            addButtonContainer.className = 'text-center';
-            addButtonContainer.style.marginTop = '30px';
-            addButtonContainer.innerHTML = `
-                <button id="show-add-image-form" class="btn btn-primary">
-                    <i class="fas fa-plus" style="margin-left: 8px;"></i> إضافة صورة جديدة
-                </button>
-            `;
-            sectionTitle.appendChild(addButtonContainer);
-            
-            // Create the form but don't append it yet
-            const formContainer = document.createElement('div');
-            formContainer.id = 'gallery-form-container';
-            formContainer.className = 'gallery-form-container';
-            formContainer.style.display = 'none';
-            formContainer.style.maxWidth = '600px';
-            formContainer.style.margin = '30px auto';
-            formContainer.style.backgroundColor = 'white';
-            formContainer.style.padding = '30px';
-            formContainer.style.borderRadius = '10px';
-            formContainer.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
-            
-            formContainer.innerHTML = `
-                <div class="form-header">
-                    <h3 id="form-title">إضافة صورة جديدة</h3>
-                    <span class="close-form">&times;</span>
-                </div>
-                <form id="gallery-form">
-                    <input type="hidden" id="image-id" value="">
-                    <div class="form-group">
-                        <label for="image-url">رابط الصورة:</label>
-                        <input type="url" id="image-url" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="image-caption">وصف الصورة:</label>
-                        <input type="text" id="image-caption" required>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">حفظ</button>
-                        <button type="button" class="btn btn-secondary cancel-form">إلغاء</button>
-                    </div>
-                </form>
-            `;
-            
-            gallerySection.appendChild(formContainer);
-            
-            // Event listener for add image button
-            document.getElementById('show-add-image-form').addEventListener('click', showAddImageForm);
-            
-            // Event listener for close form button
-            const closeFormBtn = formContainer.querySelector('.close-form');
-            closeFormBtn.addEventListener('click', hideGalleryForm);
-            
-            // Event listener for cancel button
-            const cancelBtn = formContainer.querySelector('.cancel-form');
-            cancelBtn.addEventListener('click', hideGalleryForm);
-            
-            // Event listener for form submission
-            const galleryForm = document.getElementById('gallery-form');
-            galleryForm.addEventListener('submit', handleGallerySubmit);
+            sectionTitle.parentNode.insertBefore(managementSection, sectionTitle.nextSibling);
+        } else {
+            gallerySection.prepend(managementSection);
+        }
+        
+        // Get references to form elements
+        const addImageForm = document.getElementById('add-image-form');
+        const imageUpload = document.getElementById('image-upload');
+        const imagePreview = document.getElementById('image-preview');
+        const imageProgress = document.getElementById('image-progress');
+        const cancelEditButton = document.getElementById('cancel-edit-image');
+        
+        // Add event listeners
+        if (addImageForm) {
+            addImageForm.addEventListener('submit', handleGallerySubmit);
+        }
+        
+        if (cancelEditButton) {
+            cancelEditButton.addEventListener('click', hideGalleryForm);
+        }
+        
+        if (imageUpload) {
+            imageUpload.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    uploadGalleryImage(e.target.files[0]);
+                }
+            });
         }
     }
     
-    // Fetch gallery images from API and add management controls
+    // Fetch gallery images from API
     async function fetchGalleryImagesWithControls() {
         try {
+            // Show loading message
+            if (galleryGrid) {
+                galleryGrid.innerHTML = '<p class="loading-message" style="grid-column: span 3; text-align: center;">جاري تحميل الصور...</p>';
+            }
+            
             const response = await fetch('/api/gallery');
             const data = await response.json();
+            galleryData = data.images;
             
-            if (galleryGrid) {
-                renderGalleryWithControls(data.images);
-            }
+            renderGalleryWithControls(galleryData);
         } catch (error) {
             console.error('Error fetching gallery images:', error);
             if (galleryGrid) {
-                galleryGrid.innerHTML = '<p class="error-message">حدث خطأ في تحميل الصور</p>';
+                galleryGrid.innerHTML = '<p class="error-message" style="grid-column: span 3; text-align: center; color: red;">حدث خطأ في تحميل الصور</p>';
             }
         }
     }
     
-    // Render gallery images with edit and delete controls
+    // Render gallery images with management controls
     function renderGalleryWithControls(images) {
         if (!galleryGrid) return;
         
+        galleryGrid.innerHTML = '';
+        
         if (images.length === 0) {
-            galleryGrid.innerHTML = '<p class="no-images">لا توجد صور متاحة</p>';
+            galleryGrid.innerHTML = '<p style="grid-column: span 3; text-align: center;">لا توجد صور في المعرض</p>';
             return;
         }
-        
-        galleryGrid.innerHTML = '';
         
         images.forEach(image => {
             const galleryItem = document.createElement('div');
@@ -113,10 +128,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 <img src="${image.url}" alt="${image.caption}">
                 <div class="gallery-caption">${image.caption}</div>
                 <div class="gallery-controls">
-                    <button class="edit-image" data-id="${image.id}">
+                    <button class="btn edit-image" data-id="${image.id}">
                         <i class="fas fa-edit"></i> تعديل
                     </button>
-                    <button class="delete-image" data-id="${image.id}">
+                    <button class="btn delete-image" data-id="${image.id}">
                         <i class="fas fa-trash"></i> حذف
                     </button>
                 </div>
@@ -135,99 +150,89 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmDeleteImage(image.id);
             });
         });
-        
-        // Add gallery item hover styles
-        const style = document.createElement('style');
-        style.textContent = `
-            .gallery-item {
-                position: relative;
-                overflow: hidden;
-            }
-            
-            .gallery-controls {
-                position: absolute;
-                bottom: -100%;
-                left: 0;
-                right: 0;
-                background: rgba(0, 0, 0, 0.7);
-                display: flex;
-                justify-content: center;
-                padding: 10px;
-                transition: bottom 0.3s ease;
-            }
-            
-            .gallery-item:hover .gallery-controls {
-                bottom: 0;
-            }
-            
-            .gallery-controls button {
-                background: transparent;
-                border: none;
-                color: white;
-                margin: 0 5px;
-                cursor: pointer;
-                padding: 5px 10px;
-                border-radius: 3px;
-                transition: background 0.3s ease;
-            }
-            
-            .gallery-controls button:hover {
-                background: rgba(255, 255, 255, 0.2);
-            }
-            
-            .edit-image {
-                color: #fff;
-            }
-            
-            .delete-image {
-                color: #ff6b6b;
-            }
-        `;
-        
-        document.head.appendChild(style);
     }
     
-    // Show the add image form
-    function showAddImageForm() {
-        const formContainer = document.getElementById('gallery-form-container');
-        const formTitle = document.getElementById('form-title');
-        const imageIdField = document.getElementById('image-id');
-        const urlField = document.getElementById('image-url');
-        const captionField = document.getElementById('image-caption');
-        
-        // Reset form fields
-        formTitle.textContent = 'إضافة صورة جديدة';
-        imageIdField.value = '';
-        urlField.value = '';
-        captionField.value = '';
-        
-        // Show the form
-        formContainer.style.display = 'block';
-    }
-    
-    // Show the edit image form with data
+    // Show form to edit an image
     function showEditImageForm(image) {
-        const formContainer = document.getElementById('gallery-form-container');
-        const formTitle = document.getElementById('form-title');
-        const imageIdField = document.getElementById('image-id');
-        const urlField = document.getElementById('image-url');
-        const captionField = document.getElementById('image-caption');
+        const imageCaption = document.getElementById('image-caption');
+        const imageUrl = document.getElementById('image-url');
+        const imageId = document.getElementById('image-id');
+        const submitButton = document.querySelector('#add-image-form button[type="submit"]');
+        const cancelButton = document.getElementById('cancel-edit-image');
+        const formTitle = document.querySelector('.gallery-management h3');
         
-        // Set form fields
-        formTitle.textContent = 'تعديل الصورة';
-        imageIdField.value = image.id;
-        urlField.value = image.url;
-        captionField.value = image.caption;
-        
-        // Show the form
-        formContainer.style.display = 'block';
+        if (imageCaption && imageUrl && imageId && submitButton) {
+            // Populate form fields
+            imageCaption.value = image.caption;
+            imageUrl.value = image.url;
+            imageId.value = image.id;
+            
+            // Update button text
+            submitButton.textContent = 'حفظ التعديلات';
+            
+            // Show cancel button
+            if (cancelButton) {
+                cancelButton.style.display = 'inline-block';
+            }
+            
+            // Update form title
+            if (formTitle) {
+                formTitle.textContent = 'تعديل الصورة';
+            }
+            
+            // Set current editing ID
+            currentEditingImageId = image.id;
+            
+            // Show preview
+            const imagePreview = document.getElementById('image-preview');
+            if (imagePreview) {
+                imagePreview.style.display = 'block';
+                imagePreview.innerHTML = `<img src="${image.url}" alt="${image.caption}" style="max-width: 100%; max-height: 150px; border-radius: 5px;">`;
+            }
+            
+            // Scroll to form
+            document.getElementById('add-image-form').scrollIntoView({ behavior: 'smooth' });
+        }
     }
     
-    // Hide the gallery form
+    // Hide gallery form (cancel edit)
     function hideGalleryForm() {
-        const formContainer = document.getElementById('gallery-form-container');
-        if (formContainer) {
-            formContainer.style.display = 'none';
+        const imageCaption = document.getElementById('image-caption');
+        const imageUrl = document.getElementById('image-url');
+        const imageId = document.getElementById('image-id');
+        const submitButton = document.querySelector('#add-image-form button[type="submit"]');
+        const cancelButton = document.getElementById('cancel-edit-image');
+        const formTitle = document.querySelector('.gallery-management h3');
+        const imagePreview = document.getElementById('image-preview');
+        
+        if (imageCaption && imageUrl && imageId) {
+            // Reset form fields
+            document.getElementById('add-image-form').reset();
+            imageId.value = '';
+            
+            // Update button text
+            if (submitButton) {
+                submitButton.textContent = 'إضافة الصورة';
+            }
+            
+            // Hide cancel button
+            if (cancelButton) {
+                cancelButton.style.display = 'none';
+            }
+            
+            // Update form title
+            if (formTitle) {
+                formTitle.textContent = 'إدارة معرض الصور';
+            }
+            
+            // Hide preview
+            if (imagePreview) {
+                imagePreview.style.display = 'none';
+                imagePreview.innerHTML = '';
+            }
+            
+            // Reset current editing ID
+            currentEditingImageId = null;
         }
     }
     
@@ -235,31 +240,31 @@ document.addEventListener('DOMContentLoaded', function() {
     async function handleGallerySubmit(e) {
         e.preventDefault();
         
+        const imageCaption = document.getElementById('image-caption').value;
+        const imageUrl = document.getElementById('image-url').value;
         const imageId = document.getElementById('image-id').value;
-        const url = document.getElementById('image-url').value;
-        const caption = document.getElementById('image-caption').value;
         
         const imageData = {
-            url,
-            caption
+            caption: imageCaption,
+            url: imageUrl
         };
         
         try {
-            let response;
+            let url;
             let method;
-            let apiUrl;
             
             if (imageId) {
-                // Update existing image
+                // Editing existing image
+                url = `/api/gallery/${imageId}`;
                 method = 'PUT';
-                apiUrl = `/api/gallery/${imageId}`;
             } else {
-                // Create new image
+                // Adding new image
+                url = '/api/gallery';
                 method = 'POST';
-                apiUrl = '/api/gallery';
             }
             
-            response = await fetch(apiUrl, {
+            // Send data to server
+            const response = await fetch(url, {
                 method,
                 headers: {
                     'Content-Type': 'application/json'
@@ -270,24 +275,28 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
             
             if (response.ok) {
+                // Refresh images
+                await fetchGalleryImagesWithControls();
+                
+                // Reset form
                 hideGalleryForm();
-                fetchGalleryImagesWithControls(); // Refresh the gallery
                 
                 // Show success message
                 showNotification(
-                    imageId ? 'تم تحديث الصورة بنجاح' : 'تم إضافة الصورة بنجاح', 
+                    imageId ? 'تم تحديث الصورة بنجاح' : 'تمت إضافة الصورة بنجاح',
                     'success'
                 );
             } else {
-                showNotification(`خطأ: ${result.error || 'حدث خطأ ما'}`, 'error');
+                // Show error message
+                showNotification(`خطأ: ${result.error || 'حدث خطأ أثناء معالجة الطلب'}`, 'error');
             }
         } catch (error) {
-            console.error('Error submitting image:', error);
-            showNotification('حدث خطأ أثناء معالجة الطلب', 'error');
+            console.error('Error processing gallery image:', error);
+            showNotification('حدث خطأ أثناء معالجة الطلب، يرجى المحاولة مرة أخرى', 'error');
         }
     }
     
-    // Confirm image deletion
+    // Confirm and delete an image
     function confirmDeleteImage(imageId) {
         if (confirm('هل أنت متأكد من رغبتك في حذف هذه الصورة؟')) {
             deleteImage(imageId);
@@ -302,24 +311,96 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             if (response.ok) {
-                // Remove image from DOM
-                const galleryItem = document.querySelector(`.gallery-item[data-id="${imageId}"]`);
-                if (galleryItem) {
-                    galleryItem.remove();
-                }
+                // Remove image from array
+                galleryData = galleryData.filter(image => image.id !== imageId);
                 
-                // Refresh gallery
-                fetchGalleryImagesWithControls();
+                // Re-render gallery
+                renderGalleryWithControls(galleryData);
                 
                 // Show success message
                 showNotification('تم حذف الصورة بنجاح', 'success');
+                
+                // If editing this image, reset the form
+                if (currentEditingImageId === imageId) {
+                    hideGalleryForm();
+                }
             } else {
                 const result = await response.json();
-                showNotification(`خطأ: ${result.error || 'حدث خطأ ما'}`, 'error');
+                showNotification(`خطأ: ${result.error || 'حدث خطأ أثناء حذف الصورة'}`, 'error');
             }
         } catch (error) {
             console.error('Error deleting image:', error);
-            showNotification('حدث خطأ أثناء حذف الصورة', 'error');
+            showNotification('حدث خطأ أثناء حذف الصورة، يرجى المحاولة مرة أخرى', 'error');
+        }
+    }
+    
+    // Upload gallery image
+    async function uploadGalleryImage(file) {
+        if (!file) return null;
+        
+        const imagePreview = document.getElementById('image-preview');
+        const imageProgress = document.getElementById('image-progress');
+        
+        // Create form data
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+            // Show progress bar
+            if (imageProgress) {
+                imageProgress.style.display = 'block';
+                imageProgress.querySelector('.progress-bar').style.width = '50%';
+            }
+            
+            // Send the file to the server
+            const response = await fetch('/api/upload/gallery-image', {
+                method: 'POST',
+                body: formData
+            });
+            
+            // Update progress bar to 100%
+            if (imageProgress) {
+                imageProgress.querySelector('.progress-bar').style.width = '100%';
+            }
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                // Show success notification
+                showNotification('تم رفع الصورة بنجاح', 'success');
+                
+                // Show preview
+                if (imagePreview) {
+                    imagePreview.style.display = 'block';
+                    imagePreview.innerHTML = `<img src="${result.file_url}" alt="Gallery Image Preview" style="max-width: 100%; max-height: 150px; border-radius: 5px;">`;
+                }
+                
+                // Update the URL field
+                document.getElementById('image-url').value = result.file_url;
+                
+                // Hide progress bar after a delay
+                setTimeout(() => {
+                    if (imageProgress) imageProgress.style.display = 'none';
+                }, 1000);
+                
+                return result.file_url;
+            } else {
+                // Show error notification
+                showNotification(`خطأ: ${result.error || 'حدث خطأ أثناء رفع الصورة'}`, 'error');
+                
+                // Hide progress bar
+                if (imageProgress) imageProgress.style.display = 'none';
+                
+                return null;
+            }
+        } catch (error) {
+            console.error('Error uploading gallery image:', error);
+            showNotification('حدث خطأ أثناء رفع الصورة، يرجى المحاولة مرة أخرى', 'error');
+            
+            // Hide progress bar
+            if (imageProgress) imageProgress.style.display = 'none';
+            
+            return null;
         }
     }
     
@@ -374,8 +455,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
     
-    // Initialize the module (check if we're on the gallery page)
-    if (galleryGrid) {
+    // Initialize gallery with management controls if on gallery page
+    if (isGalleryPage) {
         fetchGalleryImagesWithControls();
     }
 });

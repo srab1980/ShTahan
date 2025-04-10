@@ -53,6 +53,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="form-group">
                         <label for="article-content">محتوى المقال:</label>
                         <textarea id="article-content" rows="10" required></textarea>
+                        <div class="toolbar" style="margin-top: 5px; margin-bottom: 5px;">
+                            <button type="button" id="add-article-image-btn" class="btn" style="padding: 5px 10px; font-size: 14px;">
+                                <i class="fas fa-image"></i> إضافة صورة
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="article-image-upload-container" style="display: none;">
+                        <label for="article-image-upload">رفع صورة للمقالة:</label>
+                        <input type="file" id="article-image-upload" accept="image/*">
+                        <div class="upload-preview" id="article-image-preview" style="margin-top: 10px; display: none;"></div>
+                        <div class="upload-progress" id="article-image-progress" style="display: none; margin-top: 5px;">
+                            <div class="progress-bar" style="background-color: #d4af37; height: 5px; width: 0%;"></div>
+                        </div>
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">حفظ</button>
@@ -409,6 +423,106 @@ document.addEventListener('DOMContentLoaded', function() {
                 notification.remove();
             }, 500);
         }, 3000);
+    }
+    
+    // Upload article image
+    async function uploadArticleImage(file) {
+        if (!file) return null;
+        
+        const imagePreview = document.getElementById('article-image-preview');
+        const imageProgress = document.getElementById('article-image-progress');
+        
+        // Create form data
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+            // Show progress bar
+            if (imageProgress) {
+                imageProgress.style.display = 'block';
+                imageProgress.querySelector('.progress-bar').style.width = '50%';
+            }
+            
+            // Send the file to the server
+            const response = await fetch('/api/upload/article-image', {
+                method: 'POST',
+                body: formData
+            });
+            
+            // Update progress bar to 100%
+            if (imageProgress) {
+                imageProgress.querySelector('.progress-bar').style.width = '100%';
+            }
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                // Show success notification
+                showNotification('تم رفع الصورة بنجاح', 'success');
+                
+                // Show preview
+                if (imagePreview) {
+                    imagePreview.style.display = 'block';
+                    imagePreview.innerHTML = `<img src="${result.file_url}" alt="Article Image Preview" style="max-width: 100%; max-height: 150px; border-radius: 5px;">`;
+                }
+                
+                // Insert image URL to the content textarea
+                const contentTextarea = document.getElementById('article-content');
+                const cursorPos = contentTextarea.selectionStart;
+                const textBefore = contentTextarea.value.substring(0, cursorPos);
+                const textAfter = contentTextarea.value.substring(cursorPos);
+                
+                // Create image HTML tag
+                const imageTag = `<img src="${result.file_url}" alt="صورة المقال" style="max-width: 100%; display: block; margin: 20px auto; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">`;
+                
+                // Insert the image tag at cursor position
+                contentTextarea.value = textBefore + imageTag + textAfter;
+                
+                // Hide progress bar after a delay
+                setTimeout(() => {
+                    if (imageProgress) imageProgress.style.display = 'none';
+                }, 1000);
+                
+                return result.file_url;
+            } else {
+                // Show error notification
+                showNotification(`خطأ: ${result.error || 'حدث خطأ أثناء رفع الصورة'}`, 'error');
+                
+                // Hide progress bar
+                if (imageProgress) imageProgress.style.display = 'none';
+                
+                return null;
+            }
+        } catch (error) {
+            console.error('Error uploading article image:', error);
+            showNotification('حدث خطأ أثناء رفع الصورة، يرجى المحاولة مرة أخرى', 'error');
+            
+            // Hide progress bar
+            if (imageProgress) imageProgress.style.display = 'none';
+            
+            return null;
+        }
+    }
+    
+    // Add event listener for the add image button
+    const addImageBtn = document.getElementById('add-article-image-btn');
+    if (addImageBtn) {
+        addImageBtn.addEventListener('click', function() {
+            const uploadContainer = document.getElementById('article-image-upload-container');
+            if (uploadContainer) {
+                uploadContainer.style.display = uploadContainer.style.display === 'none' ? 'block' : 'none';
+            }
+        });
+    }
+    
+    // Add event listener for image upload
+    const imageUpload = document.getElementById('article-image-upload');
+    if (imageUpload) {
+        imageUpload.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                uploadArticleImage(e.target.files[0]);
+            }
+        });
     }
     
     // Initialize the module
