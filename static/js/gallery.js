@@ -48,7 +48,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Add event listeners to newly created gallery images
-        const galleryItems = document.querySelectorAll('.gallery-item img');
+        addGalleryEventListeners();
+    }
     
     // Show lightbox with the clicked image
     function openLightbox(e) {
@@ -80,10 +81,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Add event listeners to gallery images
-    if (galleryItems && galleryItems.length > 0) {
-        galleryItems.forEach(img => {
-            img.addEventListener('click', openLightbox);
-        });
+    function addGalleryEventListeners() {
+        const galleryItems = document.querySelectorAll('.gallery-item img');
+        if (galleryItems && galleryItems.length > 0) {
+            galleryItems.forEach(img => {
+                img.addEventListener('click', openLightbox);
+            });
+        }
     }
     
     // Add event listener to close button
@@ -106,4 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
             closeLightboxHandler();
         }
     });
+    
+    // Initialize the gallery
+    fetchGalleryImages();
 });
