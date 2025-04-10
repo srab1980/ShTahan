@@ -82,6 +82,11 @@ def generate_unique_filename(filename):
 def index():
     return render_template('index.html')
 
+@app.route('/admin')
+@login_required
+def admin_dashboard():
+    return render_template('admin.html')
+
 @app.route('/gallery')
 def gallery():
     return render_template('gallery.html')
@@ -129,18 +134,14 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-@app.route('/api/auth/status')
+@app.route('/api/auth-status')
 def auth_status():
     if current_user.is_authenticated:
         return jsonify({
             'authenticated': True,
-            'user': {
-                'id': current_user.id,
-                'username': current_user.username,
-                'role': current_user.role,
-                'is_admin': current_user.is_admin(),
-                'is_editor': current_user.is_editor()
-            }
+            'username': current_user.username,
+            'role': current_user.role,
+            'id': current_user.id
         })
     else:
         return jsonify({'authenticated': False})
