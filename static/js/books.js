@@ -13,10 +13,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Store books data
     let booksData = [];
     
-    // Fetch books from JSON file
+    // Fetch books from API
     async function fetchBooks() {
         try {
-            const response = await fetch('/static/data/books.json');
+            const response = await fetch('/api/books');
             const data = await response.json();
             booksData = data.books;
             renderBooks(booksData);
@@ -81,11 +81,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Handle book form submission
-    function handleAddBook(e) {
+    async function handleAddBook(e) {
         e.preventDefault();
         
         const newBook = {
-            id: booksData.length + 1,
             title: document.getElementById('book-title').value,
             language: document.getElementById('book-language').value,
             category: document.getElementById('book-category').value,
@@ -94,17 +93,38 @@ document.addEventListener('DOMContentLoaded', function() {
             description: document.getElementById('book-description').value
         };
         
-        // Add the new book to the array (in a real app, this would be sent to the server)
-        booksData.push(newBook);
-        
-        // Re-render the books
-        filterBooks();
-        
-        // Reset the form
-        addBookForm.reset();
-        
-        // Show success message
-        alert('تمت إضافة الكتاب بنجاح');
+        try {
+            // Send the new book data to the server
+            const response = await fetch('/api/books', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newBook)
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                // Add the new book to the array with the server-assigned ID
+                booksData.push(result.book);
+                
+                // Re-render the books
+                filterBooks();
+                
+                // Reset the form
+                addBookForm.reset();
+                
+                // Show success message
+                alert('تمت إضافة الكتاب بنجاح');
+            } else {
+                // Show error message
+                alert(`خطأ: ${result.error || 'حدث خطأ أثناء إضافة الكتاب'}`);
+            }
+        } catch (error) {
+            console.error('Error adding book:', error);
+            alert('حدث خطأ أثناء إضافة الكتاب، يرجى المحاولة مرة أخرى');
+        }
     }
     
     // Add event listeners

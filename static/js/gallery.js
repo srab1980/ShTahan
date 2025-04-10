@@ -5,11 +5,50 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     // References to DOM elements
-    const galleryItems = document.querySelectorAll('.gallery-item img');
+    const galleryContainer = document.querySelector('.gallery-container');
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const lightboxCaption = document.getElementById('lightbox-caption');
     const closeLightbox = document.querySelector('.close-lightbox');
+    
+    // Fetch gallery images from API
+    async function fetchGalleryImages() {
+        try {
+            const response = await fetch('/api/gallery');
+            const data = await response.json();
+            renderGalleryImages(data.images);
+        } catch (error) {
+            console.error('Error fetching gallery images:', error);
+            if (galleryContainer) {
+                galleryContainer.innerHTML = '<p class="error-message">حدث خطأ في تحميل الصور</p>';
+            }
+        }
+    }
+    
+    // Render gallery images
+    function renderGalleryImages(images) {
+        if (!galleryContainer) return;
+        
+        if (images.length === 0) {
+            galleryContainer.innerHTML = '<p class="no-images">لا توجد صور متاحة</p>';
+            return;
+        }
+        
+        galleryContainer.innerHTML = '';
+        
+        images.forEach(image => {
+            const galleryItem = document.createElement('div');
+            galleryItem.className = 'gallery-item';
+            
+            galleryItem.innerHTML = `
+                <img src="${image.url}" alt="${image.caption}" loading="lazy">
+            `;
+            
+            galleryContainer.appendChild(galleryItem);
+        });
+        
+        // Add event listeners to newly created gallery images
+        const galleryItems = document.querySelectorAll('.gallery-item img');
     
     // Show lightbox with the clicked image
     function openLightbox(e) {
