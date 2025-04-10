@@ -321,30 +321,20 @@
                 <h2>معرض الصور</h2>
                 <div class="separator"></div>
             </div>
-            <div class="modern-gallery-container">
-                <div class="modern-gallery-main">
-                    <div class="modern-gallery-slides">
-                        <!-- Gallery slides will be loaded dynamically from the database -->
+            <div class="simple-gallery-container">
+                <div class="simple-gallery-slider">
+                    <div class="simple-gallery-current">
+                        <img id="current-gallery-image" src="/static/img/gallery/gallery1.jpg" alt="صورة معرض">
+                        <div class="simple-gallery-caption" id="gallery-caption">الشيخ مصطفى الطحان مع وقف دار السلام</div>
                     </div>
-                    <div class="modern-gallery-navigation">
-                        <div class="modern-gallery-prev"><i class="fas fa-chevron-right"></i></div>
-                        <div class="modern-gallery-next"><i class="fas fa-chevron-left"></i></div>
-                    </div>
-                    <div class="modern-gallery-pagination">
-                        <!-- Pagination dots will be created dynamically -->
+                    <div class="simple-gallery-arrows">
+                        <button class="simple-gallery-prev" id="gallery-prev"><i class="fas fa-chevron-right"></i></button>
+                        <button class="simple-gallery-next" id="gallery-next"><i class="fas fa-chevron-left"></i></button>
                     </div>
                 </div>
-                <div class="modern-gallery-info">
-                    <h3 class="modern-gallery-title"></h3>
-                    <p class="modern-gallery-description"></p>
+                <div class="simple-gallery-thumbs" id="gallery-thumbs">
+                    <!-- Thumbnails will be added here -->
                 </div>
-            </div>
-            
-            <!-- Lightbox -->
-            <div id="modern-lightbox" class="modern-lightbox">
-                <span class="modern-lightbox-close">&times;</span>
-                <img class="modern-lightbox-content" id="modern-lightbox-img">
-                <div id="modern-lightbox-caption"></div>
             </div>
         </div>
     </section>
@@ -426,7 +416,7 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/books.js') }}"></script>
     <script src="{{ url_for('static', filename='js/articles.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/modern-gallery.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/simple-gallery.js') }}"></script>
     <script src="{{ url_for('static', filename='js/contact.js') }}"></script>
 </body>
 </html>
