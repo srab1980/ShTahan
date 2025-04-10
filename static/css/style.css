@@ -197,9 +197,10 @@ img {
 /* ====== HERO SECTION STYLES ====== */
 .hero-section {
     padding: 150px 0 80px;
-    background-color: #1a2a3a; /* Dark blue background similar to screenshot */
+    background-color: #1a3c6b; /* Updated dark blue background to match screenshot */
     color: var(--white-color);
     text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .hero-content {
@@ -219,7 +220,7 @@ img {
     height: 200px;
     object-fit: cover;
     border-radius: 50%;
-    border: 6px solid #d4af37; /* Thicker gold border that matches the screenshot */
+    border: 6px solid #d4af37; /* Rich gold border that matches the screenshot */
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
 }
 

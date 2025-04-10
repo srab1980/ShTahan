@@ -46,8 +46,11 @@
     <section id="hero" class="hero-section">
         <div class="container">
             <div class="hero-content">
-                <div class="hero-image">
-                    <img src="{{ url_for('static', filename='img/profile/sheikh_profile_new.jpg') }}" alt="الشيخ مصطفى الطحان" class="portrait">
+                <div class="hero-image" style="text-align:center; margin-bottom:30px;">
+                    <!-- Use a direct path with timestamp to avoid caching issues -->
+                    <img src="/static/img/sheikh/mustafa.jpg?t=10421942" alt="الشيخ مصطفى الطحان" 
+                         style="width:200px; height:200px; object-fit:cover; border-radius:50%; 
+                                border:6px solid #d4af37; box-shadow:0 0 20px rgba(0,0,0,0.3);">
                 </div>
                 <div class="hero-text">
                     <h1>مرحبًا بكم في الموقع الرسمي للشيخ مصطفى الطحان (أبو أيمن)</h1>
@@ -88,8 +91,11 @@
                     </div>
                 </div>
 
-                <div class="bio-image">
-                    <img src="{{ url_for('static', filename='img/profile/sheikh_profile_new.jpg') }}" alt="الشيخ مصطفى الطحان">
+                <div class="bio-image" style="text-align:center; margin:20px auto;">
+                    <!-- Use a direct path with timestamp to avoid caching issues -->
+                    <img src="/static/img/sheikh/mustafa.jpg?t=10421942" alt="الشيخ مصطفى الطحان"
+                         style="width:180px; height:180px; object-fit:cover; border-radius:50%; 
+                                border:6px solid #d4af37; box-shadow:0 0 20px rgba(0,0,0,0.3);">
                 </div>
             </div>
         </div>
