@@ -197,7 +197,7 @@ img {
 /* ====== HERO SECTION STYLES ====== */
 .hero-section {
     padding: 150px 0 80px;
-    background: linear-gradient(to bottom, rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.7)), url('https://images.unsplash.com/photo-1587617425953-9075d28b8c46') center/cover no-repeat;
+    background-color: #1a2a3a; /* Dark blue background similar to screenshot */
     color: var(--white-color);
     text-align: center;
 }
@@ -219,7 +219,8 @@ img {
     height: 200px;
     object-fit: cover;
     border-radius: 50%;
-    border: 5px solid var(--gold-color);
+    border: 6px solid #d4af37; /* Thicker gold border that matches the screenshot */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
 }
 
 .hero-text h1 {
