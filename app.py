@@ -1,6 +1,9 @@
 import os
 import logging
-from flask import Flask, render_template, request, jsonify
+import uuid
+from datetime import datetime
+from werkzeug.utils import secure_filename
+from flask import Flask, render_template, request, jsonify, url_for, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 
@@ -25,11 +28,26 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_pre_ping": True,
 }
 
+# Configure file uploads
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
+
 # Initialize the app with the SQLAlchemy extension
 db.init_app(app)
 
 # Import models after initializing db
 from models import Book, Article, GalleryImage, ContactMessage
+
+# Helper function to check allowed file extensions
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# Helper function to generate a unique filename
+def generate_unique_filename(filename):
+    ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
+    unique_name = f"{uuid.uuid4().hex}.{ext}"
+    return unique_name
 
 @app.route('/')
 def index():
@@ -225,6 +243,123 @@ def submit_contact():
     db.session.commit()
     
     return jsonify({'message': 'Message sent successfully'}), 201
+
+# File Upload Endpoints
+@app.route('/api/upload/book-cover', methods=['POST'])
+def upload_book_cover():
+    # Check if a file part exists in the request
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    
+    file = request.files['file']
+    
+    # Check if user submitted an empty form
+    if file.filename == '':
+        return jsonify({'error': 'No file selected'}), 400
+    
+    # Check if file is allowed
+    if file and allowed_file(file.filename):
+        # Create a unique filename to avoid collisions
+        filename = generate_unique_filename(file.filename)
+        
+        # Save file to the books upload directory
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'books', filename)
+        file.save(file_path)
+        
+        # Return the file path for use in the book cover field
+        return jsonify({
+            'message': 'File uploaded successfully',
+            'file_url': f"/static/uploads/books/{filename}"
+        }), 201
+    else:
+        return jsonify({'error': 'File type not allowed'}), 400
+
+@app.route('/api/upload/book-pdf', methods=['POST'])
+def upload_book_pdf():
+    # Check if a file part exists in the request
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    
+    file = request.files['file']
+    
+    # Check if user submitted an empty form
+    if file.filename == '':
+        return jsonify({'error': 'No file selected'}), 400
+    
+    # Check if file is allowed and is a PDF
+    if file and file.filename.lower().endswith('.pdf'):
+        # Create a unique filename to avoid collisions
+        filename = generate_unique_filename(file.filename)
+        
+        # Save file to the books upload directory
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'books', filename)
+        file.save(file_path)
+        
+        # Return the file path for use in the book download field
+        return jsonify({
+            'message': 'PDF uploaded successfully',
+            'file_url': f"/static/uploads/books/{filename}"
+        }), 201
+    else:
+        return jsonify({'error': 'File must be a PDF'}), 400
+
+@app.route('/api/upload/gallery-image', methods=['POST'])
+def upload_gallery_image():
+    # Check if a file part exists in the request
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    
+    file = request.files['file']
+    
+    # Check if user submitted an empty form
+    if file.filename == '':
+        return jsonify({'error': 'No file selected'}), 400
+    
+    # Check if file is an image
+    if file and allowed_file(file.filename) and file.filename.lower().endswith(('png', 'jpg', 'jpeg', 'gif')):
+        # Create a unique filename to avoid collisions
+        filename = generate_unique_filename(file.filename)
+        
+        # Save file to the gallery upload directory
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'gallery', filename)
+        file.save(file_path)
+        
+        # Return the file path for use in the gallery image
+        return jsonify({
+            'message': 'Image uploaded successfully',
+            'file_url': f"/static/uploads/gallery/{filename}"
+        }), 201
+    else:
+        return jsonify({'error': 'File must be an image (PNG, JPG, JPEG, GIF)'}), 400
+
+@app.route('/api/upload/article-image', methods=['POST'])
+def upload_article_image():
+    # Check if a file part exists in the request
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    
+    file = request.files['file']
+    
+    # Check if user submitted an empty form
+    if file.filename == '':
+        return jsonify({'error': 'No file selected'}), 400
+    
+    # Check if file is an image
+    if file and allowed_file(file.filename) and file.filename.lower().endswith(('png', 'jpg', 'jpeg', 'gif')):
+        # Create a unique filename to avoid collisions
+        filename = generate_unique_filename(file.filename)
+        
+        # Save file to the articles upload directory
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], 'articles', filename)
+        file.save(file_path)
+        
+        # Return the file path for use in the article content
+        return jsonify({
+            'message': 'Image uploaded successfully',
+            'file_url': f"/static/uploads/articles/{filename}"
+        }), 201
+    else:
+        return jsonify({'error': 'File must be an image (PNG, JPG, JPEG, GIF)'}), 400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

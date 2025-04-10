@@ -10,6 +10,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const categoryFilter = document.getElementById('category-filter');
     const addBookForm = document.getElementById('add-book-form');
     const booksSection = document.getElementById('books');
+    const bookCoverUpload = document.getElementById('book-cover-upload');
+    const bookPdfUpload = document.getElementById('book-pdf-upload');
+    const coverPreview = document.getElementById('cover-preview');
+    const coverProgress = document.getElementById('cover-progress');
+    const pdfProgress = document.getElementById('pdf-progress');
     
     // Store books data
     let booksData = [];
@@ -86,7 +91,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <p class="book-description">${book.description}</p>
                     <div class="book-actions">
-                        <a href="${book.download}" class="btn btn-secondary" target="_blank">تحميل الكتاب</a>
+                        <a href="${book.download}" class="btn btn-secondary" target="_blank">
+                            <i class="fas fa-download"></i> تحميل الكتاب
+                        </a>
                         <button class="btn edit-book" data-id="${book.id}">
                             <i class="fas fa-edit"></i> تعديل
                         </button>
