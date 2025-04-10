@@ -321,25 +321,6 @@
                 <h2>معرض الصور</h2>
                 <div class="separator"></div>
             </div>
-            <div class="gallery-container">
-                <div class="gallery-slider">
-                    <div class="gallery-slides">
-                        <!-- Gallery slides will be loaded dynamically from the database -->
-                    </div>
-                    <div class="gallery-prev"><i class="fas fa-chevron-right"></i></div>
-                    <div class="gallery-next"><i class="fas fa-chevron-left"></i></div>
-                </div>
-                <div class="gallery-nav">
-                    <!-- Gallery thumbnails will be loaded dynamically from the database -->
-                </div>
-            </div>
-            
-            <!-- Lightbox -->
-            <div id="lightbox" class="lightbox">
-                <span class="close-lightbox">&times;</span>
-                <img class="lightbox-content" id="lightbox-img">
-                <div id="lightbox-caption"></div>
-            </div>
         </div>
     </section>
 
@@ -420,7 +401,6 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/books.js') }}"></script>
     <script src="{{ url_for('static', filename='js/articles.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/gallery.js') }}"></script>
     <script src="{{ url_for('static', filename='js/contact.js') }}"></script>
 </body>
 </html>
