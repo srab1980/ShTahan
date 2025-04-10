@@ -66,7 +66,7 @@
             margin: 0 auto;
         }
 
-        .gallery {
+        .gallery-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
@@ -78,21 +78,17 @@
             overflow: hidden;
             box-shadow: var(--shadow);
             background-color: var(--white-color);
+            position: relative;
         }
 
-        .gallery-image {
-            height: 250px;
-            overflow: hidden;
-        }
-
-        .gallery-image img {
+        .gallery-item img {
             width: 100%;
-            height: 100%;
+            height: 250px;
             object-fit: cover;
             transition: transform 0.5s ease;
         }
 
-        .gallery-item:hover .gallery-image img {
+        .gallery-item:hover img {
             transform: scale(1.1);
         }
 
@@ -124,14 +120,78 @@
             text-align: center;
         }
 
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            border: none;
+            transition: var(--transition);
+            margin: 10px 0;
+        }
+
+        .btn-primary {
+            background-color: var(--main-color);
+            color: var(--white-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--gold-color);
+            color: var(--white-color);
+        }
+
+        .btn-secondary {
+            background-color: var(--gold-color);
+            color: var(--white-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--main-color);
+            color: var(--white-color);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .gallery-controls {
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+            transition: bottom 0.3s ease;
+        }
+        
+        .gallery-item:hover .gallery-controls {
+            bottom: 0;
+        }
+
         @media screen and (max-width: 992px) {
-            .gallery {
+            .gallery-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
 
         @media screen and (max-width: 576px) {
-            .gallery {
+            .gallery-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -146,71 +206,28 @@
 
     <main>
         <div class="container">
-            <div class="page-title">
-                <h2>معرض الصور</h2>
-                <div class="separator"></div>
-            </div>
-
-            <div class="gallery">
-                <div class="gallery-item">
-                    <div class="gallery-image">
-                        <img src="/static/img/gallery/gallery1.jpg" alt="الشيخ مصطفى الطحان">
-                    </div>
-                    <div class="gallery-caption">
-                        الشيخ مصطفى الطحان مع وقف دار السلام
-                    </div>
+            <div id="gallery" class="section">
+                <div class="page-title section-title">
+                    <h2>معرض الصور</h2>
+                    <div class="separator"></div>
                 </div>
 
-                <div class="gallery-item">
-                    <div class="gallery-image">
-                        <img src="/static/img/gallery/gallery2.jpg" alt="الشيخ مصطفى الطحان">
-                    </div>
-                    <div class="gallery-caption">
-                        الشيخ مصطفى الطحان في مكتبه
-                    </div>
+                <div class="gallery-grid" id="gallery-grid">
+                    <!-- Gallery images will be loaded dynamically -->
+                    <p class="loading-message" style="grid-column: span 3; text-align: center;">جاري تحميل الصور...</p>
                 </div>
 
-                <div class="gallery-item">
-                    <div class="gallery-image">
-                        <img src="/static/img/gallery/gallery3.jpg" alt="الشيخ مصطفى الطحان">
-                    </div>
-                    <div class="gallery-caption">
-                        الشيخ مصطفى الطحان في لقاء مع وسائل الإعلام
-                    </div>
+                <div class="text-center">
+                    <a href="/" class="back-button">العودة للصفحة الرئيسية</a>
                 </div>
-
-                <div class="gallery-item">
-                    <div class="gallery-image">
-                        <img src="/static/img/gallery/gallery4.jpg" alt="الشيخ مصطفى الطحان">
-                    </div>
-                    <div class="gallery-caption">
-                        الشيخ مصطفى الطحان في اجتماع مع الأصدقاء
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <div class="gallery-image">
-                        <img src="/static/img/gallery/gallery5.jpg" alt="الشيخ مصطفى الطحان">
-                    </div>
-                    <div class="gallery-caption">
-                        الشيخ مصطفى الطحان مع الزعيم التركي
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <div class="gallery-image">
-                        <img src="/static/img/gallery/gallery6.jpg" alt="الشيخ مصطفى الطحان">
-                    </div>
-                    <div class="gallery-caption">
-                        الشيخ مصطفى الطحان مع مجموعة من العلماء
-                    </div>
-                </div>
-            </div>
-
-            <div class="text-center">
-                <a href="/" class="back-button">العودة للصفحة الرئيسية</a>
             </div>
         </div>
     </main>
+
+    <!-- Load the FontAwesome for icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    
+    <!-- Load our gallery management script -->
+    <script src="{{ url_for('static', filename='js/gallery-management.js') }}"></script>
 </body>
 </html>
