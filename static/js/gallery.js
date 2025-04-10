@@ -99,8 +99,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateSlider() {
         if (!gallerySlides) return;
         
-        // Update slides position
-        gallerySlides.style.transform = `translateX(${(currentSlide * -100)}%)`;
+        // Update slides position - for RTL we need to move in the opposite direction
+        gallerySlides.style.transform = `translateX(${(currentSlide * 100)}%)`;
         
         // Update active thumbnail
         const thumbs = document.querySelectorAll('.gallery-thumb');
@@ -144,17 +144,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add event listeners to gallery elements
     function addGalleryEventListeners() {
-        // Navigate to previous slide
+        // Navigate to previous slide (reversed for RTL)
         if (galleryPrev) {
             galleryPrev.addEventListener('click', () => {
-                goToSlide(currentSlide - 1);
+                goToSlide(currentSlide + 1);
             });
         }
         
-        // Navigate to next slide
+        // Navigate to next slide (reversed for RTL)
         if (galleryNext) {
             galleryNext.addEventListener('click', () => {
-                goToSlide(currentSlide + 1);
+                goToSlide(currentSlide - 1);
             });
         }
         
@@ -174,11 +174,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     closeLightboxHandler();
                 }
             } else {
-                // Arrow keys for slider navigation
+                // Arrow keys for slider navigation (reversed for RTL)
                 if (e.key === 'ArrowLeft') {
-                    goToSlide(currentSlide - 1);
-                } else if (e.key === 'ArrowRight') {
                     goToSlide(currentSlide + 1);
+                } else if (e.key === 'ArrowRight') {
+                    goToSlide(currentSlide - 1);
                 }
             }
         });

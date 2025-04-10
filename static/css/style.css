@@ -571,6 +571,7 @@ img {
 
 .gallery-slides {
     display: flex;
+    flex-direction: row-reverse;
     transition: transform 0.5s ease;
 }
 
@@ -651,11 +652,11 @@ img {
 }
 
 .gallery-prev {
-    left: 10px;
+    right: 10px;
 }
 
 .gallery-next {
-    right: 10px;
+    left: 10px;
 }
 
 .gallery-prev:hover, .gallery-next:hover {
