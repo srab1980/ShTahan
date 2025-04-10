@@ -1,126 +1,87 @@
 /**
  * Simple Gallery module for Sheikh Mustafa Al-Tahhan website
- * Provides a basic gallery slider with thumbnails
+ * Uses static images defined in the HTML
  */
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Simple gallery script loaded');
-    
-    // Gallery image data from API
-    const galleryImages = [];
     
     // DOM Elements
     const currentImage = document.getElementById('current-gallery-image');
     const caption = document.getElementById('gallery-caption');
     const prevBtn = document.getElementById('gallery-prev');
     const nextBtn = document.getElementById('gallery-next');
-    const thumbsContainer = document.getElementById('gallery-thumbs');
+    const thumbs = document.querySelectorAll('.simple-gallery-thumb');
+    
+    // Gallery image data (hardcoded)
+    const galleryImages = [
+        { url: '/static/img/gallery/gallery1.jpg', caption: 'الشيخ مصطفى الطحان مع وقف دار السلام' },
+        { url: '/static/img/gallery/gallery2.jpg', caption: 'الشيخ مصطفى الطحان في مكتبه' },
+        { url: '/static/img/gallery/gallery3.jpg', caption: 'الشيخ مصطفى الطحان في لقاء مع وسائل الإعلام' },
+        { url: '/static/img/gallery/gallery4.jpg', caption: 'الشيخ مصطفى الطحان في اجتماع مع الأصدقاء' },
+        { url: '/static/img/gallery/gallery5.jpg', caption: 'الشيخ مصطفى الطحان مع الزعيم التركي نجم الدين أربكان' },
+        { url: '/static/img/gallery/gallery6.jpg', caption: 'الشيخ مصطفى الطحان خلال اجتماع مع مجموعة من العلماء' }
+    ];
     
     // Current image index
     let currentIndex = 0;
     
-    // Fetch gallery images from API
-    async function fetchGalleryImages() {
-        try {
-            console.log('Fetching gallery images...');
-            const response = await fetch('/api/gallery');
-            const data = await response.json();
-            
-            if (data.images && data.images.length > 0) {
-                // Store images
-                data.images.forEach(img => galleryImages.push(img));
-                console.log(`Loaded ${galleryImages.length} images`);
-                
-                // Initialize gallery
-                initGallery();
-            } else {
-                console.error('No images found in API response');
-            }
-        } catch (error) {
-            console.error('Error fetching gallery images:', error);
-        }
-    }
-    
-    // Initialize gallery
-    function initGallery() {
-        if (galleryImages.length === 0) return;
-        
-        // Set initial image
-        setActiveImage(0);
-        
-        // Create thumbnails
-        createThumbnails();
-        
-        // Add event listeners
-        if (prevBtn) prevBtn.addEventListener('click', showPrevImage);
-        if (nextBtn) nextBtn.addEventListener('click', showNextImage);
-    }
-    
-    // Create thumbnails
-    function createThumbnails() {
-        if (!thumbsContainer) return;
-        
-        thumbsContainer.innerHTML = '';
-        
-        galleryImages.forEach((image, index) => {
-            const thumb = document.createElement('div');
-            thumb.className = `simple-gallery-thumb ${index === 0 ? 'active' : ''}`;
-            thumb.dataset.index = index;
-            thumb.innerHTML = `<img src="${image.url}" alt="صورة مصغرة">`;
-            
-            thumb.addEventListener('click', () => {
-                setActiveImage(index);
-            });
-            
-            thumbsContainer.appendChild(thumb);
-        });
-    }
-    
-    // Set the active image
+    // Set active image
     function setActiveImage(index) {
         if (!currentImage || !caption) return;
         
-        const image = galleryImages[index];
-        if (!image) return;
+        currentIndex = index;
         
-        // Update image source and caption
-        currentImage.src = image.url;
-        currentImage.alt = image.caption;
-        caption.textContent = image.caption;
+        // Update image and caption
+        currentImage.src = galleryImages[index].url;
+        caption.textContent = galleryImages[index].caption;
         
         // Update thumbnails
-        const thumbs = document.querySelectorAll('.simple-gallery-thumb');
-        thumbs.forEach(thumb => {
-            if (parseInt(thumb.dataset.index) === index) {
+        thumbs.forEach((thumb, i) => {
+            if (i === index) {
                 thumb.classList.add('active');
             } else {
                 thumb.classList.remove('active');
             }
         });
-        
-        // Update current index
-        currentIndex = index;
     }
     
-    // Show previous image
-    function showPrevImage() {
-        let newIndex = currentIndex + 1; // RTL direction
-        if (newIndex >= galleryImages.length) {
-            newIndex = 0;
-        }
-        setActiveImage(newIndex);
-    }
-    
-    // Show next image
+    // Navigate to next image
     function showNextImage() {
-        let newIndex = currentIndex - 1; // RTL direction
-        if (newIndex < 0) {
-            newIndex = galleryImages.length - 1;
-        }
+        const newIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length; // RTL direction
         setActiveImage(newIndex);
     }
     
-    // Handle keyboard navigation
+    // Navigate to previous image
+    function showPrevImage() {
+        const newIndex = (currentIndex + 1) % galleryImages.length; // RTL direction
+        setActiveImage(newIndex);
+    }
+    
+    // Set up event listeners
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            console.log('Previous button clicked');
+            showPrevImage();
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            console.log('Next button clicked');
+            showNextImage();
+        });
+    }
+    
+    // Set up thumbnail clicks
+    thumbs.forEach((thumb, index) => {
+        thumb.addEventListener('click', () => {
+            console.log('Thumbnail clicked:', index);
+            setActiveImage(index);
+        });
+    });
+    
+    // Add keyboard navigation
     document.addEventListener('keydown', (e) => {
         if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
             if (e.key === 'ArrowLeft') {
@@ -131,6 +92,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Start the gallery
-    fetchGalleryImages();
+    // Auto rotate every 5 seconds
+    setInterval(() => {
+        showNextImage();
+    }, 5000);
+    
+    console.log('Gallery initialized');
 });
