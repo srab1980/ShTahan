@@ -87,6 +87,12 @@ def index():
 def admin_dashboard():
     return render_template('admin.html')
 
+@app.route('/admin/users')
+@login_required
+@admin_required
+def user_management():
+    return render_template('user-management.html')
+
 @app.route('/gallery')
 def gallery():
     return render_template('gallery.html')
@@ -341,6 +347,117 @@ def submit_contact():
     db.session.commit()
     
     return jsonify({'message': 'Message sent successfully'}), 201
+
+# User Management API Endpoints
+@app.route('/api/users', methods=['GET'])
+@login_required
+@admin_required
+def get_users():
+    users = User.query.all()
+    return jsonify({'users': [user.to_dict() for user in users]})
+
+@app.route('/api/users/<int:user_id>', methods=['GET'])
+@login_required
+@admin_required
+def get_user(user_id):
+    user = User.query.get_or_404(user_id)
+    return jsonify({'user': user.to_dict()})
+
+@app.route('/api/users', methods=['POST'])
+@login_required
+@admin_required
+def add_user():
+    data = request.json
+    
+    if not all(key in data for key in ['username', 'email', 'password', 'role']):
+        return jsonify({'error': 'Missing required fields'}), 400
+    
+    # Check if username or email already exists
+    if User.query.filter_by(username=data['username']).first():
+        return jsonify({'error': 'اسم المستخدم موجود بالفعل'}), 400
+    
+    if User.query.filter_by(email=data['email']).first():
+        return jsonify({'error': 'البريد الإلكتروني موجود بالفعل'}), 400
+    
+    # Create new user
+    new_user = User(
+        username=data['username'],
+        email=data['email'],
+        role=data['role'],
+        active=data.get('active', True)
+    )
+    
+    new_user.set_password(data['password'])
+    
+    db.session.add(new_user)
+    db.session.commit()
+    
+    return jsonify({'message': 'تمت إضافة المستخدم بنجاح', 'user': new_user.to_dict()}), 201
+
+@app.route('/api/users/<int:user_id>', methods=['PUT'])
+@login_required
+@admin_required
+def update_user(user_id):
+    user = User.query.get_or_404(user_id)
+    data = request.json
+    
+    # Check if username or email already exists for another user
+    if 'username' in data and data['username'] != user.username:
+        if User.query.filter_by(username=data['username']).first():
+            return jsonify({'error': 'اسم المستخدم موجود بالفعل'}), 400
+    
+    if 'email' in data and data['email'] != user.email:
+        if User.query.filter_by(email=data['email']).first():
+            return jsonify({'error': 'البريد الإلكتروني موجود بالفعل'}), 400
+    
+    # Update user fields
+    if 'username' in data:
+        user.username = data['username']
+    if 'email' in data:
+        user.email = data['email']
+    if 'role' in data:
+        user.role = data['role']
+    if 'active' in data:
+        user.active = data['active']
+    if 'password' in data and data['password']:
+        user.set_password(data['password'])
+    
+    db.session.commit()
+    
+    return jsonify({'message': 'تم تحديث المستخدم بنجاح', 'user': user.to_dict()})
+
+@app.route('/api/users/<int:user_id>', methods=['DELETE'])
+@login_required
+@admin_required
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    
+    # Prevent deleting the current user
+    if user.id == current_user.id:
+        return jsonify({'error': 'لا يمكنك حذف الحساب الذي تستخدمه حالياً'}), 400
+    
+    db.session.delete(user)
+    db.session.commit()
+    
+    return jsonify({'message': 'تم حذف المستخدم بنجاح'})
+
+@app.route('/api/users/<int:user_id>/status', methods=['PUT'])
+@login_required
+@admin_required
+def toggle_user_status(user_id):
+    user = User.query.get_or_404(user_id)
+    data = request.json
+    
+    # Prevent disabling the current user
+    if user.id == current_user.id and 'active' in data and not data['active']:
+        return jsonify({'error': 'لا يمكنك تعطيل الحساب الذي تستخدمه حالياً'}), 400
+    
+    if 'active' in data:
+        user.active = data['active']
+    
+    db.session.commit()
+    
+    return jsonify({'message': 'تم تحديث حالة المستخدم بنجاح', 'user': user.to_dict()})
 
 # File Upload Endpoints
 @app.route('/api/upload/book-cover', methods=['POST'])

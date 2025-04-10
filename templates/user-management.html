@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المستخدمين - موقع الشيخ مصطفى الطحان</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .admin-title h1 {
+            color: #1a2a3a;
+            margin: 0;
+        }
+        
+        .admin-user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .admin-user-info .user-role {
+            margin-left: 15px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            background-color: #1a2a3a;
+            color: white;
+        }
+        
+        .admin-user-info .logout-btn {
+            margin-right: 15px;
+            padding: 7px 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            color: #1a2a3a;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .admin-user-info .logout-btn:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .admin-navigation {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .admin-nav-links {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .admin-nav-links li {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .admin-nav-links li a {
+            display: block;
+            padding: 15px;
+            color: #1a2a3a;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .admin-nav-links li a:hover,
+        .admin-nav-links li a.active {
+            background-color: #1a2a3a;
+            color: white;
+        }
+        
+        .admin-nav-links li a i {
+            margin-left: 5px;
+        }
+        
+        .admin-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            color: #1a2a3a;
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .add-user-btn {
+            padding: 8px 15px;
+            background-color: #1a2a3a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .add-user-btn:hover {
+            background-color: #d4af37;
+        }
+        
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        .users-table th,
+        .users-table td {
+            padding: 12px 15px;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .users-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #1a2a3a;
+        }
+        
+        .users-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .role-admin {
+            background-color: #1a2a3a;
+            color: white;
+        }
+        
+        .role-editor {
+            background-color: #d4af37;
+            color: white;
+        }
+        
+        .role-user {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .status-active {
+            color: #28a745;
+        }
+        
+        .status-inactive {
+            color: #dc3545;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .edit-btn {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .toggle-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        /* User Form Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-title {
+            margin: 0;
+            color: #1a2a3a;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #1a2a3a;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .form-group .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+        }
+        
+        .form-group .checkbox-label input {
+            width: auto;
+            margin-left: 10px;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .cancel-btn {
+            padding: 10px 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            color: #1a2a3a;
+            cursor: pointer;
+        }
+        
+        .save-btn {
+            padding: 10px 20px;
+            background-color: #1a2a3a;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .save-btn:hover {
+            background-color: #d4af37;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .admin-nav-links {
+                flex-direction: column;
+            }
+            
+            .admin-user-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .admin-user-info .user-role {
+                margin-left: 0;
+                margin-bottom: 10px;
+            }
+            
+            .admin-user-info .logout-btn {
+                margin-right: 0;
+                margin-top: 10px;
+            }
+            
+            .users-table, 
+            .users-table thead, 
+            .users-table tbody, 
+            .users-table th, 
+            .users-table td, 
+            .users-table tr {
+                display: block;
+            }
+            
+            .users-table thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            
+            .users-table tr {
+                border: 1px solid #eee;
+                margin-bottom: 15px;
+                border-radius: 5px;
+                overflow: hidden;
+            }
+            
+            .users-table td {
+                border: none;
+                border-bottom: 1px solid #eee;
+                position: relative;
+                padding-right: 50%;
+            }
+            
+            .users-table td:before {
+                position: absolute;
+                right: 10px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                font-weight: bold;
+            }
+            
+            .users-table td:nth-of-type(1):before { content: "المستخدم"; }
+            .users-table td:nth-of-type(2):before { content: "البريد الإلكتروني"; }
+            .users-table td:nth-of-type(3):before { content: "الدور"; }
+            .users-table td:nth-of-type(4):before { content: "الحالة"; }
+            .users-table td:nth-of-type(5):before { content: "آخر تسجيل دخول"; }
+            .users-table td:nth-of-type(6):before { content: "الإجراءات"; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="admin-title">
+                <h1>إدارة المستخدمين</h1>
+            </div>
+            <div class="admin-user-info">
+                <span class="user-role" id="userRole">مدير</span>
+                <span id="userName">مرحباً، <strong>المستخدم</strong></span>
+                <a href="/api/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                </a>
+            </div>
+        </header>
+        
+        <nav class="admin-navigation">
+            <ul class="admin-nav-links">
+                <li><a href="/admin"><i class="fas fa-tachometer-alt"></i> الرئيسية</a></li>
+                <li><a href="#"><i class="fas fa-book"></i> الكتب</a></li>
+                <li><a href="#"><i class="fas fa-newspaper"></i> المقالات</a></li>
+                <li><a href="#"><i class="fas fa-images"></i> معرض الصور</a></li>
+                <li><a href="#"><i class="fas fa-envelope"></i> الرسائل</a></li>
+                <li><a href="/admin/users" class="active"><i class="fas fa-users"></i> إدارة المستخدمين</a></li>
+            </ul>
+        </nav>
+        
+        <div class="admin-content">
+            <div class="section-title">
+                <h2>قائمة المستخدمين</h2>
+                <button class="add-user-btn" id="addUserBtn">
+                    <i class="fas fa-plus"></i> إضافة مستخدم جديد
+                </button>
+            </div>
+            
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>المستخدم</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>الدور</th>
+                        <th>الحالة</th>
+                        <th>آخر تسجيل دخول</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <!-- User rows will be populated via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- User Modal Form -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">إضافة مستخدم جديد</h3>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            
+            <form id="userForm">
+                <input type="hidden" id="userId" value="">
+                
+                <div class="form-group">
+                    <label for="username">اسم المستخدم</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" id="password" name="password">
+                    <small id="passwordHint" style="display: none; color: #6c757d;">اترك هذا الحقل فارغاً إذا كنت لا ترغب في تغيير كلمة المرور.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="role">الدور</label>
+                    <select id="role" name="role" required>
+                        <option value="user">مستخدم</option>
+                        <option value="editor">محرر</option>
+                        <option value="admin">مدير</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="active" name="active" checked>
+                        المستخدم نشط
+                    </label>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" id="cancelBtn">إلغاء</button>
+                    <button type="submit" class="save-btn">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="/static/js/user-management.js"></script>
+</body>
+</html>
