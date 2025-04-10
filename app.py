@@ -3,9 +3,11 @@ import logging
 import uuid
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from flask import Flask, render_template, request, jsonify, url_for, send_from_directory
+from flask import Flask, render_template, request, jsonify, url_for, send_from_directory, redirect, flash, session
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
+from functools import wraps
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -37,7 +39,34 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 db.init_app(app)
 
 # Import models after initializing db
-from models import Book, Article, GalleryImage, ContactMessage
+from models import Book, Article, GalleryImage, ContactMessage, User
+
+# Initialize Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+login_manager.login_message = 'يرجى تسجيل الدخول للوصول إلى هذه الصفحة'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# Role-based authorization decorators
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_admin():
+            return jsonify({'error': 'غير مصرح. يتطلب صلاحيات المسؤول'}), 403
+        return f(*args, **kwargs)
+    return decorated_function
+
+def editor_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_editor():
+            return jsonify({'error': 'غير مصرح. يتطلب صلاحيات المحرر على الأقل'}), 403
+        return f(*args, **kwargs)
+    return decorated_function
 
 # Helper function to check allowed file extensions
 def allowed_file(filename):
@@ -57,6 +86,65 @@ def index():
 def gallery():
     return render_template('gallery.html')
 
+# Authentication routes
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+        
+    if request.method == 'POST':
+        data = request.json
+        
+        if not all(key in data for key in ['username', 'password']):
+            return jsonify({'error': 'يرجى تقديم اسم المستخدم وكلمة المرور'}), 400
+        
+        user = User.query.filter_by(username=data['username']).first()
+        
+        if user is None or not user.check_password(data['password']):
+            return jsonify({'error': 'اسم المستخدم أو كلمة المرور غير صحيحة'}), 401
+        
+        if not user.active:
+            return jsonify({'error': 'تم تعطيل هذا الحساب، يرجى الاتصال بالمسؤول'}), 403
+        
+        # Update last login time
+        user.last_login = datetime.utcnow()
+        db.session.commit()
+        
+        login_user(user)
+        return jsonify({
+            'message': 'تم تسجيل الدخول بنجاح',
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'role': user.role
+            }
+        })
+    
+    # GET request - serve the login page
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+@app.route('/api/auth/status')
+def auth_status():
+    if current_user.is_authenticated:
+        return jsonify({
+            'authenticated': True,
+            'user': {
+                'id': current_user.id,
+                'username': current_user.username,
+                'role': current_user.role,
+                'is_admin': current_user.is_admin(),
+                'is_editor': current_user.is_editor()
+            }
+        })
+    else:
+        return jsonify({'authenticated': False})
+
 # Books API Endpoints
 @app.route('/api/books', methods=['GET'])
 def get_books():
@@ -69,6 +157,7 @@ def get_book(book_id):
     return jsonify({'book': book.to_dict()})
 
 @app.route('/api/books', methods=['POST'])
+@editor_required
 def add_book():
     data = request.json
     
@@ -90,6 +179,7 @@ def add_book():
     return jsonify({'message': 'Book added successfully', 'book': new_book.to_dict()}), 201
 
 @app.route('/api/books/<int:book_id>', methods=['PUT'])
+@editor_required
 def update_book(book_id):
     book = Book.query.get_or_404(book_id)
     data = request.json
@@ -112,6 +202,7 @@ def update_book(book_id):
     return jsonify({'message': 'Book updated successfully', 'book': book.to_dict()})
 
 @app.route('/api/books/<int:book_id>', methods=['DELETE'])
+@editor_required
 def delete_book(book_id):
     book = Book.query.get_or_404(book_id)
     

@@ -2,6 +2,8 @@
 Database models for Sheikh Mustafa Al-Tahhan website
 """
 from datetime import datetime
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 
 class Book(db.Model):
@@ -76,4 +78,43 @@ class ContactMessage(db.Model):
             'email': self.email,
             'message': self.message,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        }
+
+class User(UserMixin, db.Model):
+    """Model for users with role-based access control"""
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+    role = db.Column(db.String(20), nullable=False, default='user')  # 'admin', 'editor', or 'user'
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_login = db.Column(db.DateTime, nullable=True)
+    active = db.Column(db.Boolean, default=True)
+    
+    def set_password(self, password):
+        """Set password hash"""
+        self.password_hash = generate_password_hash(password)
+    
+    def check_password(self, password):
+        """Check password against hash"""
+        return check_password_hash(self.password_hash, password)
+    
+    def is_admin(self):
+        """Check if user is an admin"""
+        return self.role == 'admin'
+    
+    def is_editor(self):
+        """Check if user is an editor"""
+        return self.role == 'editor' or self.role == 'admin'
+    
+    def to_dict(self):
+        """Convert model to dictionary (excluding password)"""
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'role': self.role,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'last_login': self.last_login.strftime('%Y-%m-%d %H:%M:%S') if self.last_login else None,
+            'active': self.active
         }
