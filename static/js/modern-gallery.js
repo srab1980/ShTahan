@@ -4,6 +4,8 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Modern gallery script loaded');
+    
     // References to DOM elements
     const galleryContainer = document.querySelector('.modern-gallery-container');
     const gallerySlides = document.querySelector('.modern-gallery-slides');
@@ -16,6 +18,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const lightboxImg = document.getElementById('modern-lightbox-img');
     const lightboxCaption = document.getElementById('modern-lightbox-caption');
     const closeLightbox = document.querySelector('.modern-lightbox-close');
+    
+    console.log('Gallery elements:', 
+        { container: galleryContainer, 
+          slides: gallerySlides, 
+          pagination: galleryPagination,
+          prev: galleryPrev,
+          next: galleryNext
+        });
     
     // Current slide index
     let currentSlide = 0;
