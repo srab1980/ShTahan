@@ -35,6 +35,10 @@ from models import Book, Article, GalleryImage, ContactMessage
 def index():
     return render_template('index.html')
 
+@app.route('/gallery')
+def gallery():
+    return render_template('gallery.html')
+
 # Books API Endpoints
 @app.route('/api/books', methods=['GET'])
 def get_books():
