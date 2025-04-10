@@ -321,6 +321,31 @@
                 <h2>معرض الصور</h2>
                 <div class="separator"></div>
             </div>
+            <div class="modern-gallery-container">
+                <div class="modern-gallery-main">
+                    <div class="modern-gallery-slides">
+                        <!-- Gallery slides will be loaded dynamically from the database -->
+                    </div>
+                    <div class="modern-gallery-navigation">
+                        <div class="modern-gallery-prev"><i class="fas fa-chevron-right"></i></div>
+                        <div class="modern-gallery-next"><i class="fas fa-chevron-left"></i></div>
+                    </div>
+                    <div class="modern-gallery-pagination">
+                        <!-- Pagination dots will be created dynamically -->
+                    </div>
+                </div>
+                <div class="modern-gallery-info">
+                    <h3 class="modern-gallery-title"></h3>
+                    <p class="modern-gallery-description"></p>
+                </div>
+            </div>
+            
+            <!-- Lightbox -->
+            <div id="modern-lightbox" class="modern-lightbox">
+                <span class="modern-lightbox-close">&times;</span>
+                <img class="modern-lightbox-content" id="modern-lightbox-img">
+                <div id="modern-lightbox-caption"></div>
+            </div>
         </div>
     </section>
 
@@ -401,6 +426,7 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/books.js') }}"></script>
     <script src="{{ url_for('static', filename='js/articles.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modern-gallery.js') }}"></script>
     <script src="{{ url_for('static', filename='js/contact.js') }}"></script>
 </body>
 </html>
