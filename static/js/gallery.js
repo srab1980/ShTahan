@@ -1,22 +1,31 @@
 /**
  * Gallery module for Sheikh Mustafa Al-Tahhan website
- * Handles image gallery with lightbox functionality
+ * Handles image gallery slider with lightbox functionality
  */
 
 document.addEventListener('DOMContentLoaded', function() {
     // References to DOM elements
     const galleryContainer = document.querySelector('.gallery-container');
+    const gallerySlides = document.querySelector('.gallery-slides');
+    const galleryNav = document.querySelector('.gallery-nav');
+    const galleryPrev = document.querySelector('.gallery-prev');
+    const galleryNext = document.querySelector('.gallery-next');
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const lightboxCaption = document.getElementById('lightbox-caption');
     const closeLightbox = document.querySelector('.close-lightbox');
+    
+    // Current slide index
+    let currentSlide = 0;
+    let galleryImages = [];
     
     // Fetch gallery images from API
     async function fetchGalleryImages() {
         try {
             const response = await fetch('/api/gallery');
             const data = await response.json();
-            renderGalleryImages(data.images);
+            galleryImages = data.images;
+            renderGallerySlider(galleryImages);
         } catch (error) {
             console.error('Error fetching gallery images:', error);
             if (galleryContainer) {
@@ -25,35 +34,88 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Render gallery images
-    function renderGalleryImages(images) {
-        if (!galleryContainer) return;
+    // Render gallery slider
+    function renderGallerySlider(images) {
+        if (!gallerySlides || !galleryNav) return;
         
         if (images.length === 0) {
             galleryContainer.innerHTML = '<p class="no-images">لا توجد صور متاحة</p>';
             return;
         }
         
-        galleryContainer.innerHTML = '';
+        // Clear existing content
+        gallerySlides.innerHTML = '';
+        galleryNav.innerHTML = '';
         
-        images.forEach(image => {
-            const galleryItem = document.createElement('div');
-            galleryItem.className = 'gallery-item';
+        // Create slides
+        images.forEach((image, index) => {
+            // Create slide
+            const slide = document.createElement('div');
+            slide.className = 'gallery-item';
+            slide.dataset.index = index;
             
-            galleryItem.innerHTML = `
-                <img src="${image.url}" alt="${image.caption}" loading="lazy">
+            slide.innerHTML = `
+                <img src="${image.url}" alt="${image.caption}" loading="${index < 3 ? 'eager' : 'lazy'}">
+                <div class="gallery-caption">${image.caption}</div>
             `;
             
-            galleryContainer.appendChild(galleryItem);
+            gallerySlides.appendChild(slide);
+            
+            // Create thumbnail
+            const thumb = document.createElement('div');
+            thumb.className = `gallery-thumb ${index === 0 ? 'active' : ''}`;
+            thumb.dataset.index = index;
+            
+            thumb.innerHTML = `<img src="${image.url}" alt="thumbnail">`;
+            
+            thumb.addEventListener('click', () => {
+                goToSlide(index);
+            });
+            
+            galleryNav.appendChild(thumb);
         });
         
-        // Add event listeners to newly created gallery images
+        // Set initial slide
+        updateSlider();
+        
+        // Add event listeners
         addGalleryEventListeners();
+    }
+    
+    // Go to specific slide
+    function goToSlide(index) {
+        if (index < 0) {
+            currentSlide = galleryImages.length - 1;
+        } else if (index >= galleryImages.length) {
+            currentSlide = 0;
+        } else {
+            currentSlide = index;
+        }
+        
+        updateSlider();
+    }
+    
+    // Update slider position and active thumbnail
+    function updateSlider() {
+        if (!gallerySlides) return;
+        
+        // Update slides position
+        gallerySlides.style.transform = `translateX(${(currentSlide * -100)}%)`;
+        
+        // Update active thumbnail
+        const thumbs = document.querySelectorAll('.gallery-thumb');
+        thumbs.forEach((thumb, index) => {
+            if (index === currentSlide) {
+                thumb.classList.add('active');
+            } else {
+                thumb.classList.remove('active');
+            }
+        });
     }
     
     // Show lightbox with the clicked image
     function openLightbox(e) {
-        if (lightbox && lightboxImg) {
+        if (lightbox && lightboxImg && e.target.tagName === 'IMG') {
             const imgSrc = e.target.src;
             const imgAlt = e.target.alt;
             
@@ -80,14 +142,46 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Add event listeners to gallery images
+    // Add event listeners to gallery elements
     function addGalleryEventListeners() {
-        const galleryItems = document.querySelectorAll('.gallery-item img');
-        if (galleryItems && galleryItems.length > 0) {
-            galleryItems.forEach(img => {
-                img.addEventListener('click', openLightbox);
+        // Navigate to previous slide
+        if (galleryPrev) {
+            galleryPrev.addEventListener('click', () => {
+                goToSlide(currentSlide - 1);
             });
         }
+        
+        // Navigate to next slide
+        if (galleryNext) {
+            galleryNext.addEventListener('click', () => {
+                goToSlide(currentSlide + 1);
+            });
+        }
+        
+        // Open lightbox when clicking on slide image
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        if (galleryItems && galleryItems.length > 0) {
+            galleryItems.forEach(item => {
+                item.addEventListener('click', openLightbox);
+            });
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (lightbox && lightbox.style.display === 'block') {
+                // ESC to close lightbox
+                if (e.key === 'Escape') {
+                    closeLightboxHandler();
+                }
+            } else {
+                // Arrow keys for slider navigation
+                if (e.key === 'ArrowLeft') {
+                    goToSlide(currentSlide - 1);
+                } else if (e.key === 'ArrowRight') {
+                    goToSlide(currentSlide + 1);
+                }
+            }
+        });
     }
     
     // Add event listener to close button
@@ -103,13 +197,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    // Close lightbox with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && lightbox && lightbox.style.display === 'block') {
-            closeLightboxHandler();
-        }
-    });
     
     // Initialize the gallery
     fetchGalleryImages();
