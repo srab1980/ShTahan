@@ -223,6 +223,7 @@ def get_article(article_id):
     return jsonify({'article': article.to_dict()})
 
 @app.route('/api/articles', methods=['POST'])
+@editor_required
 def add_article():
     data = request.json
     
@@ -241,6 +242,7 @@ def add_article():
     return jsonify({'message': 'Article added successfully', 'article': new_article.to_dict()}), 201
 
 @app.route('/api/articles/<int:article_id>', methods=['PUT'])
+@editor_required
 def update_article(article_id):
     article = Article.query.get_or_404(article_id)
     data = request.json
@@ -257,6 +259,7 @@ def update_article(article_id):
     return jsonify({'message': 'Article updated successfully', 'article': article.to_dict()})
 
 @app.route('/api/articles/<int:article_id>', methods=['DELETE'])
+@editor_required
 def delete_article(article_id):
     article = Article.query.get_or_404(article_id)
     
@@ -277,6 +280,7 @@ def get_gallery_image(image_id):
     return jsonify({'image': image.to_dict()})
 
 @app.route('/api/gallery', methods=['POST'])
+@editor_required
 def add_gallery_image():
     data = request.json
     
@@ -294,6 +298,7 @@ def add_gallery_image():
     return jsonify({'message': 'Image added successfully', 'image': new_image.to_dict()}), 201
 
 @app.route('/api/gallery/<int:image_id>', methods=['PUT'])
+@editor_required
 def update_gallery_image(image_id):
     image = GalleryImage.query.get_or_404(image_id)
     data = request.json
@@ -308,6 +313,7 @@ def update_gallery_image(image_id):
     return jsonify({'message': 'Image updated successfully', 'image': image.to_dict()})
 
 @app.route('/api/gallery/<int:image_id>', methods=['DELETE'])
+@editor_required
 def delete_gallery_image(image_id):
     image = GalleryImage.query.get_or_404(image_id)
     
@@ -337,6 +343,7 @@ def submit_contact():
 
 # File Upload Endpoints
 @app.route('/api/upload/book-cover', methods=['POST'])
+@editor_required
 def upload_book_cover():
     # Check if a file part exists in the request
     if 'file' not in request.files:
@@ -366,6 +373,7 @@ def upload_book_cover():
         return jsonify({'error': 'File type not allowed'}), 400
 
 @app.route('/api/upload/book-pdf', methods=['POST'])
+@editor_required
 def upload_book_pdf():
     # Check if a file part exists in the request
     if 'file' not in request.files:
@@ -395,6 +403,7 @@ def upload_book_pdf():
         return jsonify({'error': 'File must be a PDF'}), 400
 
 @app.route('/api/upload/gallery-image', methods=['POST'])
+@editor_required
 def upload_gallery_image():
     # Check if a file part exists in the request
     if 'file' not in request.files:
@@ -424,6 +433,7 @@ def upload_gallery_image():
         return jsonify({'error': 'File must be an image (PNG, JPG, JPEG, GIF)'}), 400
 
 @app.route('/api/upload/article-image', methods=['POST'])
+@editor_required
 def upload_article_image():
     # Check if a file part exists in the request
     if 'file' not in request.files:
