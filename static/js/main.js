@@ -26,16 +26,19 @@ document.addEventListener('DOMContentLoaded', function() {
         anchor.addEventListener('click', function(e) {
             const targetId = this.getAttribute('href');
             
-            // Skip processing if it's just a "#" link (like in "Read More" buttons)
+            // Skip entirely if the href is just "#" (like in "Read More" buttons)
             if (targetId === '#') {
+                // Let the default behavior happen for these links
                 return;
             }
             
+            // For actual section links (like #biography, #books, etc.)
             e.preventDefault();
             
-            // Only try to scroll if it's a valid target ID
-            if (targetId.length > 1) {
-                const targetElement = document.querySelector(targetId);
+            try {
+                // Use getElementById instead of querySelector for better error handling with fragments
+                const sectionId = targetId.substring(1); // Remove the # character
+                const targetElement = document.getElementById(sectionId);
                 
                 if (targetElement) {
                     window.scrollTo({
@@ -43,6 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         behavior: 'smooth'
                     });
                 }
+            } catch (error) {
+                console.log('Smooth scroll error:', error);
             }
         });
     });
