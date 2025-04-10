@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الموقع الرسمي للشيخ مصطفى الطحان (أبو أيمن)</title>
+    <meta name="description" content="الموقع الرسمي للشيخ مصطفى الطحان - كاتب ومربٍ فاضل ومسيرة من العطاء والفكر والدعوة">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <div class="logo">
+                <a href="#hero">الشيخ مصطفى الطحان</a>
+            </div>
+            <nav>
+                <div class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#hero">الرئيسية</a></li>
+                    <li><a href="#biography">السيرة الذاتية</a></li>
+                    <li><a href="#testimonials">أقوال الشخصيات</a></li>
+                    <li><a href="#achievements">الإنجازات</a></li>
+                    <li><a href="#books">الكتب والمؤلفات</a></li>
+                    <li><a href="#articles">المقالات</a></li>
+                    <li><a href="#gallery">معرض الصور</a></li>
+                    <li><a href="#contact">تواصل معنا</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1506863530036-1efeddceb993" alt="الشيخ مصطفى الطحان" class="portrait">
+                </div>
+                <div class="hero-text">
+                    <h1>مرحبًا بكم في الموقع الرسمي للشيخ مصطفى الطحان (أبو أيمن)</h1>
+                    <p>كاتب ومربٍ فاضل... ومسيرة من العطاء والفكر والدعوة.</p>
+                    <a href="#biography" class="btn btn-primary">استكشف السيرة الذاتية</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Biography Section -->
+    <section id="biography" class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>من هو الشيخ؟</h2>
+                <div class="separator"></div>
+            </div>
+            <div class="bio-content">
+                <div class="bio-card">
+                    <div class="bio-info">
+                        <ul>
+                            <li><strong>الاسم:</strong> مصطفى محمد الطحان</li>
+                            <li><strong>الميلاد:</strong> 1940م – بلدة كوشا، شمال لبنان</li>
+                            <li><strong>الدراسة:</strong> ماجستير في الهندسة الكيميائية – جامعة إسطنبول – 1964</li>
+                            <li><strong>الوفاة:</strong> توفي في 25 سبتمبر 2019م ودفن في إسطنبول</li>
+                        </ul>
+                    </div>
+
+                    <div class="bio-roles">
+                        <h3>أهم الأدوار:</h3>
+                        <ul>
+                            <li>عمل في قسم التكرير بشركة النفط بالكويت حتى 1979</li>
+                            <li>شارك في تأسيس الاتحاد الإسلامي العالمي للمنظمات الطلابية وانتُخب أمينًا عامًا له عام 1980</li>
+                            <li>أشرف على مشروع الكتاب الإسلامي وترجمته إلى أكثر من 70 لغة</li>
+                            <li>شارك في تأسيس الندوة العالمية للشباب الإسلامي بالرياض</li>
+                            <li>عضو في الأمانة العامة للندوة العالمية</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bio-image">
+                    <img src="https://images.unsplash.com/photo-1560601575-29dc7d25ff3b" alt="الشيخ مصطفى الطحان مع مجموعة من العلماء">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="section bg-light">
+        <div class="container">
+            <div class="section-title">
+                <h2>أقوال الشخصيات عنه</h2>
+                <div class="separator"></div>
+            </div>
+            <div class="testimonials-container">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>"كان حركة دؤوبة لخدمة دعوته ونصرة قضايا أمته، وموقظًا للوعي ومرشدًا لشباب الصحوة."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <h4>د. عبدالله العتيبي</h4>
+                        <p>مفكر ومؤرخ إسلامي</p>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>"عرفته داعية متميزًا، وكاتبًا مؤثرًا، ومربيًا فريدًا، اجتمعت فيه الخصال الحميدة والأخلاق الرفيعة."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <h4>أ. محمد الراشد</h4>
+                        <p>مفكر وداعية إسلامي</p>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>"كان نموذجًا للعالم العامل والمفكر المخلص الذي يسعى لنهضة الأمة في جميع المجالات."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <h4>د. يوسف القرضاوي</h4>
+                        <p>عالم وفقيه إسلامي</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Achievements Section -->
+    <section id="achievements" class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>الإنجازات</h2>
+                <div class="separator"></div>
+            </div>
+            <div class="achievements-container">
+                <div class="achievement-item">
+                    <div class="achievement-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="achievement-content">
+                        <h3>تأسيس الاتحاد الإسلامي العالمي للمنظمات الطلابية</h3>
+                        <p>عام 1969م</p>
+                    </div>
+                </div>
+
+                <div class="achievement-item">
+                    <div class="achievement-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="achievement-content">
+                        <h3>تأسيس وإدارة مشروع الكتاب الإسلامي</h3>
+                        <p>مع ترجمة إلى أكثر من 70 لغة</p>
+                    </div>
+                </div>
+
+                <div class="achievement-item">
+                    <div class="achievement-icon">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
+                    <div class="achievement-content">
+                        <h3>إصدار مجلة "الأخبار"</h3>
+                        <p>باللغتين العربية والإنجليزية</p>
+                    </div>
+                </div>
+
+                <div class="achievement-item">
+                    <div class="achievement-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="achievement-content">
+                        <h3>تأسيس الندوة العالمية للشباب الإسلامي</h3>
+                        <p>بالرياض، المملكة العربية السعودية</p>
+                    </div>
+                </div>
+
+                <div class="achievement-item">
+                    <div class="achievement-icon">
+                        <i class="fas fa-pen-fancy"></i>
+                    </div>
+                    <div class="achievement-content">
+                        <h3>تأليف أكثر من 15 كتابًا</h3>
+                        <p>تُرجم عدد منها إلى لغات عدة</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Books Section -->
+    <section id="books" class="section bg-light">
+        <div class="container">
+            <div class="section-title">
+                <h2>الكتب والمؤلفات</h2>
+                <div class="separator"></div>
+            </div>
+            
+            <div class="books-filter">
+                <div class="filter-group">
+                    <label for="language-filter">اللغة:</label>
+                    <select id="language-filter">
+                        <option value="all">الكل</option>
+                        <option value="العربية">العربية</option>
+                        <option value="الإنجليزية">الإنجليزية</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="category-filter">التصنيف:</label>
+                    <select id="category-filter">
+                        <option value="all">الكل</option>
+                        <option value="تربية">تربية</option>
+                        <option value="دعوة">دعوة</option>
+                        <option value="فكر">فكر</option>
+                        <option value="مذكرات">مذكرات</option>
+                        <option value="تاريخ">تاريخ</option>
+                        <option value="تراجم">تراجم</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="books-grid" id="books-container">
+                <!-- Books will be loaded from books.json here -->
+            </div>
+            
+            <div class="section-title">
+                <h3>إضافة كتاب جديد</h3>
+            </div>
+            
+            <div class="book-form">
+                <form id="add-book-form">
+                    <div class="form-group">
+                        <label for="book-title">العنوان:</label>
+                        <input type="text" id="book-title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="book-language">اللغة:</label>
+                        <select id="book-language" required>
+                            <option value="العربية">العربية</option>
+                            <option value="الإنجليزية">الإنجليزية</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="book-category">التصنيف:</label>
+                        <select id="book-category" required>
+                            <option value="تربية">تربية</option>
+                            <option value="دعوة">دعوة</option>
+                            <option value="فكر">فكر</option>
+                            <option value="مذكرات">مذكرات</option>
+                            <option value="تاريخ">تاريخ</option>
+                            <option value="تراجم">تراجم</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="book-cover">رابط الغلاف:</label>
+                        <input type="url" id="book-cover" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="book-download">رابط التحميل:</label>
+                        <input type="url" id="book-download" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="book-description">وصف مختصر:</label>
+                        <textarea id="book-description" rows="3" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">إضافة الكتاب</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Articles Section -->
+    <section id="articles" class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>المقالات</h2>
+                <div class="separator"></div>
+            </div>
+            <div class="articles-container">
+                <div class="article-card">
+                    <h3>من يبني منبر نور الدين زنكي؟</h3>
+                    <p>مقال يتحدث عن أهمية إحياء التراث الإسلامي والتأسي بشخصيات إسلامية تاريخية فذة مثل نور الدين زنكي في النهضة الإسلامية المعاصرة.</p>
+                    <a href="#" class="btn btn-secondary">اقرأ المزيد</a>
+                </div>
+                
+                <div class="article-card">
+                    <h3>المسؤولية</h3>
+                    <p>مقال يتناول مفهوم المسؤولية من منظور إسلامي وأهميتها في بناء الفرد والمجتمع، وكيف يمكن تنمية الشعور بالمسؤولية لدى الأجيال الجديدة.</p>
+                    <a href="#" class="btn btn-secondary">اقرأ المزيد</a>
+                </div>
+                
+                <div class="article-card">
+                    <h3>لقاءات ومواقف مع شخصيات إسلامية عايشتها</h3>
+                    <p>سلسلة من المقالات يستعرض فيها الشيخ أبرز اللقاءات والمواقف التي جمعته بشخصيات إسلامية بارزة عبر مسيرته الدعوية والفكرية.</p>
+                    <a href="#" class="btn btn-secondary">اقرأ المزيد</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="section bg-light">
+        <div class="container">
+            <div class="section-title">
+                <h2>معرض الصور</h2>
+                <div class="separator"></div>
+            </div>
+            <div class="gallery-container">
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1570206916435-745fc43bb9c1" alt="الشيخ مصطفى الطحان في أحد المؤتمرات الإسلامية">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1587617425953-9075d28b8c46" alt="الشيخ مصطفى الطحان في لقاء علمي">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1445067041505-b53988974abd" alt="حدث ثقافي شارك فيه الشيخ">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1525725125604-4c2493fe9ca6" alt="الشيخ في إحدى الزيارات">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1698429683316-a941bf4a74ec" alt="فعالية ثقافية دينية">
+                </div>
+            </div>
+            
+            <!-- Lightbox -->
+            <div id="lightbox" class="lightbox">
+                <span class="close-lightbox">&times;</span>
+                <img class="lightbox-content" id="lightbox-img">
+                <div id="lightbox-caption"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section">
+        <div class="container">
+            <div class="section-title">
+                <h2>تواصل معنا</h2>
+                <div class="separator"></div>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>للتواصل والاستفسارات</h3>
+                    <p>يمكنكم التواصل معنا من خلال النموذج المرفق، وسنقوم بالرد عليكم في أقرب وقت ممكن.</p>
+                </div>
+                
+                <div class="contact-form">
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="name">الاسم:</label>
+                            <input type="text" id="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">البريد الإلكتروني:</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">الرسالة:</label>
+                            <textarea id="message" rows="5" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">إرسال</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <h3>روابط سريعة</h3>
+                    <ul>
+                        <li><a href="#hero">الرئيسية</a></li>
+                        <li><a href="#biography">السيرة الذاتية</a></li>
+                        <li><a href="#testimonials">أقوال الشخصيات</a></li>
+                        <li><a href="#achievements">الإنجازات</a></li>
+                        <li><a href="#books">الكتب والمؤلفات</a></li>
+                        <li><a href="#articles">المقالات</a></li>
+                        <li><a href="#gallery">معرض الصور</a></li>
+                        <li><a href="#contact">تواصل معنا</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-social">
+                    <h3>تابعونا</h3>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-copyright">
+                <p>جميع الحقوق محفوظة © الشيخ مصطفى الطحان 2025</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/books.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/gallery.js') }}"></script>
+</body>
+</html>
