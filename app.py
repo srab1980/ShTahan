@@ -215,6 +215,7 @@ def get_book(book_id):
     return jsonify({'book': book.to_dict()})
 
 @app.route('/api/books', methods=['POST'])
+@login_required
 @editor_required
 def add_book():
     data = request.json
@@ -247,6 +248,7 @@ def add_book():
     return jsonify({'message': 'Book added successfully', 'book': new_book.to_dict()}), 201
 
 @app.route('/api/books/<int:book_id>', methods=['PUT'])
+@login_required
 @editor_required
 def update_book(book_id):
     book = Book.query.get_or_404(book_id)
@@ -279,6 +281,7 @@ def update_book(book_id):
     return jsonify({'message': 'Book updated successfully', 'book': book.to_dict()})
 
 @app.route('/api/books/<int:book_id>', methods=['DELETE'])
+@login_required
 @editor_required
 def delete_book(book_id):
     book = Book.query.get_or_404(book_id)
@@ -300,6 +303,7 @@ def get_article(article_id):
     return jsonify({'article': article.to_dict()})
 
 @app.route('/api/articles', methods=['POST'])
+@login_required
 @editor_required
 def add_article():
     data = request.json
@@ -319,6 +323,7 @@ def add_article():
     return jsonify({'message': 'Article added successfully', 'article': new_article.to_dict()}), 201
 
 @app.route('/api/articles/<int:article_id>', methods=['PUT'])
+@login_required
 @editor_required
 def update_article(article_id):
     article = Article.query.get_or_404(article_id)
@@ -336,6 +341,7 @@ def update_article(article_id):
     return jsonify({'message': 'Article updated successfully', 'article': article.to_dict()})
 
 @app.route('/api/articles/<int:article_id>', methods=['DELETE'])
+@login_required
 @editor_required
 def delete_article(article_id):
     article = Article.query.get_or_404(article_id)
@@ -357,6 +363,7 @@ def get_gallery_image(image_id):
     return jsonify({'image': image.to_dict()})
 
 @app.route('/api/gallery', methods=['POST'])
+@login_required
 @editor_required
 def add_gallery_image():
     data = request.json
@@ -375,6 +382,7 @@ def add_gallery_image():
     return jsonify({'message': 'Image added successfully', 'image': new_image.to_dict()}), 201
 
 @app.route('/api/gallery/<int:image_id>', methods=['PUT'])
+@login_required
 @editor_required
 def update_gallery_image(image_id):
     image = GalleryImage.query.get_or_404(image_id)
