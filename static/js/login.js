@@ -73,8 +73,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch('/api/auth-status');
             const data = await response.json();
             
-            // Only redirect if on login page and already authenticated
-            if (data.authenticated && window.location.pathname === '/login') {
+            // Only redirect if on login form page and already authenticated
+            if (data.authenticated && window.location.pathname === '/login-form') {
                 if (data.role === 'admin' || data.role === 'editor') {
                     window.location.href = '/admin';
                 } else {

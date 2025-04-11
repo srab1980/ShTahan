@@ -106,11 +106,18 @@ def login_button():
     return render_template('login_button.html')
 
 # Authentication routes
+@app.route('/login-form')
+def login_form():
+    # Always serve the login form through this route, regardless of authentication status
+    return render_template('login_form.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
+    # For GET requests, redirect to the login form
+    if request.method == 'GET':
+        return redirect(url_for('login_form'))
         
+    # Handle POST requests (API login)
     if request.method == 'POST':
         data = request.json
         
@@ -138,9 +145,6 @@ def login():
                 'role': user.role
             }
         })
-    
-    # GET request - serve the login page
-    return render_template('login.html')
 
 @app.route('/logout')
 @login_required
