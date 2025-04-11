@@ -3,6 +3,7 @@
  * Handles the back to top button functionality
  */
 document.addEventListener('DOMContentLoaded', function() {
+    // Get the button element
     const backToTopBtn = document.getElementById('back-to-top');
     
     if (!backToTopBtn) {
@@ -10,22 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // Show/hide the button based on scroll position
-    window.addEventListener('scroll', function() {
-        if (window.scrollY > 300) {
-            backToTopBtn.classList.add('visible');
-        } else {
-            backToTopBtn.classList.remove('visible');
-        }
-    });
-    
-    // Force check on page load in case we're already scrolled down
-    if (window.scrollY > 300) {
-        backToTopBtn.classList.add('visible');
-    }
-    
-    // Scroll to top when clicked
-    backToTopBtn.addEventListener('click', function() {
+    // Add click event listener
+    backToTopBtn.addEventListener('click', function(e) {
+        e.preventDefault();
         console.log('Back to top button clicked');
         window.scrollTo({
             top: 0,
@@ -33,6 +21,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Debug info
     console.log('Back to top button initialized');
 });
