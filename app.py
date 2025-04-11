@@ -398,6 +398,7 @@ def update_gallery_image(image_id):
     return jsonify({'message': 'Image updated successfully', 'image': image.to_dict()})
 
 @app.route('/api/gallery/<int:image_id>', methods=['DELETE'])
+@login_required
 @editor_required
 def delete_gallery_image(image_id):
     image = GalleryImage.query.get_or_404(image_id)
@@ -564,6 +565,7 @@ def toggle_user_status(user_id):
 
 # File Upload Endpoints
 @app.route('/api/upload/book-cover', methods=['POST'])
+@login_required
 @editor_required
 def upload_book_cover():
     # Check if a file part exists in the request
@@ -594,6 +596,7 @@ def upload_book_cover():
         return jsonify({'error': 'File type not allowed'}), 400
 
 @app.route('/api/upload/book-pdf', methods=['POST'])
+@login_required
 @editor_required
 def upload_book_pdf():
     # Check if a file part exists in the request
