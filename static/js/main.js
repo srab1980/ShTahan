@@ -106,14 +106,28 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Fixed header on scroll
     const header = document.getElementById('header');
+    const backToTopBtn = document.getElementById('back-to-top');
     
     window.addEventListener('scroll', () => {
+        // Header effect
         if (window.scrollY > 100) {
             header.style.padding = '10px 0';
+            if (backToTopBtn) backToTopBtn.classList.add('visible');
         } else {
             header.style.padding = '15px 0';
+            if (backToTopBtn) backToTopBtn.classList.remove('visible');
         }
     });
+    
+    // Back to top functionality
+    if (backToTopBtn) {
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
     
     // Contact form submission
     const contactForm = document.getElementById('contact-form');
