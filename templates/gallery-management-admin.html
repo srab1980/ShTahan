@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة معرض الصور - موقع الشيخ مصطفى الطحان</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .admin-title h1 {
+            color: #1a2a3a;
+            margin: 0;
+        }
+        
+        .admin-user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .admin-user-info .user-role {
+            margin-left: 15px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            background-color: #1a2a3a;
+            color: white;
+        }
+        
+        .admin-user-info .logout-btn {
+            margin-right: 15px;
+            padding: 7px 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            color: #1a2a3a;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .admin-user-info .logout-btn:hover {
+            background-color: #e2e6ea;
+        }
+        
+        .admin-navigation {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .admin-nav-links {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .admin-nav-links li {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .admin-nav-links li a {
+            display: block;
+            padding: 15px;
+            color: #1a2a3a;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .admin-nav-links li a:hover,
+        .admin-nav-links li a.active {
+            background-color: #1a2a3a;
+            color: white;
+        }
+        
+        .admin-nav-links li a i {
+            margin-left: 5px;
+        }
+        
+        .admin-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            color: #1a2a3a;
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .gallery-item {
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            height: 200px;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            background-color: rgba(26, 42, 58, 0.8);
+            color: white;
+            padding: 10px;
+            font-size: 14px;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+        
+        .gallery-item:hover .gallery-caption {
+            transform: translateY(0);
+        }
+        
+        .gallery-controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .gallery-item:hover .gallery-controls {
+            opacity: 1;
+        }
+        
+        .gallery-control-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.2s;
+        }
+        
+        .gallery-control-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .gallery-edit-btn {
+            background-color: #ffc107;
+        }
+        
+        .gallery-delete-btn {
+            background-color: #dc3545;
+        }
+        
+        /* Form Styles */
+        .gallery-form-container {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .gallery-form {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: grid;
+            gap: 5px;
+        }
+        
+        .form-group label {
+            font-weight: bold;
+            color: #1a2a3a;
+        }
+        
+        .form-group input, 
+        .form-group textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .form-group input[type="file"] {
+            padding: 10px 0;
+        }
+        
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #1a2a3a;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0d1b2a;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        /* Image preview */
+        .image-preview {
+            width: 100%;
+            max-height: 200px;
+            overflow: hidden;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .upload-progress {
+            height: 5px;
+            background-color: #e9ecef;
+            margin-top: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: #1a2a3a;
+            width: 0;
+            transition: width 0.3s;
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .notification.success {
+            background-color: #28a745;
+        }
+        
+        .notification.error {
+            background-color: #dc3545;
+        }
+        
+        .notification.info {
+            background-color: #17a2b8;
+        }
+        
+        .view-options {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .view-option-link {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: #1a2a3a;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 0 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .view-option-link:hover {
+            background-color: #0d1b2a;
+        }
+        
+        .view-option-link i {
+            margin-left: 5px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .admin-nav-links {
+                flex-direction: column;
+            }
+            
+            .admin-user-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .admin-user-info .user-role {
+                margin-left: 0;
+                margin-bottom: 10px;
+            }
+            
+            .admin-user-info .logout-btn {
+                margin-right: 0;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="admin-title">
+                <h1>إدارة معرض الصور</h1>
+            </div>
+            <div class="admin-user-info">
+                <div class="user-name" id="userName">المستخدم</div>
+                <div class="user-role" id="userRole">الصلاحية</div>
+                <a href="/logout" class="logout-btn">تسجيل الخروج</a>
+            </div>
+        </header>
+        
+        <nav class="admin-navigation">
+            <ul class="admin-nav-links">
+                <li><a href="/admin"><i class="fas fa-tachometer-alt"></i> الرئيسية</a></li>
+                <li><a href="/admin/books"><i class="fas fa-book"></i> الكتب</a></li>
+                <li><a href="/articles-management-test"><i class="fas fa-newspaper"></i> المقالات</a></li>
+                <li><a href="/admin/gallery" class="active"><i class="fas fa-images"></i> معرض الصور</a></li>
+                <li><a href="#"><i class="fas fa-envelope"></i> الرسائل</a></li>
+                <li><a href="/admin/users" id="userManagementLink"><i class="fas fa-users"></i> إدارة المستخدمين</a></li>
+            </ul>
+        </nav>
+        
+        <div class="admin-content">
+            <div class="view-options">
+                <a href="/gallery" class="view-option-link" target="_blank">
+                    <i class="fas fa-eye"></i> عرض الصور في الواجهة الأمامية
+                </a>
+                <a href="/responsive-gallery" class="view-option-link" target="_blank">
+                    <i class="fas fa-mobile-alt"></i> عرض الصور في الواجهة المتجاوبة
+                </a>
+            </div>
+            
+            <div class="gallery-form-container">
+                <h3 class="section-title">إضافة أو تعديل صورة</h3>
+                <form id="galleryForm" class="gallery-form">
+                    <div class="form-group">
+                        <label for="galleryCaption">عنوان الصورة</label>
+                        <input type="text" id="galleryCaption" name="caption" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="galleryImage">الصورة</label>
+                        <input type="file" id="galleryImage" name="image" accept="image/*">
+                        <div class="image-preview" id="imagePreview">
+                            <img id="previewImg" src="" alt="">
+                        </div>
+                        <div class="upload-progress" id="uploadProgress">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" id="galleryId" name="id">
+                    
+                    <div class="form-buttons">
+                        <button type="button" id="cancelBtn" class="btn btn-secondary">إلغاء</button>
+                        <button type="submit" id="saveBtn" class="btn btn-primary">حفظ الصورة</button>
+                    </div>
+                </form>
+            </div>
+            
+            <h3 class="section-title">الصور الحالية</h3>
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Gallery items will be loaded dynamically -->
+                <div class="loading-message">جاري تحميل الصور...</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const galleryForm = document.getElementById('galleryForm');
+            const galleryCaption = document.getElementById('galleryCaption');
+            const galleryImage = document.getElementById('galleryImage');
+            const galleryId = document.getElementById('galleryId');
+            const imagePreview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            const uploadProgress = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('progressBar');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const galleryGrid = document.getElementById('galleryGrid');
+            const notification = document.getElementById('notification');
+            const userName = document.getElementById('userName');
+            const userRole = document.getElementById('userRole');
+            const userManagementLink = document.getElementById('userManagementLink');
+            
+            // Application State
+            let galleryImages = [];
+            let currentUser = null;
+            
+            // Initialize
+            checkAuthStatus();
+            loadGalleryImages();
+            
+            // Event Listeners
+            galleryForm.addEventListener('submit', handleFormSubmit);
+            cancelBtn.addEventListener('click', resetForm);
+            galleryImage.addEventListener('change', handleImageChange);
+            
+            // Check authentication status
+            async function checkAuthStatus() {
+                try {
+                    const response = await fetch('/api/auth-status');
+                    const data = await response.json();
+                    
+                    if (data.authenticated) {
+                        currentUser = {
+                            id: data.id,
+                            username: data.username,
+                            role: data.role
+                        };
+                        
+                        userName.textContent = currentUser.username;
+                        userRole.textContent = getRoleLabel(currentUser.role);
+                        
+                        // Show/hide user management link based on role
+                        if (currentUser.role !== 'admin') {
+                            userManagementLink.parentElement.style.display = 'none';
+                        }
+                    } else {
+                        // Redirect to login page if not authenticated
+                        window.location.href = '/login-form';
+                    }
+                } catch (error) {
+                    console.error('Error checking auth status:', error);
+                    showNotification('خطأ في التحقق من حالة تسجيل الدخول', 'error');
+                }
+            }
+            
+            // Get Arabic role label
+            function getRoleLabel(role) {
+                switch (role) {
+                    case 'admin':
+                        return 'مدير';
+                    case 'editor':
+                        return 'محرر';
+                    case 'user':
+                        return 'مستخدم';
+                    default:
+                        return role;
+                }
+            }
+            
+            // Load gallery images
+            async function loadGalleryImages() {
+                try {
+                    const response = await fetch('/api/gallery');
+                    const data = await response.json();
+                    
+                    if (data.images && Array.isArray(data.images)) {
+                        galleryImages = data.images;
+                        renderGalleryGrid();
+                    } else {
+                        console.error('Unexpected response format:', data);
+                        galleryGrid.innerHTML = '<p>خطأ في تنسيق البيانات المستلمة</p>';
+                    }
+                } catch (error) {
+                    console.error('Error loading gallery images:', error);
+                    galleryGrid.innerHTML = '<p>حدث خطأ في تحميل الصور</p>';
+                    showNotification('خطأ في تحميل الصور', 'error');
+                }
+            }
+            
+            // Render gallery grid
+            function renderGalleryGrid() {
+                galleryGrid.innerHTML = '';
+                
+                if (galleryImages.length === 0) {
+                    galleryGrid.innerHTML = '<p>لا توجد صور في المعرض حالياً</p>';
+                    return;
+                }
+                
+                galleryImages.forEach(image => {
+                    const galleryItem = document.createElement('div');
+                    galleryItem.className = 'gallery-item';
+                    galleryItem.innerHTML = `
+                        <img src="${image.url}" alt="${image.caption}" class="gallery-image">
+                        <div class="gallery-caption">${image.caption}</div>
+                        <div class="gallery-controls">
+                            <button class="gallery-control-btn gallery-edit-btn" data-id="${image.id}" title="تعديل">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="gallery-control-btn gallery-delete-btn" data-id="${image.id}" title="حذف">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    galleryGrid.appendChild(galleryItem);
+                });
+                
+                // Add event listeners to edit and delete buttons
+                document.querySelectorAll('.gallery-edit-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.getAttribute('data-id');
+                        editGalleryImage(id);
+                    });
+                });
+                
+                document.querySelectorAll('.gallery-delete-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.getAttribute('data-id');
+                        confirmDeleteImage(id);
+                    });
+                });
+            }
+            
+            // Handle form submission
+            async function handleFormSubmit(e) {
+                e.preventDefault();
+                
+                const caption = galleryCaption.value.trim();
+                const id = galleryId.value;
+                const file = galleryImage.files[0];
+                
+                if (!caption) {
+                    showNotification('يرجى إدخال عنوان للصورة', 'error');
+                    return;
+                }
+                
+                if (!id && !file) {
+                    showNotification('يرجى اختيار صورة للإضافة', 'error');
+                    return;
+                }
+                
+                saveBtn.disabled = true;
+                saveBtn.textContent = id ? 'جاري تحديث الصورة...' : 'جاري إضافة الصورة...';
+                
+                try {
+                    let imageUrl = '';
+                    
+                    // Upload image if selected
+                    if (file) {
+                        imageUrl = await uploadImage(file);
+                        if (!imageUrl) {
+                            throw new Error('فشل في رفع الصورة');
+                        }
+                    }
+                    
+                    // Prepare data
+                    const galleryData = {
+                        caption: caption
+                    };
+                    
+                    if (imageUrl) {
+                        galleryData.url = imageUrl;
+                    }
+                    
+                    // Determine if this is a new image or an update
+                    const method = id ? 'PUT' : 'POST';
+                    const url = id ? `/api/gallery/${id}` : '/api/gallery';
+                    
+                    // Send request
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(galleryData)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('فشل في حفظ الصورة');
+                    }
+                    
+                    // Reset form and reload images
+                    resetForm();
+                    loadGalleryImages();
+                    
+                    // Show success message
+                    showNotification(
+                        id ? 'تم تحديث الصورة بنجاح' : 'تمت إضافة الصورة بنجاح',
+                        'success'
+                    );
+                } catch (error) {
+                    console.error('Error saving gallery image:', error);
+                    showNotification(error.message || 'حدث خطأ أثناء حفظ الصورة', 'error');
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'حفظ الصورة';
+                }
+            }
+            
+            // Upload image
+            async function uploadImage(file) {
+                // Show upload progress bar
+                uploadProgress.style.display = 'block';
+                progressBar.style.width = '0%';
+                
+                // Create form data
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                try {
+                    // Simulate progress (since fetch doesn't report progress natively)
+                    let progress = 0;
+                    const interval = setInterval(() => {
+                        progress += 10;
+                        if (progress > 90) {
+                            clearInterval(interval);
+                        } else {
+                            progressBar.style.width = `${progress}%`;
+                        }
+                    }, 200);
+                    
+                    // Upload the image
+                    const response = await fetch('/api/upload/gallery-image', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    // Clear the progress interval
+                    clearInterval(interval);
+                    
+                    if (!response.ok) {
+                        throw new Error('فشل في رفع الصورة');
+                    }
+                    
+                    // Complete progress bar
+                    progressBar.style.width = '100%';
+                    
+                    const data = await response.json();
+                    return data.file_url;
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                    throw new Error('فشل في رفع الصورة: ' + error.message);
+                } finally {
+                    // Hide progress bar after a delay
+                    setTimeout(() => {
+                        uploadProgress.style.display = 'none';
+                    }, 1000);
+                }
+            }
+            
+            // Handle image change (preview)
+            function handleImageChange(e) {
+                const file = e.target.files[0];
+                
+                if (file) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreview.style.display = 'none';
+                }
+            }
+            
+            // Edit gallery image
+            function editGalleryImage(id) {
+                const image = galleryImages.find(img => img.id == id);
+                
+                if (!image) {
+                    showNotification('لم يتم العثور على الصورة', 'error');
+                    return;
+                }
+                
+                // Fill form with image data
+                galleryCaption.value = image.caption;
+                galleryId.value = image.id;
+                
+                // Show image preview
+                previewImg.src = image.url;
+                imagePreview.style.display = 'block';
+                
+                // Scroll to form
+                galleryForm.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Confirm delete image
+            function confirmDeleteImage(id) {
+                if (confirm('هل أنت متأكد من رغبتك في حذف هذه الصورة؟')) {
+                    deleteGalleryImage(id);
+                }
+            }
+            
+            // Delete gallery image
+            async function deleteGalleryImage(id) {
+                try {
+                    const response = await fetch(`/api/gallery/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('فشل في حذف الصورة');
+                    }
+                    
+                    // Reload gallery images
+                    loadGalleryImages();
+                    
+                    // Show success message
+                    showNotification('تم حذف الصورة بنجاح', 'success');
+                } catch (error) {
+                    console.error('Error deleting gallery image:', error);
+                    showNotification(error.message || 'حدث خطأ أثناء حذف الصورة', 'error');
+                }
+            }
+            
+            // Reset form
+            function resetForm() {
+                galleryForm.reset();
+                galleryId.value = '';
+                imagePreview.style.display = 'none';
+                uploadProgress.style.display = 'none';
+            }
+            
+            // Show notification
+            function showNotification(message, type = 'info') {
+                notification.textContent = message;
+                notification.className = `notification ${type}`;
+                notification.classList.add('show');
+                
+                // Hide notification after 5 seconds
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

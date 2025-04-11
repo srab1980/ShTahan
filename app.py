@@ -111,6 +111,12 @@ def articles_management_test():
 def user_management():
     return render_template('user-management.html')
 
+@app.route('/admin/gallery')
+@login_required
+@editor_required
+def admin_gallery_management():
+    return render_template('gallery-management-admin.html')
+
 @app.route('/gallery')
 def gallery():
     # Check for responsive URL parameter
