@@ -19,18 +19,18 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
 </head>
 <body>
-    <!-- Enhanced Header with Modern Design -->
+    <!-- Header -->
     <header id="header">
         <div class="container">
             <div class="logo">
-                <a href="#hero" class="animate-fade-in">الشيخ مصطفى الطحان</a>
+                <a href="#hero">الشيخ مصطفى الطحان</a>
             </div>
             <nav>
-                <button type="button" class="menu-toggle" aria-label="افتح القائمة">
+                <div class="menu-toggle">
                     <i class="fas fa-bars"></i>
-                </button>
+                </div>
                 <ul class="nav-menu">
-                    <li><a href="#hero" class="active">الرئيسية</a></li>
+                    <li><a href="#hero">الرئيسية</a></li>
                     <li><a href="#biography">السيرة الذاتية</a></li>
                     <li><a href="#testimonials">أقوال الشخصيات</a></li>
                     <li><a href="#achievements">الإنجازات</a></li>
@@ -39,8 +39,8 @@
                     <li><a href="#gallery">معرض الصور</a></li>
                     <li><a href="#contact">تواصل معنا</a></li>
                     <li>
-                        <!-- Enhanced Login Button -->
-                        <a href="/login-form?check_auth=false" class="btn-login">
+                        <!-- Direct link to login form page with auth check disabled -->
+                        <a href="/login-form?check_auth=false" style="display: inline-block; background-color: #d4af37; color: #fff; padding: 8px 15px; border-radius: 5px; margin-right: 20px; transition: all 0.3s ease;">
                             <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
                         </a>
                     </li>
@@ -327,7 +327,7 @@
         </div>
     </section>
 
-    <!-- Enhanced Footer with Modern Design -->
+    <!-- Footer -->
     <footer id="footer">
         <div class="container">
             <div class="footer-content">
@@ -348,17 +348,9 @@
                 <div class="footer-social">
                     <h3>تابعونا</h3>
                     <div class="social-icons">
-                        <a href="javascript:void(0);" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="javascript:void(0);" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="javascript:void(0);" aria-label="Youtube"><i class="fab fa-youtube"></i></a>
-                        <a href="javascript:void(0);" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    </div>
-                    
-                    <div style="margin-top: 25px; text-align: center;">
-                        <p>يمكنكم التواصل معنا على البريد الإلكتروني:</p>
-                        <a href="mailto:info@mustafatahhan.org" style="color: var(--gold-color); font-weight: 600; display: inline-block; margin-top: 5px;">
-                            info@mustafatahhan.org
-                        </a>
+                        <a href="javascript:void(0);"><i class="fab fa-facebook"></i></a>
+                        <a href="javascript:void(0);"><i class="fab fa-twitter"></i></a>
+                        <a href="javascript:void(0);"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
             </div>
