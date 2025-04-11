@@ -13,16 +13,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Close menu when clicking on a nav link
+    // Close menu when clicking on a nav link (but don't interfere with the navigation)
     const navLinks = document.querySelectorAll('.nav-menu a');
     navLinks.forEach(link => {
-        link.addEventListener('click', () => {
+        link.addEventListener('click', (e) => {
+            // Just close the mobile menu - don't prevent default navigation
             navMenu.classList.remove('active');
+            
+            // Don't stop propagation, so the actual link still works
+            // Let the regular navigation happen for links to other pages
         });
     });
     
-    // Smooth scrolling for navigation links
+    // Smooth scrolling for navigation links - ONLY for within-page links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        // Only apply to links that start with # (within-page links)
+        // This excludes absolute links like /login or /admin
         anchor.addEventListener('click', function(e) {
             const targetId = this.getAttribute('href');
             
