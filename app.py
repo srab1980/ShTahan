@@ -96,6 +96,10 @@ def user_management():
 @app.route('/gallery')
 def gallery():
     return render_template('gallery.html')
+    
+@app.route('/login-link')
+def login_link():
+    return render_template('login-link.html')
 
 # Authentication routes
 @app.route('/login', methods=['GET', 'POST'])
