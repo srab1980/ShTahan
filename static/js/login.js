@@ -7,8 +7,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     const errorMessage = document.getElementById('errorMessage');
     
-    // Check if user is already logged in
-    checkAuthStatus();
+    // Add a parameter to URL to control whether to check auth status
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldCheckAuth = urlParams.get('check_auth') !== 'false';
+    
+    // Only check auth status if the parameter is not set to false
+    if (shouldCheckAuth) {
+        // Check if user is already logged in
+        checkAuthStatus();
+    }
     
     // Add event listener for form submission
     if (loginForm) {
