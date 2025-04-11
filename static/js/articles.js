@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">حفظ</button>
+                        <button type="button" class="btn btn-primary" id="save-article-btn">حفظ</button>
                         <button type="button" class="btn btn-secondary cancel-form">إلغاء</button>
                     </div>
                 </form>
@@ -90,7 +90,17 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Event listener for form submission
             const articleForm = document.getElementById('article-form');
-            articleForm.addEventListener('submit', handleArticleSubmit);
+            articleForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                console.log('Form submitted via standard submit');
+                handleArticleSubmit(e);
+            });
+            
+            // Event listener for save button (primary method)
+            document.getElementById('save-article-btn').addEventListener('click', function() {
+                console.log('Save button clicked');
+                handleArticleSubmit({preventDefault: () => {}});
+            });
         }
     }
     
@@ -202,18 +212,38 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Handle article form submission
     async function handleArticleSubmit(e) {
-        e.preventDefault();
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        }
+        
+        console.log('Form submission started');
         
         const articleId = document.getElementById('article-id').value;
         const title = document.getElementById('article-title').value;
         const summary = document.getElementById('article-summary').value;
         const content = document.getElementById('article-content').value;
         
+        // Validate required fields
+        if (!title || !summary || !content) {
+            console.log('Missing required fields. Form validation failed.');
+            
+            // Log which fields are missing for debugging
+            if (!title) console.log('Missing title');
+            if (!summary) console.log('Missing summary');
+            if (!content) console.log('Missing content');
+            
+            showNotification('يرجى ملء جميع الحقول المطلوبة', 'error');
+            return;
+        }
+        
         const articleData = {
             title,
             summary,
             content
         };
+        
+        // Log the data being sent
+        console.log('Submitting article data:', articleData);
         
         try {
             let response;
@@ -224,21 +254,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Update existing article
                 method = 'PUT';
                 url = `/api/articles/${articleId}`;
+                articleData.id = articleId; // Make sure we include the ID
             } else {
                 // Create new article
                 method = 'POST';
                 url = '/api/articles';
             }
             
+            showNotification('جاري حفظ البيانات...', 'info');
+            
+            console.log(`Sending ${method} request to ${url}`);
             response = await fetch(url, {
                 method,
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify(articleData)
             });
             
+            console.log('Response status:', response.status);
             const result = await response.json();
+            console.log('Response data:', result);
             
             if (response.ok) {
                 hideArticleForm();
@@ -251,6 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 );
             } else {
                 showNotification(`خطأ: ${result.error || 'حدث خطأ ما'}`, 'error');
+                console.error('Server error:', result.error);
             }
         } catch (error) {
             console.error('Error submitting article:', error);
@@ -432,6 +470,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const imagePreview = document.getElementById('article-image-preview');
         const imageProgress = document.getElementById('article-image-progress');
         
+        // Check if it's an image
+        if (!file.type.startsWith('image/')) {
+            showNotification('يرجى اختيار ملف صورة صالح', 'error');
+            return null;
+        }
+        
+        console.log('Uploading article image file:', file.name);
+        
         // Create form data
         const formData = new FormData();
         formData.append('file', file);
@@ -455,6 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             const result = await response.json();
+            console.log('Server response for image upload:', result);
             
             if (response.ok) {
                 // Show success notification
@@ -487,6 +534,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 // Show error notification
                 showNotification(`خطأ: ${result.error || 'حدث خطأ أثناء رفع الصورة'}`, 'error');
+                console.error('Error uploading image:', result.error);
                 
                 // Hide progress bar
                 if (imageProgress) imageProgress.style.display = 'none';
