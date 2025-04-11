@@ -10,11 +10,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let galleryData = [];
     let currentEditingImageId = null;
     
-    // Check if we're on the gallery page
-    const isGalleryPage = window.location.pathname.includes('/gallery');
+    // Check if we're on the gallery management page (i.e. admin-specific)
+    const isGalleryManagementPage = window.location.pathname.includes('/admin/gallery');
     
-    // Create gallery management controls if on the gallery page
-    if (isGalleryPage && galleryGrid) {
+    // Create gallery management controls only if on the admin gallery management page
+    if (isGalleryManagementPage && galleryGrid) {
         // Add gallery management UI
         createGalleryManagementUI();
     }
@@ -456,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Initialize gallery with management controls if on gallery page
-    if (isGalleryPage) {
+    if (isGalleryManagementPage) {
         fetchGalleryImagesWithControls();
     }
 });
