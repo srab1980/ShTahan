@@ -47,8 +47,20 @@ document.addEventListener('DOMContentLoaded', function() {
         cancelBtn.addEventListener('click', closeBookModal);
     }
     
+    // Add event listener to the save button
+    const saveBookBtn = document.getElementById('saveBookBtn');
+    if (saveBookBtn) {
+        saveBookBtn.addEventListener('click', handleBookFormSubmit);
+        console.log('Save button event listener attached');
+    }
+    
+    // Keep form submit as a backup, but it shouldn't be used now
     if (bookForm) {
-        bookForm.addEventListener('submit', handleBookFormSubmit);
+        bookForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('Form submitted via standard submit');
+            handleBookFormSubmit(e);
+        });
     }
     
     if (coverUpload) {
@@ -412,6 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     async function handleBookFormSubmit(e) {
         e.preventDefault();
+        console.log('Form submission started');
         
         // Get all form values
         const bookId = document.getElementById('bookId').value;
@@ -422,15 +435,21 @@ document.addEventListener('DOMContentLoaded', function() {
         let download = document.getElementById('download').value;
         const description = document.getElementById('description').value;
         
-        // Check required fields
+        // Check mandatory fields (don't include download)
         if (!title || !language || !category || !cover || !description) {
             showNotification('يرجى ملء جميع الحقول المطلوبة', 'error');
+            console.log('Missing required fields. Form validation failed.');
             return;
         }
         
+        // Always ensure download has a value
         // If download URL is not set, use a default value
         if (!download || download.trim() === '') {
             download = '#';
+            console.log('Using default download URL: #');
+            
+            // Update the download field to avoid browser validation issues
+            document.getElementById('download').value = '#';
         }
         
         const bookData = {
@@ -455,6 +474,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 method = 'PUT';
             }
             
+            showNotification('جاري حفظ البيانات...', 'info');
+            
             const response = await fetch(url, {
                 method,
                 headers: {
@@ -476,6 +497,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 fetchBooks();
             } else {
                 showNotification(`خطأ: ${result.error || 'حدث خطأ أثناء معالجة الطلب'}`, 'error');
+                console.error('Server error:', result.error);
             }
         } catch (error) {
             console.error('Error saving book:', error);
@@ -597,10 +619,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Show success notification
                 showNotification('تم رفع ملف PDF بنجاح', 'success');
                 
-                // Update the download URL field and log the update
+                // Update the download URL field with the new URL
                 const downloadField = document.getElementById('download');
                 downloadField.value = result.file_url;
                 console.log('Updated download field with URL:', result.file_url);
+                
+                // Force update the field value (to bypass browser validations)
+                setTimeout(() => {
+                    if (downloadField.value !== result.file_url) {
+                        console.log('Re-setting download field value');
+                        downloadField.value = result.file_url;
+                    }
+                }, 100);
                 
                 // Trigger change event to ensure form validation is updated
                 const event = new Event('change');
