@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // We've removed the Add New Article button and form for public facing pages
     
-    // Fetch articles from API
+    // Fetch articles from API with caching for improved performance
     async function fetchArticles() {
         console.log('Fetching articles from API');
         
@@ -27,6 +27,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (!articlesContainer) {
             console.error('Articles container not found!');
+            return;
+        }
+        
+        // Check if we have cached articles data
+        const cachedArticles = sessionStorage.getItem('cachedArticles');
+        const cachedTimestamp = sessionStorage.getItem('articlesTimestamp');
+        const currentTime = new Date().getTime();
+        
+        // Use cached data if available and less than 5 minutes old
+        if (cachedArticles && cachedTimestamp && (currentTime - parseInt(cachedTimestamp) < 5 * 60 * 1000)) {
+            console.log('Using cached articles data');
+            renderArticles(JSON.parse(cachedArticles));
+            
+            // Refresh cache in background after 3 seconds
+            setTimeout(refreshArticlesCache, 3000);
             return;
         }
         
@@ -44,12 +59,32 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Response received:', response.status);
             const data = await response.json();
             console.log('Articles data:', data);
+            
+            // Cache the articles data
+            sessionStorage.setItem('cachedArticles', JSON.stringify(data.articles));
+            sessionStorage.setItem('articlesTimestamp', currentTime.toString());
+            
             renderArticles(data.articles);
         } catch (error) {
             console.error('Error fetching articles:', error);
             if (articlesContainer) {
                 articlesContainer.innerHTML = '<p class="error-message" style="text-align: center; color: #721c24; background-color: #f8d7da; padding: 15px; border-radius: 5px;">حدث خطأ في تحميل المقالات</p>';
             }
+        }
+    }
+    
+    // Refresh articles cache in background without affecting UI
+    async function refreshArticlesCache() {
+        try {
+            const response = await fetch('/api/articles');
+            if (response.ok) {
+                const data = await response.json();
+                sessionStorage.setItem('cachedArticles', JSON.stringify(data.articles));
+                sessionStorage.setItem('articlesTimestamp', new Date().getTime().toString());
+                console.log('Articles cache updated in background');
+            }
+        } catch (error) {
+            console.error('Error refreshing articles cache:', error);
         }
     }
     

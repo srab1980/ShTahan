@@ -50,16 +50,66 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Fetch books from API
+    // Fetch books from API with caching for better performance
     async function fetchBooks() {
         try {
+            // Check for cached books data
+            const cachedBooks = localStorage.getItem('cachedBooks');
+            const cachedTimestamp = localStorage.getItem('booksTimestamp');
+            const currentTime = new Date().getTime();
+            
+            // Use cached data if available and less than 10 minutes old
+            if (cachedBooks && cachedTimestamp && (currentTime - parseInt(cachedTimestamp) < 10 * 60 * 1000)) {
+                console.log('Using cached books data');
+                booksData = JSON.parse(cachedBooks);
+                renderBooks(booksData);
+                
+                // Refresh books cache in background for next visit
+                setTimeout(refreshBooksCache, 3000);
+                return;
+            }
+            
+            // Cache not available or too old, fetch fresh data
             const response = await fetch('/api/books');
             const data = await response.json();
             booksData = data.books;
+            
+            // Save to cache
+            localStorage.setItem('cachedBooks', JSON.stringify(booksData));
+            localStorage.setItem('booksTimestamp', currentTime.toString());
+            
             renderBooks(booksData);
         } catch (error) {
             console.error('Error fetching books:', error);
-            booksContainer.innerHTML = '<p class="error-message">حدث خطأ في تحميل البيانات</p>';
+            
+            // If there's cached data, use it as fallback even if it's old
+            const cachedBooks = localStorage.getItem('cachedBooks');
+            if (cachedBooks) {
+                console.log('Using cached books data as fallback after error');
+                booksData = JSON.parse(cachedBooks);
+                renderBooks(booksData);
+                return;
+            }
+            
+            // No cached data available, show error
+            if (booksContainer) {
+                booksContainer.innerHTML = '<p class="error-message" style="text-align: center; color: #721c24; background-color: #f8d7da; padding: 15px; border-radius: 5px;">حدث خطأ في تحميل البيانات</p>';
+            }
+        }
+    }
+    
+    // Refresh books cache in background without affecting UI
+    async function refreshBooksCache() {
+        try {
+            const response = await fetch('/api/books');
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('cachedBooks', JSON.stringify(data.books));
+                localStorage.setItem('booksTimestamp', new Date().getTime().toString());
+                console.log('Books cache updated in background');
+            }
+        } catch (error) {
+            console.error('Error refreshing books cache:', error);
         }
     }
     

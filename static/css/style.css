@@ -374,6 +374,7 @@ img {
     color: var(--white-color);
     text-align: center;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    overflow: hidden; /* منع الفائض في الأجهزة الصغيرة */
 }
 
 .hero-content {

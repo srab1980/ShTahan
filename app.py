@@ -23,6 +23,11 @@ db = SQLAlchemy(model_class=Base)
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "default_secret_key")
 
+# تحسين أمان التطبيق
+app.config['SESSION_COOKIE_SECURE'] = True  # للتأكد من استخدام HTTPS فقط للجلسات
+app.config['SESSION_COOKIE_HTTPONLY'] = True  # منع الوصول إلى ملفات تعريف الارتباط من JavaScript
+app.config['PERMANENT_SESSION_LIFETIME'] = 86400  # تحديد مدة الجلسة بيوم واحد
+
 # Configure database
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "postgresql://neondb_owner:npg_HwBp7WMGd4ni@ep-flat-hall-a4pn3nar.us-east-1.aws.neon.tech/neondb?sslmode=require")
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
@@ -206,8 +211,12 @@ def auth_status():
 # Books API Endpoints
 @app.route('/api/books', methods=['GET'])
 def get_books():
+    # إضافة رأس التحكم بالتخزين المؤقت (Cache-Control) للمتصفح
+    # تخزين البيانات لمدة 5 دقائق (300 ثانية) للتحسين من سرعة التحميل
     books = Book.query.all()
-    return jsonify({'books': [book.to_dict() for book in books]})
+    response = jsonify({'books': [book.to_dict() for book in books]})
+    response.headers['Cache-Control'] = 'public, max-age=300'
+    return response
 
 @app.route('/api/books/<int:book_id>', methods=['GET'])
 def get_book(book_id):
