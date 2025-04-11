@@ -841,10 +841,11 @@ img {
         margin-bottom: 15px;
     }
     
-    .nav-menu a.btn-login {
+    .nav-menu .btn-login {
         display: inline-block;
         margin-right: 0;
         text-align: center;
+        width: auto;
     }
     
     .hero-content {
