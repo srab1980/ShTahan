@@ -187,20 +187,26 @@ img {
     width: 100%;
 }
 
-.nav-menu a.btn-login {
+.nav-menu .btn-login {
     background-color: #d4af37;
     color: #fff;
     padding: 8px 15px;
     border-radius: 5px;
     margin-right: 20px;
     transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    display: inline-flex;
+    align-items: center;
 }
 
-.nav-menu a.btn-login::after {
+.nav-menu .btn-login::after {
     display: none;
 }
 
-.nav-menu a.btn-login:hover {
+.nav-menu .btn-login:hover {
     background-color: #1a3c6b;
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);

@@ -3,6 +3,13 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Login Button Functionality - Direct JavaScript redirect to login page
+    const loginButton = document.getElementById('loginButton');
+    if (loginButton) {
+        loginButton.addEventListener('click', function() {
+            window.location.href = '/login';
+        });
+    }
     // Mobile menu toggle
     const menuToggle = document.querySelector('.menu-toggle');
     const navMenu = document.querySelector('.nav-menu');
