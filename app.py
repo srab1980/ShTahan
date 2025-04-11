@@ -93,6 +93,12 @@ def admin_dashboard():
 def books_management():
     return render_template('books-management.html')
 
+@app.route('/admin/articles')
+@login_required
+@editor_required
+def articles_management():
+    return render_template('articles-management.html')
+
 @app.route('/admin/users')
 @login_required
 @admin_required
