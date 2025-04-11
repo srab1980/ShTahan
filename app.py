@@ -100,6 +100,10 @@ def gallery():
 @app.route('/login-link')
 def login_link():
     return render_template('login-link.html')
+    
+@app.route('/login-button')
+def login_button():
+    return render_template('login_button.html')
 
 # Authentication routes
 @app.route('/login', methods=['GET', 'POST'])
