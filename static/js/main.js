@@ -106,27 +106,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Fixed header on scroll
     const header = document.getElementById('header');
-    const backToTopButton = document.getElementById('back-to-top');
     
     window.addEventListener('scroll', () => {
         if (window.scrollY > 100) {
             header.style.padding = '10px 0';
-            backToTopButton.classList.add('show');
         } else {
             header.style.padding = '15px 0';
-            backToTopButton.classList.remove('show');
         }
     });
-    
-    // Back to top functionality
-    if (backToTopButton) {
-        backToTopButton.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-    }
     
     // Contact form submission
     const contactForm = document.getElementById('contact-form');

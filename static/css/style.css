@@ -848,40 +848,6 @@ img {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* ====== BACK TO TOP BUTTON ====== */
-#back-to-top {
-    position: fixed;
-    bottom: 30px;
-    left: 30px; /* RTL positioning */
-    background-color: var(--main-color);
-    color: var(--white-color);
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.2rem;
-    cursor: pointer;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(20px);
-    transition: opacity 0.3s, visibility 0.3s, transform 0.3s, background-color 0.3s;
-    border: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    z-index: 999;
-}
-
-#back-to-top:hover {
-    background-color: var(--gold-color);
-}
-
-#back-to-top.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
 /* ====== RESPONSIVE STYLES ====== */
 @media screen and (max-width: 992px) {
     .section {

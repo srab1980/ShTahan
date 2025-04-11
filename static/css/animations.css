@@ -5,56 +5,19 @@
 
 /* Base animation styles */
 .has-animation {
-    transition: all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+    transition: all 0.8s ease-out;
 }
 
 /* Hidden state - elements start hidden/transformed */
 .animate-hidden {
     opacity: 0;
     transform: translateY(30px);
-    will-change: opacity, transform;
 }
 
 /* Visible state - elements animate to this state */
 .animate-visible {
     opacity: 1;
     transform: translateY(0);
-}
-
-/* Define animation types for different elements */
-.fade-in.animate-hidden {
-    opacity: 0;
-    transform: translateY(0);
-}
-
-.slide-up.animate-hidden {
-    opacity: 0;
-    transform: translateY(40px);
-}
-
-.slide-down.animate-hidden {
-    opacity: 0;
-    transform: translateY(-40px);
-}
-
-.slide-right.animate-hidden {
-    opacity: 0;
-    transform: translateX(-40px);
-}
-
-.slide-left.animate-hidden {
-    opacity: 0;
-    transform: translateX(40px);
-}
-
-.zoom-in.animate-hidden {
-    opacity: 0;
-    transform: scale(0.9);
-}
-
-.zoom-out.animate-hidden {
-    opacity: 0;
-    transform: scale(1.1);
 }
 
 /* Staggered animations for different elements */

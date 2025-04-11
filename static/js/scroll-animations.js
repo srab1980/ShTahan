@@ -1,63 +1,31 @@
 /**
- * Enhanced Scroll Animations Module for Sheikh Mustafa Al-Tahhan website
- * Provides gentle scroll-triggered reveal animations for page elements with various effects
+ * Scroll Animations Module for Sheikh Mustafa Al-Tahhan website
+ * Provides gentle scroll-triggered reveal animations for page elements
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Animation configurations for different elements
-    const animationConfig = [
-        { selector: '.section-title', animationClass: 'slide-up' },
-        { selector: '.section-description', animationClass: 'fade-in' },
-        { selector: '.bio-card', animationClass: 'slide-right' },
-        { selector: '.bio-image', animationClass: 'slide-left' },
-        { selector: '.book-card:nth-child(odd)', animationClass: 'slide-right' },
-        { selector: '.book-card:nth-child(even)', animationClass: 'slide-up' },
-        { selector: '.article-card:nth-child(3n+1)', animationClass: 'slide-up' },
-        { selector: '.article-card:nth-child(3n+2)', animationClass: 'zoom-in' },
-        { selector: '.article-card:nth-child(3n+3)', animationClass: 'slide-left' },
-        { selector: '.gallery-item', animationClass: 'zoom-in' },
-        { selector: '.testimonial-card', animationClass: 'fade-in' },
-        { selector: '.achievement-item:nth-child(odd)', animationClass: 'slide-right' },
-        { selector: '.achievement-item:nth-child(even)', animationClass: 'slide-left' },
-        { selector: '.contact-form', animationClass: 'zoom-in' },
-        { selector: '.contact-info', animationClass: 'slide-right' }
+    // Add 'has-animation' class to all elements that should be animated
+    const animatedSections = [
+        '.section-title',
+        '.section-description',
+        '.book-card',
+        '.article-card',
+        '.gallery-item',
+        '.quote-card',
+        '.bio-card',
+        '.contact-form'
     ];
     
-    // Apply animation classes to elements
-    animationConfig.forEach(config => {
-        const elements = document.querySelectorAll(config.selector);
-        elements.forEach((element, index) => {
+    // Add animation classes to elements
+    animatedSections.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
             // Skip elements already initialized
             if (element.classList.contains('has-animation')) return;
             
-            // Add animation classes
+            // Add animation class
             element.classList.add('has-animation');
-            element.classList.add(config.animationClass);
             element.classList.add('animate-hidden');
-            
-            // Add staggered delay for some elements
-            if (config.selector.includes('card') || config.selector.includes('item')) {
-                element.style.transitionDelay = `${index * 0.1}s`;
-            }
-        });
-    });
-    
-    // For any elements that didn't match the specific selectors but should be animated
-    const additionalElements = [
-        '.quote-card',
-        '.team-member',
-        '.footer-links',
-        '.footer-social'
-    ];
-    
-    additionalElements.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(element => {
-            if (!element.classList.contains('has-animation')) {
-                element.classList.add('has-animation');
-                element.classList.add('fade-in');
-                element.classList.add('animate-hidden');
-            }
         });
     });
     
