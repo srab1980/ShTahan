@@ -303,8 +303,12 @@ def delete_book(book_id):
 # Articles API Endpoints
 @app.route('/api/articles', methods=['GET'])
 def get_articles():
+    # إضافة رأس التحكم بالتخزين المؤقت (Cache-Control) للمقالات
+    # تخزين البيانات لمدة 5 دقائق (300 ثانية) للتحسين من سرعة التحميل
     articles = Article.query.all()
-    return jsonify({'articles': [article.to_dict() for article in articles]})
+    response = jsonify({'articles': [article.to_dict() for article in articles]})
+    response.headers['Cache-Control'] = 'public, max-age=300'
+    return response
 
 @app.route('/api/articles/<int:article_id>', methods=['GET'])
 def get_article(article_id):
@@ -363,8 +367,12 @@ def delete_article(article_id):
 # Gallery API Endpoints
 @app.route('/api/gallery', methods=['GET'])
 def get_gallery():
+    # إضافة رأس التحكم بالتخزين المؤقت (Cache-Control) للمعرض
+    # تخزين البيانات لمدة 10 دقائق (600 ثانية) للتحسين من سرعة التحميل
     images = GalleryImage.query.all()
-    return jsonify({'images': [image.to_dict() for image in images]})
+    response = jsonify({'images': [image.to_dict() for image in images]})
+    response.headers['Cache-Control'] = 'public, max-age=600'
+    return response
 
 @app.route('/api/gallery/<int:image_id>', methods=['GET'])
 def get_gallery_image(image_id):
