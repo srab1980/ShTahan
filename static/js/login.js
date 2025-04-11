@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             // Send login request to server
-            const response = await fetch('/api/login', {
+            const response = await fetch('/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -45,8 +45,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             
             if (response.ok) {
-                // Successful login, redirect to admin dashboard or home page
-                window.location.href = '/';
+                // Successful login, redirect based on user role
+                if (data.user && data.user.role === 'admin') {
+                    window.location.href = '/admin';
+                } else if (data.user && data.user.role === 'editor') {
+                    window.location.href = '/admin';
+                } else {
+                    window.location.href = '/';
+                }
             } else {
                 // Show error message
                 errorMessage.textContent = data.error || 'Invalid username or password';
