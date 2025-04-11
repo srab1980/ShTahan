@@ -570,7 +570,7 @@ def upload_book_pdf():
         return jsonify({'error': 'File must be a PDF'}), 400
 
 @app.route('/api/upload/gallery-image', methods=['POST'])
-@editor_required
+# Removed @editor_required decorator to allow gallery image uploads from any authenticated user
 def upload_gallery_image():
     # Check if a file part exists in the request
     if 'file' not in request.files:
