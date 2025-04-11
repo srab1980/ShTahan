@@ -4,10 +4,16 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Articles module loaded');
+    
     // References to DOM elements
     const articlesContainer = document.querySelector('.articles-container');
     const addArticleForm = document.getElementById('add-article-form');
     const articlesSection = document.getElementById('articles');
+    
+    // Log DOM elements to check if they're found correctly
+    console.log('Articles container element:', articlesContainer);
+    console.log('Articles section element:', articlesSection);
     
     // Add a container for the "Add New Article" button if articles section exists
     if (articlesSection) {
