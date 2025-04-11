@@ -186,15 +186,25 @@ def get_book(book_id):
 def add_book():
     data = request.json
     
-    if not all(key in data for key in ['title', 'language', 'category', 'cover', 'download', 'description']):
+    # Check for required fields, allowing download to be empty or optional
+    required_fields = ['title', 'language', 'category', 'cover', 'description']
+    if not all(key in data for key in required_fields):
         return jsonify({'error': 'Missing required fields'}), 400
+    
+    # Set default value for download if not provided or empty
+    download_url = data.get('download', '#')
+    if not download_url or download_url.strip() == '':
+        download_url = '#'  # Default placeholder value
+    
+    # Print debug information
+    print(f"Adding book: {data['title']}, download URL: {download_url}")
     
     new_book = Book(
         title=data['title'],
         language=data['language'],
         category=data['category'],
         cover=data['cover'],
-        download=data['download'],
+        download=download_url,
         description=data['description']
     )
     
@@ -217,10 +227,19 @@ def update_book(book_id):
         book.category = data['category']
     if 'cover' in data:
         book.cover = data['cover']
+    
+    # Handle download URL - set to default '#' if empty
     if 'download' in data:
-        book.download = data['download']
+        download_url = data['download']
+        if not download_url or download_url.strip() == '':
+            download_url = '#'
+        book.download = download_url
+    
     if 'description' in data:
         book.description = data['description']
+    
+    # Print debug information
+    print(f"Updating book: {book.title}, download URL: {book.download}")
     
     db.session.commit()
     

@@ -415,14 +415,35 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Get all form values
         const bookId = document.getElementById('bookId').value;
+        const title = document.getElementById('title').value;
+        const language = document.getElementById('language').value;
+        const category = document.getElementById('category').value;
+        const cover = document.getElementById('cover').value;
+        let download = document.getElementById('download').value;
+        const description = document.getElementById('description').value;
+        
+        // Check required fields
+        if (!title || !language || !category || !cover || !description) {
+            showNotification('يرجى ملء جميع الحقول المطلوبة', 'error');
+            return;
+        }
+        
+        // If download URL is not set, use a default value
+        if (!download || download.trim() === '') {
+            download = '#';
+        }
+        
         const bookData = {
-            title: document.getElementById('title').value,
-            language: document.getElementById('language').value,
-            category: document.getElementById('category').value,
-            cover: document.getElementById('cover').value,
-            download: document.getElementById('download').value,
-            description: document.getElementById('description').value
+            title,
+            language,
+            category,
+            cover,
+            download,
+            description
         };
+        
+        // Log the data being sent
+        console.log('Submitting book data:', bookData);
         
         try {
             let url = '/api/books';
@@ -542,7 +563,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!file) return;
         
         // Check if it's a PDF
-        if (file.type !== 'application/pdf') {
+        if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
             showNotification('يرجى اختيار ملف PDF صالح', 'error');
             return;
         }
@@ -576,8 +597,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Show success notification
                 showNotification('تم رفع ملف PDF بنجاح', 'success');
                 
-                // Update the download URL field
-                document.getElementById('download').value = result.file_url;
+                // Update the download URL field and log the update
+                const downloadField = document.getElementById('download');
+                downloadField.value = result.file_url;
+                console.log('Updated download field with URL:', result.file_url);
+                
+                // Trigger change event to ensure form validation is updated
+                const event = new Event('change');
+                downloadField.dispatchEvent(event);
                 
                 // Hide progress bar after a delay
                 setTimeout(() => {
