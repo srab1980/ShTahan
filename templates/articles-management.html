@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المقالات - موقع الشيخ مصطفى الطحان</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .admin-title h1 {
+            color: #1a2a3a;
+            margin: 0;
+        }
+        
+        .admin-user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .admin-user-info .user-role {
+            margin-left: 15px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            background-color: #1a2a3a;
+            color: white;
+        }
+        
+        .admin-user-info .logout-btn {
+            margin-right: 15px;
+            padding: 7px 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            color: #1a2a3a;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .admin-user-info .logout-btn:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .admin-navigation {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .admin-nav-links {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .admin-nav-links li {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .admin-nav-links li a {
+            display: block;
+            padding: 15px;
+            color: #1a2a3a;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .admin-nav-links li a:hover,
+        .admin-nav-links li a.active {
+            background-color: #1a2a3a;
+            color: white;
+        }
+        
+        .admin-nav-links li a i {
+            margin-left: 5px;
+        }
+        
+        .admin-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section-title h2 {
+            color: #1a2a3a;
+            margin: 0;
+        }
+        
+        .add-article-btn {
+            padding: 8px 16px;
+            background-color: #1a2a3a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .add-article-btn i {
+            margin-left: 8px;
+        }
+        
+        .add-article-btn:hover {
+            background-color: #d4af37;
+        }
+        
+        .articles-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .articles-table th,
+        .articles-table td {
+            padding: 12px 15px;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .articles-table th {
+            background-color: #f8f9fa;
+            color: #1a2a3a;
+            font-weight: bold;
+        }
+        
+        .articles-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .articles-table tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .article-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .article-actions button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .edit-btn {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .view-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .article-actions button:hover {
+            opacity: 0.8;
+        }
+        
+        /* Article Modal Form */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-title {
+            margin: 0;
+            color: #1a2a3a;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #1a2a3a;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .form-group textarea {
+            height: 200px;
+            resize: vertical;
+        }
+        
+        .editor-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .editor-controls button {
+            padding: 6px 12px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .editor-controls button:hover {
+            background-color: #e9ecef;
+        }
+        
+        .upload-progress {
+            margin-top: 5px;
+            height: 5px;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: #d4af37;
+            width: 0%;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .cancel-btn {
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .save-btn {
+            padding: 10px 20px;
+            background-color: #1a2a3a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .cancel-btn:hover,
+        .save-btn:hover {
+            opacity: 0.8;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .admin-nav-links {
+                flex-direction: column;
+            }
+            
+            .admin-user-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .admin-user-info .user-role {
+                margin-left: 0;
+                margin-bottom: 10px;
+            }
+            
+            .admin-user-info .logout-btn {
+                margin-right: 0;
+                margin-top: 10px;
+            }
+            
+            .articles-table th,
+            .articles-table td {
+                padding: 8px;
+            }
+            
+            .article-actions {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .editor-controls {
+                flex-wrap: wrap;
+            }
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            z-index: 1100;
+            transition: 0.3s;
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .notification.info {
+            background-color: #17a2b8;
+        }
+        
+        .notification.success {
+            background-color: #28a745;
+        }
+        
+        .notification.error {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="admin-title">
+                <h1>إدارة المقالات</h1>
+            </div>
+            <div class="admin-user-info">
+                <span class="user-role" id="userRole">مدير</span>
+                <span id="userName">مرحباً، <strong>المستخدم</strong></span>
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                </a>
+            </div>
+        </header>
+        
+        <nav class="admin-navigation">
+            <ul class="admin-nav-links">
+                <li><a href="/admin"><i class="fas fa-tachometer-alt"></i> الرئيسية</a></li>
+                <li><a href="/admin/books"><i class="fas fa-book"></i> الكتب</a></li>
+                <li><a href="/admin/articles" class="active"><i class="fas fa-newspaper"></i> المقالات</a></li>
+                <li><a href="#"><i class="fas fa-images"></i> معرض الصور</a></li>
+                <li><a href="#"><i class="fas fa-envelope"></i> الرسائل</a></li>
+                <li><a href="/admin/users" id="userManagementLink"><i class="fas fa-users"></i> إدارة المستخدمين</a></li>
+            </ul>
+        </nav>
+        
+        <div class="admin-content">
+            <div class="section-title">
+                <h2>قائمة المقالات</h2>
+                <button class="add-article-btn" id="addArticleBtn">
+                    <i class="fas fa-plus"></i> إضافة مقال جديد
+                </button>
+            </div>
+            
+            <div class="articles-list">
+                <table class="articles-table">
+                    <thead>
+                        <tr>
+                            <th>العنوان</th>
+                            <th>الملخص</th>
+                            <th>تاريخ النشر</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="articlesTableBody">
+                        <!-- Article rows will be populated via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Article Modal Form -->
+    <div id="articleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">إضافة مقال جديد</h3>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            
+            <form id="articleForm">
+                <input type="hidden" id="articleId" value="">
+                
+                <div class="form-group">
+                    <label for="title">عنوان المقال</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="summary">ملخص المقال</label>
+                    <textarea id="summary" name="summary" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="content">محتوى المقال</label>
+                    <div class="editor-controls">
+                        <button type="button" id="add-article-image-btn" title="إضافة صورة">
+                            <i class="fas fa-image"></i> إضافة صورة
+                        </button>
+                        <button type="button" title="عنوان رئيسي" onclick="insertTag('h2')">
+                            <i class="fas fa-heading"></i> H2
+                        </button>
+                        <button type="button" title="عنوان فرعي" onclick="insertTag('h3')">
+                            <i class="fas fa-heading"></i> H3
+                        </button>
+                        <button type="button" title="فقرة" onclick="insertTag('p')">
+                            <i class="fas fa-paragraph"></i>
+                        </button>
+                        <button type="button" title="نص عريض" onclick="insertTag('strong')">
+                            <i class="fas fa-bold"></i>
+                        </button>
+                        <button type="button" title="نص مائل" onclick="insertTag('em')">
+                            <i class="fas fa-italic"></i>
+                        </button>
+                        <button type="button" title="قائمة نقطية" onclick="insertTag('ul')">
+                            <i class="fas fa-list-ul"></i>
+                        </button>
+                        <button type="button" title="قائمة رقمية" onclick="insertTag('ol')">
+                            <i class="fas fa-list-ol"></i>
+                        </button>
+                        <button type="button" title="عنصر قائمة" onclick="insertTag('li')">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" title="رابط" onclick="insertTag('a')">
+                            <i class="fas fa-link"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Image Upload Container -->
+                    <div id="article-image-upload-container" style="display: none; margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                        <label for="articleImageUpload">اختر صورة للرفع:</label>
+                        <input type="file" id="articleImageUpload" accept="image/*" style="margin-top: 10px;">
+                        <div class="upload-progress" id="imageProgress">
+                            <div class="progress-bar"></div>
+                        </div>
+                    </div>
+                    
+                    <textarea id="content" name="content" required style="height: 300px;"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" id="cancelBtn">إلغاء</button>
+                    <button type="button" class="save-btn" id="saveBtn">حفظ المقال</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Notification container -->
+    <div id="notification" class="notification"></div>
+    
+    <script>
+        // Function to insert HTML tags
+        function insertTag(tag) {
+            const contentTextarea = document.getElementById('content');
+            if (!contentTextarea) return;
+            
+            const startPos = contentTextarea.selectionStart;
+            const endPos = contentTextarea.selectionEnd;
+            const selectedText = contentTextarea.value.substring(startPos, endPos);
+            
+            let insertText = '';
+            switch(tag) {
+                case 'h2':
+                    insertText = `<h2>${selectedText || 'عنوان رئيسي'}</h2>`;
+                    break;
+                case 'h3':
+                    insertText = `<h3>${selectedText || 'عنوان فرعي'}</h3>`;
+                    break;
+                case 'p':
+                    insertText = `<p>${selectedText || 'فقرة جديدة'}</p>`;
+                    break;
+                case 'strong':
+                    insertText = `<strong>${selectedText || 'نص عريض'}</strong>`;
+                    break;
+                case 'em':
+                    insertText = `<em>${selectedText || 'نص مائل'}</em>`;
+                    break;
+                case 'ul':
+                    insertText = `<ul>\n  <li>عنصر قائمة 1</li>\n  <li>عنصر قائمة 2</li>\n</ul>`;
+                    break;
+                case 'ol':
+                    insertText = `<ol>\n  <li>عنصر قائمة 1</li>\n  <li>عنصر قائمة 2</li>\n</ol>`;
+                    break;
+                case 'li':
+                    insertText = `<li>${selectedText || 'عنصر قائمة'}</li>`;
+                    break;
+                case 'a':
+                    insertText = `<a href="#" target="_blank">${selectedText || 'رابط'}</a>`;
+                    break;
+                default:
+                    insertText = selectedText;
+            }
+            
+            contentTextarea.value = contentTextarea.value.substring(0, startPos) + insertText + contentTextarea.value.substring(endPos);
+            
+            // Move cursor position after the inserted tag
+            const newCursorPos = startPos + insertText.length;
+            contentTextarea.selectionStart = newCursorPos;
+            contentTextarea.selectionEnd = newCursorPos;
+            contentTextarea.focus();
+        }
+    </script>
+    
+    <script src="/static/js/articles-management.js"></script>
+</body>
+</html>
