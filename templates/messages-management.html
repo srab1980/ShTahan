@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الرسائل - موقع الشيخ مصطفى الطحان</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .admin-title h1 {
+            color: #1a2a3a;
+            margin: 0;
+        }
+        
+        .admin-user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .admin-user-info .user-role {
+            margin-left: 15px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            background-color: #1a2a3a;
+            color: white;
+        }
+        
+        .admin-user-info .logout-btn {
+            margin-right: 15px;
+            padding: 7px 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            color: #1a2a3a;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .admin-user-info .logout-btn:hover {
+            background-color: #e2e6ea;
+        }
+        
+        .admin-navigation {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .admin-nav-links {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .admin-nav-links li {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .admin-nav-links li a {
+            display: block;
+            padding: 15px;
+            color: #1a2a3a;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .admin-nav-links li a:hover,
+        .admin-nav-links li a.active {
+            background-color: #1a2a3a;
+            color: white;
+        }
+        
+        .admin-nav-links li a i {
+            margin-left: 5px;
+        }
+        
+        .admin-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            color: #1a2a3a;
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        /* Message List */
+        .messages-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .message-item {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .message-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .message-header {
+            padding: 15px;
+            background-color: #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .message-sender {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sender-name {
+            font-weight: bold;
+            color: #1a2a3a;
+            margin-bottom: 5px;
+        }
+        
+        .sender-email {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        .message-date {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        .message-content {
+            padding: 15px;
+        }
+        
+        .message-text {
+            margin: 0;
+            line-height: 1.6;
+            color: #1a2a3a;
+            white-space: pre-wrap;
+        }
+        
+        .message-actions {
+            padding: 0 15px 15px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .message-action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .reply-btn {
+            background-color: #1a2a3a;
+            color: white;
+        }
+        
+        .reply-btn:hover {
+            background-color: #0d1b2a;
+        }
+        
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+        
+        /* Reply Form */
+        .reply-form {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .reply-form.show {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #1a2a3a;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #1a2a3a;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0d1b2a;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        /* Search and Filter */
+        .messages-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 5px 10px;
+            flex: 1;
+            max-width: 400px;
+        }
+        
+        .search-bar input {
+            border: none;
+            background: transparent;
+            padding: 5px;
+            font-size: 16px;
+            width: 100%;
+        }
+        
+        .search-bar input:focus {
+            outline: none;
+        }
+        
+        .search-bar button {
+            background: none;
+            border: none;
+            color: #1a2a3a;
+            cursor: pointer;
+        }
+        
+        .filter-dropdown {
+            position: relative;
+            margin-right: 10px;
+        }
+        
+        .filter-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .filter-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 5px;
+            z-index: 10;
+            display: none;
+        }
+        
+        .filter-options.show {
+            display: block;
+        }
+        
+        .filter-option {
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .filter-option:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 50px 0;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #dee2e6;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #1a2a3a;
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .notification.success {
+            background-color: #28a745;
+        }
+        
+        .notification.error {
+            background-color: #dc3545;
+        }
+        
+        .notification.info {
+            background-color: #17a2b8;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .admin-nav-links {
+                flex-direction: column;
+            }
+            
+            .admin-user-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .admin-user-info .user-role {
+                margin-left: 0;
+                margin-bottom: 10px;
+            }
+            
+            .admin-user-info .logout-btn {
+                margin-right: 0;
+            }
+            
+            .messages-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-bar {
+                max-width: none;
+                margin-bottom: 10px;
+            }
+            
+            .message-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .message-date {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="admin-title">
+                <h1>إدارة الرسائل</h1>
+            </div>
+            <div class="admin-user-info">
+                <div class="user-name" id="userName">المستخدم</div>
+                <div class="user-role" id="userRole">الصلاحية</div>
+                <a href="/logout" class="logout-btn">تسجيل الخروج</a>
+            </div>
+        </header>
+        
+        <nav class="admin-navigation">
+            <ul class="admin-nav-links">
+                <li><a href="/admin"><i class="fas fa-tachometer-alt"></i> الرئيسية</a></li>
+                <li><a href="/admin/books"><i class="fas fa-book"></i> الكتب</a></li>
+                <li><a href="/articles-management-test"><i class="fas fa-newspaper"></i> المقالات</a></li>
+                <li><a href="/admin/gallery"><i class="fas fa-images"></i> معرض الصور</a></li>
+                <li><a href="/admin/messages" class="active"><i class="fas fa-envelope"></i> الرسائل</a></li>
+                <li><a href="/admin/users" id="userManagementLink"><i class="fas fa-users"></i> إدارة المستخدمين</a></li>
+            </ul>
+        </nav>
+        
+        <div class="admin-content">
+            <div class="messages-toolbar">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="البحث في الرسائل...">
+                    <button id="searchBtn"><i class="fas fa-search"></i></button>
+                </div>
+                
+                <div class="filter-dropdown">
+                    <button class="filter-btn" id="filterBtn">
+                        <span>تصفية حسب</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="filter-options" id="filterOptions">
+                        <div class="filter-option" data-filter="all">الكل</div>
+                        <div class="filter-option" data-filter="newest">الأحدث</div>
+                        <div class="filter-option" data-filter="oldest">الأقدم</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="section-title">قائمة الرسائل</h3>
+            
+            <div id="messagesContainer">
+                <ul class="messages-list" id="messagesList">
+                    <!-- Messages will be loaded dynamically -->
+                </ul>
+                
+                <!-- Empty state -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <i class="fas fa-envelope-open"></i>
+                    <h3>لا توجد رسائل</h3>
+                    <p>لم يتم العثور على أي رسائل في النظام.</p>
+                </div>
+                
+                <!-- Loading state -->
+                <div class="loading-state" id="loadingState">
+                    <p style="text-align: center;">جاري تحميل الرسائل...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const userName = document.getElementById('userName');
+            const userRole = document.getElementById('userRole');
+            const userManagementLink = document.getElementById('userManagementLink');
+            const messagesList = document.getElementById('messagesList');
+            const emptyState = document.getElementById('emptyState');
+            const loadingState = document.getElementById('loadingState');
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const filterBtn = document.getElementById('filterBtn');
+            const filterOptions = document.getElementById('filterOptions');
+            const notification = document.getElementById('notification');
+            
+            // Application State
+            let messages = [];
+            let currentUser = null;
+            let currentFilter = 'all';
+            let searchQuery = '';
+            
+            // Initialize
+            checkAuthStatus();
+            loadMessages();
+            
+            // Event Listeners
+            searchBtn.addEventListener('click', performSearch);
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            filterBtn.addEventListener('click', function() {
+                filterOptions.classList.toggle('show');
+            });
+            
+            document.querySelectorAll('.filter-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+                    currentFilter = filter;
+                    filterBtn.querySelector('span').textContent = this.textContent;
+                    filterOptions.classList.remove('show');
+                    applyFilters();
+                });
+            });
+            
+            // Click outside to close filter dropdown
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.filter-dropdown')) {
+                    filterOptions.classList.remove('show');
+                }
+            });
+            
+            // Check authentication status
+            async function checkAuthStatus() {
+                try {
+                    const response = await fetch('/api/auth-status');
+                    const data = await response.json();
+                    
+                    if (data.authenticated) {
+                        currentUser = {
+                            id: data.id,
+                            username: data.username,
+                            role: data.role
+                        };
+                        
+                        userName.textContent = currentUser.username;
+                        userRole.textContent = getRoleLabel(currentUser.role);
+                        
+                        // Show/hide user management link based on role
+                        if (currentUser.role !== 'admin') {
+                            userManagementLink.parentElement.style.display = 'none';
+                        }
+                    } else {
+                        // Redirect to login page if not authenticated
+                        window.location.href = '/login-form';
+                    }
+                } catch (error) {
+                    console.error('Error checking auth status:', error);
+                    showNotification('خطأ في التحقق من حالة تسجيل الدخول', 'error');
+                }
+            }
+            
+            // Get Arabic role label
+            function getRoleLabel(role) {
+                switch (role) {
+                    case 'admin':
+                        return 'مدير';
+                    case 'editor':
+                        return 'محرر';
+                    case 'user':
+                        return 'مستخدم';
+                    default:
+                        return role;
+                }
+            }
+            
+            // Load messages
+            async function loadMessages() {
+                try {
+                    // Show loading state
+                    loadingState.style.display = 'block';
+                    emptyState.style.display = 'none';
+                    messagesList.innerHTML = '';
+                    
+                    const response = await fetch('/api/contact-messages');
+                    const data = await response.json();
+                    
+                    // Hide loading state
+                    loadingState.style.display = 'none';
+                    
+                    if (data.messages && Array.isArray(data.messages)) {
+                        messages = data.messages;
+                        
+                        if (messages.length === 0) {
+                            // Show empty state
+                            emptyState.style.display = 'block';
+                        } else {
+                            // Apply filters to render messages
+                            applyFilters();
+                        }
+                    } else {
+                        console.error('Unexpected response format:', data);
+                        showNotification('خطأ في تنسيق البيانات المستلمة', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error loading messages:', error);
+                    loadingState.style.display = 'none';
+                    showNotification('خطأ في تحميل الرسائل', 'error');
+                }
+            }
+            
+            // Apply filters and search to messages
+            function applyFilters() {
+                let filteredMessages = [...messages];
+                
+                // Apply filter
+                if (currentFilter === 'newest') {
+                    filteredMessages.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                } else if (currentFilter === 'oldest') {
+                    filteredMessages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                }
+                
+                // Apply search
+                if (searchQuery) {
+                    const query = searchQuery.toLowerCase();
+                    filteredMessages = filteredMessages.filter(message => 
+                        message.name.toLowerCase().includes(query) || 
+                        message.email.toLowerCase().includes(query) || 
+                        message.message.toLowerCase().includes(query)
+                    );
+                }
+                
+                // Render filtered messages
+                renderMessages(filteredMessages);
+            }
+            
+            // Perform search
+            function performSearch() {
+                searchQuery = searchInput.value.trim();
+                applyFilters();
+            }
+            
+            // Render messages
+            function renderMessages(messagesToRender) {
+                messagesList.innerHTML = '';
+                
+                if (messagesToRender.length === 0) {
+                    emptyState.style.display = 'block';
+                    return;
+                }
+                
+                emptyState.style.display = 'none';
+                
+                messagesToRender.forEach(message => {
+                    const messageDate = new Date(message.created_at);
+                    const formattedDate = messageDate.toLocaleDateString('ar-SA', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    const messageItem = document.createElement('li');
+                    messageItem.className = 'message-item';
+                    messageItem.dataset.id = message.id;
+                    
+                    messageItem.innerHTML = `
+                        <div class="message-header">
+                            <div class="message-sender">
+                                <div class="sender-name">${message.name}</div>
+                                <div class="sender-email">${message.email}</div>
+                            </div>
+                            <div class="message-date">${formattedDate}</div>
+                        </div>
+                        <div class="message-content">
+                            <p class="message-text">${message.message}</p>
+                        </div>
+                        <div class="message-actions">
+                            <button class="message-action-btn reply-btn" data-id="${message.id}" data-email="${message.email}">
+                                <i class="fas fa-reply"></i> الرد
+                            </button>
+                            <button class="message-action-btn delete-btn" data-id="${message.id}">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </div>
+                    `;
+                    
+                    messagesList.appendChild(messageItem);
+                });
+                
+                // Add event listeners to message actions
+                document.querySelectorAll('.reply-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const messageId = this.getAttribute('data-id');
+                        const email = this.getAttribute('data-email');
+                        openEmailClient(email);
+                    });
+                });
+                
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const messageId = this.getAttribute('data-id');
+                        confirmDeleteMessage(messageId);
+                    });
+                });
+            }
+            
+            // Open email client
+            function openEmailClient(email) {
+                window.location.href = `mailto:${email}`;
+            }
+            
+            // Confirm delete message
+            function confirmDeleteMessage(messageId) {
+                if (confirm('هل أنت متأكد من رغبتك في حذف هذه الرسالة؟')) {
+                    deleteMessage(messageId);
+                }
+            }
+            
+            // Delete message
+            async function deleteMessage(messageId) {
+                try {
+                    const response = await fetch(`/api/contact-messages/${messageId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('فشل في حذف الرسالة');
+                    }
+                    
+                    // Remove message from the list
+                    messages = messages.filter(message => message.id != messageId);
+                    
+                    // Apply filters again
+                    applyFilters();
+                    
+                    // Show success message
+                    showNotification('تم حذف الرسالة بنجاح', 'success');
+                } catch (error) {
+                    console.error('Error deleting message:', error);
+                    showNotification(error.message || 'حدث خطأ أثناء حذف الرسالة', 'error');
+                }
+            }
+            
+            // Show notification
+            function showNotification(message, type = 'info') {
+                notification.textContent = message;
+                notification.className = `notification ${type}`;
+                notification.classList.add('show');
+                
+                // Hide notification after 5 seconds
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

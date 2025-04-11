@@ -117,6 +117,12 @@ def user_management():
 def admin_gallery_management():
     return render_template('gallery-management-admin.html')
 
+@app.route('/admin/messages')
+@login_required
+@editor_required
+def admin_messages_management():
+    return render_template('messages-management.html')
+
 @app.route('/gallery')
 def gallery():
     # Check for responsive URL parameter
@@ -393,7 +399,7 @@ def delete_gallery_image(image_id):
     
     return jsonify({'message': 'Image deleted successfully'})
 
-# Contact Form API Endpoint
+# Contact Form API Endpoints
 @app.route('/api/contact', methods=['POST'])
 def submit_contact():
     data = request.json
@@ -411,6 +417,31 @@ def submit_contact():
     db.session.commit()
     
     return jsonify({'message': 'Message sent successfully'}), 201
+
+@app.route('/api/contact-messages', methods=['GET'])
+@login_required
+@editor_required
+def get_contact_messages():
+    messages = ContactMessage.query.order_by(ContactMessage.created_at.desc()).all()
+    return jsonify({'messages': [message.to_dict() for message in messages]})
+
+@app.route('/api/contact-messages/<int:message_id>', methods=['GET'])
+@login_required
+@editor_required
+def get_contact_message(message_id):
+    message = ContactMessage.query.get_or_404(message_id)
+    return jsonify({'message': message.to_dict()})
+
+@app.route('/api/contact-messages/<int:message_id>', methods=['DELETE'])
+@login_required
+@editor_required
+def delete_contact_message(message_id):
+    message = ContactMessage.query.get_or_404(message_id)
+    
+    db.session.delete(message)
+    db.session.commit()
+    
+    return jsonify({'message': 'Message deleted successfully'})
 
 # User Management API Endpoints
 @app.route('/api/users', methods=['GET'])
