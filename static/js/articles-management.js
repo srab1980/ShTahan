@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Add global insertTag function
+    // Define global insertTag function for both normal and test pages
     window.insertTag = function(tagName) {
         const contentArea = document.getElementById('content');
         if (!contentArea) return;

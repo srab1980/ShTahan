@@ -525,58 +525,7 @@
     <!-- Notification container -->
     <div id="notification" class="notification"></div>
     
-    <script>
-        // Function to insert HTML tags
-        function insertTag(tag) {
-            const contentTextarea = document.getElementById('content');
-            if (!contentTextarea) return;
-            
-            const startPos = contentTextarea.selectionStart;
-            const endPos = contentTextarea.selectionEnd;
-            const selectedText = contentTextarea.value.substring(startPos, endPos);
-            
-            let insertText = '';
-            switch(tag) {
-                case 'h2':
-                    insertText = `<h2>${selectedText || 'عنوان رئيسي'}</h2>`;
-                    break;
-                case 'h3':
-                    insertText = `<h3>${selectedText || 'عنوان فرعي'}</h3>`;
-                    break;
-                case 'p':
-                    insertText = `<p>${selectedText || 'فقرة جديدة'}</p>`;
-                    break;
-                case 'strong':
-                    insertText = `<strong>${selectedText || 'نص عريض'}</strong>`;
-                    break;
-                case 'em':
-                    insertText = `<em>${selectedText || 'نص مائل'}</em>`;
-                    break;
-                case 'ul':
-                    insertText = `<ul>\n  <li>عنصر قائمة 1</li>\n  <li>عنصر قائمة 2</li>\n</ul>`;
-                    break;
-                case 'ol':
-                    insertText = `<ol>\n  <li>عنصر قائمة 1</li>\n  <li>عنصر قائمة 2</li>\n</ol>`;
-                    break;
-                case 'li':
-                    insertText = `<li>${selectedText || 'عنصر قائمة'}</li>`;
-                    break;
-                case 'a':
-                    insertText = `<a href="#" target="_blank">${selectedText || 'رابط'}</a>`;
-                    break;
-                default:
-                    insertText = selectedText;
-            }
-            
-            contentTextarea.value = contentTextarea.value.substring(0, startPos) + insertText + contentTextarea.value.substring(endPos);
-            
-            // Move cursor position after the inserted tag
-            const newCursorPos = startPos + insertText.length;
-            contentTextarea.selectionStart = newCursorPos;
-            contentTextarea.selectionEnd = newCursorPos;
-            contentTextarea.focus();
-        }
-    </script>
+    <!-- تم نقل وظيفة insertTag إلى ملف articles-management.js -->
     
     <script src="/static/js/articles-management.js"></script>
 </body>
