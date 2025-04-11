@@ -198,7 +198,85 @@ document.addEventListener('DOMContentLoaded', function() {
             const deleteBtn = row.querySelector('.delete-btn');
             
             viewBtn.addEventListener('click', () => {
-                window.open(`/api/books/${book.id}`, '_blank');
+                // Open a new window and display book details in a readable format
+                const win = window.open('', '_blank');
+                win.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="ar" dir="rtl">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>${book.title} - معلومات الكتاب</title>
+                        <style>
+                            body {
+                                font-family: Arial, sans-serif;
+                                line-height: 1.6;
+                                padding: 20px;
+                                max-width: 800px;
+                                margin: 0 auto;
+                            }
+                            .book-container {
+                                display: flex;
+                                gap: 20px;
+                                margin-bottom: 30px;
+                            }
+                            .book-cover {
+                                flex: 0 0 200px;
+                            }
+                            .book-cover img {
+                                max-width: 100%;
+                                border-radius: 5px;
+                                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+                            }
+                            .book-info {
+                                flex: 1;
+                            }
+                            h1 {
+                                margin-top: 0;
+                                color: #1a2a3a;
+                            }
+                            .book-meta {
+                                display: flex;
+                                gap: 10px;
+                                margin-bottom: 20px;
+                            }
+                            .book-meta span {
+                                background-color: #f0f0f0;
+                                padding: 5px 10px;
+                                border-radius: 3px;
+                                font-size: 14px;
+                            }
+                            .download-btn {
+                                display: inline-block;
+                                padding: 10px 20px;
+                                background-color: #1a2a3a;
+                                color: white;
+                                text-decoration: none;
+                                border-radius: 5px;
+                                margin-top: 20px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="book-container">
+                            <div class="book-cover">
+                                <img src="${book.cover}" alt="${book.title}">
+                            </div>
+                            <div class="book-info">
+                                <h1>${book.title}</h1>
+                                <div class="book-meta">
+                                    <span>اللغة: ${book.language}</span>
+                                    <span>التصنيف: ${book.category}</span>
+                                </div>
+                                <h3>الوصف:</h3>
+                                <p>${book.description}</p>
+                                <a href="${book.download}" class="download-btn" target="_blank">تحميل الكتاب</a>
+                            </div>
+                        </div>
+                        <button onclick="window.close()">إغلاق</button>
+                    </body>
+                    </html>
+                `);
             });
             
             editBtn.addEventListener('click', () => {
@@ -273,9 +351,15 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             const response = await fetch(`/api/books/${bookId}`);
-            const book = await response.json();
+            const data = await response.json();
             
-            if (response.ok) {
+            // Check if response contains book data
+            if (response.ok && data.book) {
+                const book = data.book;
+                
+                // Log received data for debugging
+                console.log('Book data received:', book);
+                
                 // Set form values
                 document.getElementById('bookId').value = book.id;
                 document.getElementById('title').value = book.title;
@@ -306,7 +390,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Show the modal
                 bookModal.style.display = 'block';
             } else {
-                showNotification(`خطأ: ${book.error || 'حدث خطأ في تحميل بيانات الكتاب'}`, 'error');
+                showNotification(`خطأ: ${data.error || 'حدث خطأ في تحميل بيانات الكتاب'}`, 'error');
             }
         } catch (error) {
             console.error('Error fetching book details:', error);
