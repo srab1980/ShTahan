@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معرض الصور المتجاوب - الشيخ مصطفى الطحان</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --main-color: #1a3c6b;
+            --gold-color: #d4af37;
+            --text-color: #333;
+            --white-color: #fff;
+            --light-color: #f8f9fa;
+            --shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+
+        /* Header Styles */
+        .header {
+            background-color: var(--main-color);
+            color: var(--white-color);
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--gold-color);
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            color: var(--white-color);
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        .nav {
+            background-color: var(--white-color);
+            box-shadow: var(--shadow);
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: var(--main-color);
+            text-decoration: none;
+            font-weight: bold;
+            transition: var(--transition);
+            padding: 0.5rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold-color);
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--main-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--main-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background-color: var(--gold-color);
+            margin: 0.5rem auto;
+        }
+
+        /* Gallery */
+        .gallery-container {
+            margin-top: 2rem;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            background-color: var(--white-color);
+            height: 300px;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            background-color: rgba(26, 60, 107, 0.8);
+            color: var(--white-color);
+            padding: 0.75rem;
+            transform: translateY(100%);
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .gallery-item:hover .gallery-caption {
+            transform: translateY(0);
+        }
+
+        .gallery-item:hover .gallery-image {
+            transform: scale(1.05);
+        }
+
+        /* Lightbox */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 80vh;
+        }
+
+        .lightbox-image {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+            border: 5px solid var(--white-color);
+        }
+
+        .lightbox-caption {
+            color: var(--white-color);
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: rgba(26, 60, 107, 0.8);
+            border-radius: 4px;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .close-lightbox {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            font-size: 2rem;
+            color: var(--white-color);
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 1rem;
+        }
+
+        .lightbox-nav button {
+            background: none;
+            border: none;
+            color: var(--white-color);
+            font-size: 2rem;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+
+        .lightbox-nav button:hover {
+            opacity: 1;
+        }
+
+        /* Gallery Management */
+        .gallery-management {
+            background-color: var(--white-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .gallery-management h3 {
+            color: var(--main-color);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .gallery-form {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: var(--main-color);
+        }
+
+        .form-group input {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .form-actions button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        .cancel-btn {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #ddd;
+        }
+
+        .save-btn {
+            background-color: var(--main-color);
+            color: var(--white-color);
+        }
+
+        .add-btn {
+            background-color: var(--gold-color);
+            color: var(--white-color);
+        }
+
+        .cancel-btn:hover {
+            background-color: #e9ecef;
+        }
+
+        .save-btn:hover {
+            background-color: #14325c;
+        }
+
+        .add-btn:hover {
+            background-color: #c19d30;
+        }
+
+        /* Image controls */
+        .image-controls {
+            display: flex;
+            gap: 0.5rem;
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .gallery-item:hover .image-controls {
+            opacity: 1;
+        }
+
+        .image-control-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .edit-btn {
+            background-color: var(--gold-color);
+            color: var(--white-color);
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: var(--white-color);
+        }
+
+        .image-control-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 1rem;
+            left: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            color: var(--white-color);
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .notification.success {
+            background-color: #28a745;
+        }
+
+        .notification.error {
+            background-color: #dc3545;
+        }
+
+        .notification.info {
+            background-color: #17a2b8;
+        }
+
+        /* Upload progress */
+        .upload-progress {
+            height: 5px;
+            width: 100%;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--gold-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 60px;
+                right: -100%;
+                width: 80%;
+                height: calc(100vh - 60px);
+                background-color: var(--white-color);
+                flex-direction: column;
+                padding: 2rem;
+                box-shadow: var(--shadow);
+                transition: var(--transition);
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .nav-toggle {
+                display: block;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .lightbox-image {
+                max-width: 95%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .page-title {
+                font-size: 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .gallery-item {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1 class="page-title">معرض الصور</h1>
+        <p class="page-subtitle">الشيخ مصطفى الطحان</p>
+    </header>
+
+    <nav class="nav">
+        <div class="logo">
+            <a href="/">
+                <img src="/static/images/logo.png" alt="الشعار" style="height: 40px;">
+            </a>
+        </div>
+        <button class="nav-toggle" id="navToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="nav-links" id="navLinks">
+            <a href="/">الرئيسية</a>
+            <a href="/books">الكتب</a>
+            <a href="/articles">المقالات</a>
+            <a href="/gallery" class="active">معرض الصور</a>
+            <a href="/contact">اتصل بنا</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2 class="section-title">معرض الصور</h2>
+        
+        <div id="gallery-management" class="gallery-management">
+            <h3>إضافة صورة جديدة</h3>
+            <form id="gallery-form" class="gallery-form">
+                <div class="form-group">
+                    <label for="image-caption">عنوان الصورة:</label>
+                    <input type="text" id="image-caption" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image-upload">اختر صورة:</label>
+                    <input type="file" id="image-upload" accept="image/*">
+                    <div class="upload-progress" id="image-progress" style="display: none;">
+                        <div class="progress-bar"></div>
+                    </div>
+                </div>
+                
+                <input type="hidden" id="image-id">
+                <div class="form-actions">
+                    <button type="button" id="cancel-btn" class="cancel-btn">إلغاء</button>
+                    <button type="submit" id="save-btn" class="save-btn">حفظ الصورة</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="gallery-container">
+            <div id="gallery-grid" class="gallery-grid">
+                <!-- سيتم تحميل الصور هنا عن طريق جافاسكريبت -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox">
+        <button id="close-lightbox" class="close-lightbox">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="lightbox-content">
+            <img id="lightbox-image" class="lightbox-image" src="" alt="">
+            <div id="lightbox-caption" class="lightbox-caption"></div>
+            <div class="lightbox-nav">
+                <button id="prev-btn"><i class="fas fa-chevron-left"></i></button>
+                <button id="next-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // References to DOM elements
+            const galleryGrid = document.getElementById('gallery-grid');
+            const galleryForm = document.getElementById('gallery-form');
+            const imageCaption = document.getElementById('image-caption');
+            const imageUpload = document.getElementById('image-upload');
+            const imageId = document.getElementById('image-id');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const saveBtn = document.getElementById('save-btn');
+            const imageProgress = document.getElementById('image-progress');
+            const progressBar = imageProgress ? imageProgress.querySelector('.progress-bar') : null;
+            
+            // Lightbox elements
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImage = document.getElementById('lightbox-image');
+            const lightboxCaption = document.getElementById('lightbox-caption');
+            const closeLightbox = document.getElementById('close-lightbox');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            // Navigation toggle
+            const navToggle = document.getElementById('navToggle');
+            const navLinks = document.getElementById('navLinks');
+            
+            // Gallery data
+            let galleryImages = [];
+            let currentImageIndex = 0;
+            
+            // Mobile navigation toggle
+            if (navToggle && navLinks) {
+                navToggle.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                    navToggle.innerHTML = navLinks.classList.contains('active') ? 
+                        '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+                });
+            }
+            
+            // Initialize - fetch gallery images
+            fetchGalleryImages();
+            
+            // Initialize event listeners
+            if (galleryForm) {
+                galleryForm.addEventListener('submit', handleGallerySubmit);
+            }
+            
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', resetForm);
+            }
+            
+            if (imageUpload) {
+                imageUpload.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        // Preview image
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.style.maxWidth = '100%';
+                            img.style.maxHeight = '200px';
+                            img.style.marginTop = '10px';
+                            
+                            // Show preview
+                            const previewContainer = document.createElement('div');
+                            previewContainer.id = 'preview-container';
+                            previewContainer.appendChild(img);
+                            
+                            // Remove existing preview if any
+                            const existingPreview = document.getElementById('preview-container');
+                            if (existingPreview) {
+                                existingPreview.remove();
+                            }
+                            
+                            // Add new preview after file input
+                            imageUpload.parentNode.insertBefore(previewContainer, imageProgress);
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+            
+            // Lightbox event listeners
+            if (closeLightbox) {
+                closeLightbox.addEventListener('click', function() {
+                    lightbox.classList.remove('active');
+                });
+            }
+            
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function() {
+                    navigateLightbox(-1);
+                });
+            }
+            
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function() {
+                    navigateLightbox(1);
+                });
+            }
+            
+            // Keyboard navigation for lightbox
+            document.addEventListener('keydown', function(e) {
+                if (!lightbox.classList.contains('active')) return;
+                
+                if (e.key === 'Escape') {
+                    lightbox.classList.remove('active');
+                } else if (e.key === 'ArrowLeft') {
+                    navigateLightbox(-1);
+                } else if (e.key === 'ArrowRight') {
+                    navigateLightbox(1);
+                }
+            });
+            
+            // Fetch gallery images from API
+            async function fetchGalleryImages() {
+                try {
+                    const response = await fetch('/api/gallery');
+                    const data = await response.json();
+                    
+                    if (data.gallery) {
+                        galleryImages = data.gallery;
+                        renderGallery();
+                    }
+                } catch (error) {
+                    console.error('Error fetching gallery images:', error);
+                    showNotification('حدث خطأ في تحميل الصور', 'error');
+                }
+            }
+            
+            // Render gallery images
+            function renderGallery() {
+                if (!galleryGrid) return;
+                
+                galleryGrid.innerHTML = '';
+                
+                if (galleryImages.length === 0) {
+                    galleryGrid.innerHTML = '<p class="text-center">لا توجد صور في المعرض حالياً</p>';
+                    return;
+                }
+                
+                galleryImages.forEach((image, index) => {
+                    const galleryItem = document.createElement('div');
+                    galleryItem.className = 'gallery-item';
+                    galleryItem.dataset.id = image.id;
+                    galleryItem.dataset.index = index;
+                    
+                    galleryItem.innerHTML = `
+                        <img src="${image.url}" alt="${image.caption}" class="gallery-image">
+                        <div class="gallery-caption">${image.caption}</div>
+                        <div class="image-controls">
+                            <button class="image-control-btn edit-btn" data-id="${image.id}" title="تعديل">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="image-control-btn delete-btn" data-id="${image.id}" title="حذف">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    galleryGrid.appendChild(galleryItem);
+                    
+                    // Add click event to open lightbox
+                    galleryItem.addEventListener('click', function(e) {
+                        if (!e.target.closest('.image-controls')) {
+                            openLightbox(index);
+                        }
+                    });
+                });
+                
+                // Add event listeners to control buttons
+                const editButtons = document.querySelectorAll('.edit-btn');
+                editButtons.forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const imageId = button.dataset.id;
+                        editImage(imageId);
+                    });
+                });
+                
+                const deleteButtons = document.querySelectorAll('.delete-btn');
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const imageId = button.dataset.id;
+                        confirmDeleteImage(imageId);
+                    });
+                });
+            }
+            
+            // Handle gallery form submission
+            async function handleGallerySubmit(e) {
+                e.preventDefault();
+                
+                const caption = imageCaption.value.trim();
+                const file = imageUpload.files[0];
+                const id = imageId.value;
+                
+                if (!caption) {
+                    showNotification('الرجاء إدخال عنوان للصورة', 'error');
+                    return;
+                }
+                
+                if (!file && !id) {
+                    showNotification('الرجاء اختيار صورة', 'error');
+                    return;
+                }
+                
+                try {
+                    let imageUrl = '';
+                    
+                    // If there's a file, upload it first
+                    if (file) {
+                        // Show progress bar
+                        if (imageProgress) {
+                            imageProgress.style.display = 'block';
+                            progressBar.style.width = '0%';
+                        }
+                        
+                        // Upload the file
+                        const uploadResult = await uploadGalleryImage(file);
+                        
+                        if (!uploadResult) {
+                            showNotification('فشل في رفع الصورة', 'error');
+                            return;
+                        }
+                        
+                        imageUrl = uploadResult;
+                    }
+                    
+                    const imageData = {
+                        caption: caption,
+                    };
+                    
+                    if (imageUrl) {
+                        imageData.url = imageUrl;
+                    }
+                    
+                    // Determine if this is an add or edit operation
+                    const method = id ? 'PUT' : 'POST';
+                    const url = id ? `/api/gallery/${id}` : '/api/gallery';
+                    
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(imageData)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        showNotification(
+                            id ? 'تم تحديث الصورة بنجاح' : 'تمت إضافة الصورة بنجاح',
+                            'success'
+                        );
+                        resetForm();
+                        fetchGalleryImages(); // Refresh gallery
+                    } else {
+                        showNotification(data.error || 'حدث خطأ في حفظ الصورة', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error submitting gallery form:', error);
+                    showNotification('حدث خطأ في حفظ الصورة', 'error');
+                } finally {
+                    // Hide progress bar
+                    if (imageProgress) {
+                        setTimeout(() => {
+                            imageProgress.style.display = 'none';
+                        }, 1000);
+                    }
+                }
+            }
+            
+            // Edit image
+            function editImage(id) {
+                const image = galleryImages.find(img => img.id == id);
+                if (!image) return;
+                
+                // Populate form
+                imageCaption.value = image.caption;
+                imageId.value = image.id;
+                
+                // Display current image preview
+                const previewContainer = document.createElement('div');
+                previewContainer.id = 'preview-container';
+                
+                const img = document.createElement('img');
+                img.src = image.url;
+                img.style.maxWidth = '100%';
+                img.style.maxHeight = '200px';
+                img.style.marginTop = '10px';
+                
+                previewContainer.appendChild(img);
+                
+                // Remove existing preview if any
+                const existingPreview = document.getElementById('preview-container');
+                if (existingPreview) {
+                    existingPreview.remove();
+                }
+                
+                // Add new preview after file input
+                imageUpload.parentNode.insertBefore(previewContainer, imageProgress);
+                
+                // Scroll to form
+                document.getElementById('gallery-management').scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Reset form
+            function resetForm() {
+                galleryForm.reset();
+                imageId.value = '';
+                
+                // Remove preview
+                const existingPreview = document.getElementById('preview-container');
+                if (existingPreview) {
+                    existingPreview.remove();
+                }
+                
+                // Hide progress bar
+                if (imageProgress) {
+                    imageProgress.style.display = 'none';
+                }
+            }
+            
+            // Confirm delete image
+            function confirmDeleteImage(id) {
+                if (confirm('هل أنت متأكد من حذف هذه الصورة؟')) {
+                    deleteImage(id);
+                }
+            }
+            
+            // Delete image
+            async function deleteImage(id) {
+                try {
+                    const response = await fetch(`/api/gallery/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        showNotification('تم حذف الصورة بنجاح', 'success');
+                        fetchGalleryImages(); // Refresh gallery
+                    } else {
+                        showNotification(data.error || 'حدث خطأ في حذف الصورة', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error deleting image:', error);
+                    showNotification('حدث خطأ في حذف الصورة', 'error');
+                }
+            }
+            
+            // Upload gallery image
+            async function uploadGalleryImage(file) {
+                if (!file) return null;
+                
+                // Create form data
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                try {
+                    // Update progress bar
+                    if (progressBar) {
+                        let progress = 10;
+                        const interval = setInterval(() => {
+                            progress += 10;
+                            progressBar.style.width = `${Math.min(progress, 90)}%`;
+                            if (progress >= 90) clearInterval(interval);
+                        }, 200);
+                    }
+                    
+                    // Send the file to the server
+                    const response = await fetch('/api/upload/gallery-image', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    
+                    // Set progress to 100%
+                    if (progressBar) {
+                        progressBar.style.width = '100%';
+                    }
+                    
+                    if (data.file_url) {
+                        return data.file_url;
+                    } else {
+                        throw new Error(data.error || 'فشل في رفع الصورة');
+                    }
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                    showNotification('فشل في رفع الصورة: ' + error.message, 'error');
+                    return null;
+                }
+            }
+            
+            // Open lightbox
+            function openLightbox(index) {
+                if (!lightbox || !lightboxImage || !lightboxCaption) return;
+                
+                currentImageIndex = index;
+                const image = galleryImages[index];
+                
+                lightboxImage.src = image.url;
+                lightboxCaption.textContent = image.caption;
+                lightbox.classList.add('active');
+            }
+            
+            // Navigate lightbox
+            function navigateLightbox(direction) {
+                let newIndex = currentImageIndex + direction;
+                
+                if (newIndex < 0) {
+                    newIndex = galleryImages.length - 1;
+                } else if (newIndex >= galleryImages.length) {
+                    newIndex = 0;
+                }
+                
+                currentImageIndex = newIndex;
+                const image = galleryImages[newIndex];
+                
+                lightboxImage.src = image.url;
+                lightboxCaption.textContent = image.caption;
+            }
+            
+            // Show notification
+            function showNotification(message, type = 'info') {
+                const notification = document.getElementById('notification');
+                if (!notification) return;
+                
+                notification.textContent = message;
+                notification.className = `notification ${type}`;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

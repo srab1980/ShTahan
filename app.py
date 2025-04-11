@@ -113,7 +113,16 @@ def user_management():
 
 @app.route('/gallery')
 def gallery():
+    # Check for responsive URL parameter
+    responsive = request.args.get('responsive', '0')
+    if responsive == '1':
+        return render_template('responsive-gallery.html')
     return render_template('gallery.html')
+
+@app.route('/responsive-gallery')
+def responsive_gallery():
+    """Render responsive gallery page"""
+    return render_template('responsive-gallery.html')
     
 @app.route('/login-link')
 def login_link():
