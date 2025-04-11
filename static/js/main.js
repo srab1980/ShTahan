@@ -13,12 +13,44 @@ document.addEventListener('DOMContentLoaded', function() {
     // Mobile menu toggle
     const menuToggle = document.querySelector('.menu-toggle');
     const navMenu = document.querySelector('.nav-menu');
+    const navigation = document.querySelector('.navigation');
     
     if (menuToggle) {
         menuToggle.addEventListener('click', function() {
             navMenu.classList.toggle('active');
+            // Add an attribute for accessibility
+            const expanded = navMenu.classList.contains('active');
+            menuToggle.setAttribute('aria-expanded', expanded);
+            
+            // Change the icon based on state
+            const icon = menuToggle.querySelector('i');
+            if (expanded) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
         });
     }
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', function(event) {
+        // Check if the navigation exists and is open
+        if (navigation && navMenu.classList.contains('active')) {
+            // Check if click is outside the navigation
+            const isClickInside = navigation.contains(event.target) || 
+                                menuToggle.contains(event.target);
+            
+            if (!isClickInside) {
+                navMenu.classList.remove('active');
+                menuToggle.setAttribute('aria-expanded', 'false');
+                const icon = menuToggle.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        }
+    });
     
     // Close menu when clicking on a nav link (but don't interfere with the navigation)
     const navLinks = document.querySelectorAll('.nav-menu a');
@@ -26,6 +58,13 @@ document.addEventListener('DOMContentLoaded', function() {
         link.addEventListener('click', (e) => {
             // Just close the mobile menu - don't prevent default navigation
             navMenu.classList.remove('active');
+            
+            if (menuToggle) {
+                menuToggle.setAttribute('aria-expanded', 'false');
+                const icon = menuToggle.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
             
             // Don't stop propagation, so the actual link still works
             // Let the regular navigation happen for links to other pages
