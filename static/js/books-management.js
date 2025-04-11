@@ -423,8 +423,8 @@ document.addEventListener('DOMContentLoaded', function() {
      * Handle book form submission (add or edit)
      */
     async function handleBookFormSubmit(e) {
-        e.preventDefault();
-        console.log('Form submission started');
+        if (e) e.preventDefault();
+        console.log('Form submission started - triggered by', e ? e.type : 'direct call');
         
         // Get all form values
         const bookId = document.getElementById('bookId').value;
@@ -439,6 +439,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!title || !language || !category || !cover || !description) {
             showNotification('يرجى ملء جميع الحقول المطلوبة', 'error');
             console.log('Missing required fields. Form validation failed.');
+            
+            // Log which fields are missing
+            if (!title) console.log('Missing title');
+            if (!language) console.log('Missing language');
+            if (!category) console.log('Missing category');
+            if (!cover) console.log('Missing cover');
+            if (!description) console.log('Missing description');
+            
             return;
         }
         
@@ -472,19 +480,25 @@ document.addEventListener('DOMContentLoaded', function() {
             if (bookId) {
                 url = `/api/books/${bookId}`;
                 method = 'PUT';
+                bookData.id = bookId; // Make sure we include the ID
             }
             
             showNotification('جاري حفظ البيانات...', 'info');
             
+            // Use the fetch API to send the data
+            console.log(`Sending ${method} request to ${url}`);
             const response = await fetch(url, {
                 method,
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify(bookData)
             });
             
+            console.log('Response status:', response.status);
             const result = await response.json();
+            console.log('Response data:', result);
             
             if (response.ok) {
                 showNotification(
@@ -598,6 +612,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 pdfProgress.querySelector('.progress-bar').style.width = '50%';
             }
             
+            console.log('Uploading PDF file:', file.name);
+            
             // Create form data and append file
             const formData = new FormData();
             formData.append('file', file);
@@ -614,6 +630,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             const result = await response.json();
+            console.log('Server response:', result);
             
             if (response.ok) {
                 // Show success notification
@@ -621,20 +638,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Update the download URL field with the new URL
                 const downloadField = document.getElementById('download');
-                downloadField.value = result.file_url;
-                console.log('Updated download field with URL:', result.file_url);
                 
-                // Force update the field value (to bypass browser validations)
-                setTimeout(() => {
-                    if (downloadField.value !== result.file_url) {
-                        console.log('Re-setting download field value');
-                        downloadField.value = result.file_url;
-                    }
-                }, 100);
-                
-                // Trigger change event to ensure form validation is updated
-                const event = new Event('change');
-                downloadField.dispatchEvent(event);
+                // Make sure we have a result URL
+                if (result.file_url) {
+                    downloadField.value = result.file_url;
+                    console.log('Updated download field with URL:', result.file_url);
+                    
+                    // Force update the field value directly via DOM
+                    downloadField.setAttribute('value', result.file_url);
+                    
+                    // Skip browser validation on this field temporarily
+                    downloadField.setAttribute('data-validated', 'true');
+                } else {
+                    console.error('Missing file_url in server response');
+                    showNotification('تم رفع الملف ولكن لم يتم استلام الرابط بشكل صحيح', 'error');
+                }
                 
                 // Hide progress bar after a delay
                 setTimeout(() => {
