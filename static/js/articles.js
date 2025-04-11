@@ -112,30 +112,63 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Fetch articles from API
     async function fetchArticles() {
+        console.log('Fetching articles from API');
+        
+        // Find the container again in case it wasn't found earlier
+        const articlesContainer = document.querySelector('.articles-container');
+        console.log('Articles container when fetching:', articlesContainer);
+        
+        if (!articlesContainer) {
+            console.error('Articles container not found!');
+            return;
+        }
+        
+        // Show loading state
+        articlesContainer.innerHTML = `
+            <div class="loading-spinner" style="text-align: center; width: 100%; padding: 30px;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #d4af37;"></i>
+                <p>جاري تحميل المقالات...</p>
+            </div>
+        `;
+        
         try {
+            console.log('Sending request to /api/articles');
             const response = await fetch('/api/articles');
+            console.log('Response received:', response.status);
             const data = await response.json();
+            console.log('Articles data:', data);
             renderArticles(data.articles);
         } catch (error) {
             console.error('Error fetching articles:', error);
             if (articlesContainer) {
-                articlesContainer.innerHTML = '<p class="error-message">حدث خطأ في تحميل المقالات</p>';
+                articlesContainer.innerHTML = '<p class="error-message" style="text-align: center; color: #721c24; background-color: #f8d7da; padding: 15px; border-radius: 5px;">حدث خطأ في تحميل المقالات</p>';
             }
         }
     }
     
     // Render articles to the DOM
     function renderArticles(articles) {
-        if (!articlesContainer) return;
+        console.log('Rendering articles:', articles);
         
-        if (articles.length === 0) {
-            articlesContainer.innerHTML = '<p class="no-articles">لا توجد مقالات متاحة</p>';
+        // Get the container again in case it wasn't found earlier
+        const articlesContainer = document.querySelector('.articles-container');
+        console.log('Articles container when rendering:', articlesContainer);
+        
+        if (!articlesContainer) {
+            console.error('Articles container not found for rendering!');
+            return;
+        }
+        
+        if (!articles || articles.length === 0) {
+            articlesContainer.innerHTML = '<p class="no-articles" style="text-align: center; padding: 20px; color: #666;">لا توجد مقالات متاحة</p>';
             return;
         }
         
         articlesContainer.innerHTML = '';
         
         articles.forEach(article => {
+            console.log('Rendering article:', article.id, article.title);
+            
             const articleCard = document.createElement('div');
             articleCard.className = 'article-card';
             articleCard.dataset.id = article.id;
@@ -166,6 +199,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const deleteBtn = articleCard.querySelector('.delete-article');
             deleteBtn.addEventListener('click', () => confirmDeleteArticle(article.id));
         });
+        
+        console.log('Articles rendered successfully');
     }
     
     // Show the add article form
@@ -580,5 +615,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Initialize the module
-    fetchArticles();
+    console.log('Initializing articles module and fetching articles');
+    
+    // Use setTimeout to ensure DOM is fully loaded before fetching
+    setTimeout(() => {
+        fetchArticles();
+    }, 500);
+    
+    console.log('Articles module initialization complete');
 });
