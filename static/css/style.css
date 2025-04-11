@@ -187,6 +187,25 @@ img {
     width: 100%;
 }
 
+.nav-menu a.btn-login {
+    background-color: #d4af37;
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 5px;
+    margin-right: 20px;
+    transition: all 0.3s ease;
+}
+
+.nav-menu a.btn-login::after {
+    display: none;
+}
+
+.nav-menu a.btn-login:hover {
+    background-color: #1a3c6b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
 .menu-toggle {
     display: none;
     font-size: 1.5rem;
@@ -814,6 +833,12 @@ img {
     .nav-menu li {
         margin-right: 0;
         margin-bottom: 15px;
+    }
+    
+    .nav-menu a.btn-login {
+        display: inline-block;
+        margin-right: 0;
+        text-align: center;
     }
     
     .hero-content {
