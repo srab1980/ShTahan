@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة تسجيل الدخول</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #1a2a3a;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 50px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        h1 {
+            color: #1a3c6b;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            margin-bottom: 30px;
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .login-btn {
+            display: inline-block;
+            background-color: #d4af37;
+            color: white;
+            padding: 15px 40px;
+            font-size: 18px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .login-btn:hover {
+            background-color: #c39c2e;
+        }
+        
+        .home-link {
+            display: block;
+            margin-top: 30px;
+            color: #1a3c6b;
+            text-decoration: none;
+        }
+        
+        .home-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>صفحة تسجيل الدخول</h1>
+        <p>اضغط على الزر أدناه للذهاب إلى صفحة تسجيل الدخول للوصول إلى لوحة التحكم</p>
+        
+        <!-- Simple form with submit button that navigates to /login -->
+        <form action="/login" method="get">
+            <button type="submit" class="login-btn">تسجيل الدخول</button>
+        </form>
+        
+        <a href="/" class="home-link">العودة إلى الصفحة الرئيسية</a>
+    </div>
+</body>
+</html>
