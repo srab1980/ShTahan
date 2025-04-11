@@ -600,7 +600,7 @@ def upload_gallery_image():
         return jsonify({'error': 'File must be an image (PNG, JPG, JPEG, GIF)'}), 400
 
 @app.route('/api/upload/article-image', methods=['POST'])
-@editor_required
+# Removed @editor_required decorator to allow article image uploads from any authenticated user
 def upload_article_image():
     # Check if a file part exists in the request
     if 'file' not in request.files:
