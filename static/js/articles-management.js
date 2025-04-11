@@ -55,6 +55,68 @@ document.addEventListener('DOMContentLoaded', function() {
         articleImageUpload.addEventListener('change', handleImageUpload);
     }
     
+    // Image upload button handler
+    const addImageBtn = document.getElementById('add-article-image-btn');
+    if (addImageBtn) {
+        addImageBtn.addEventListener('click', function() {
+            const uploadContainer = document.getElementById('article-image-upload-container');
+            if (uploadContainer) {
+                uploadContainer.style.display = uploadContainer.style.display === 'none' ? 'block' : 'none';
+            }
+        });
+    }
+    
+    // Add global insertTag function
+    window.insertTag = function(tagName) {
+        const contentArea = document.getElementById('content');
+        if (!contentArea) return;
+        
+        const start = contentArea.selectionStart;
+        const end = contentArea.selectionEnd;
+        const selectedText = contentArea.value.substring(start, end);
+        let replacement = '';
+        
+        switch(tagName) {
+            case 'h2':
+                replacement = `<h2>${selectedText || 'عنوان رئيسي'}</h2>`;
+                break;
+            case 'h3':
+                replacement = `<h3>${selectedText || 'عنوان فرعي'}</h3>`;
+                break;
+            case 'p':
+                replacement = `<p>${selectedText || 'فقرة جديدة'}</p>`;
+                break;
+            case 'strong':
+                replacement = `<strong>${selectedText || 'نص عريض'}</strong>`;
+                break;
+            case 'em':
+                replacement = `<em>${selectedText || 'نص مائل'}</em>`;
+                break;
+            case 'ul':
+                replacement = `<ul>\n    <li>عنصر 1</li>\n    <li>عنصر 2</li>\n</ul>`;
+                break;
+            case 'ol':
+                replacement = `<ol>\n    <li>عنصر 1</li>\n    <li>عنصر 2</li>\n</ol>`;
+                break;
+            case 'li':
+                replacement = `<li>${selectedText || 'عنصر جديد'}</li>`;
+                break;
+            case 'a':
+                replacement = `<a href="https://example.com" target="_blank">${selectedText || 'رابط'}</a>`;
+                break;
+            default:
+                replacement = selectedText;
+        }
+        
+        // Insert the tag
+        contentArea.focus();
+        contentArea.value = contentArea.value.substring(0, start) + replacement + contentArea.value.substring(end);
+        
+        // Place cursor after insertion
+        const newCursorPos = start + replacement.length;
+        contentArea.setSelectionRange(newCursorPos, newCursorPos);
+    };
+    
     // Initialize - fetch articles
     fetchArticles();
     
@@ -195,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${truncatedSummary}</td>
                 <td>${formattedDate}</td>
                 <td class="article-actions">
-                    <button class="view-btn" onclick="window.open('/articles/${article.id}', '_blank')">
+                    <button class="view-btn" onclick="previewArticle(${article.id})">
                         <i class="fas fa-eye"></i> عرض
                     </button>
                     <button class="edit-btn" data-id="${article.id}">
@@ -490,5 +552,57 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             notification.classList.remove('show');
         }, 5000);
+    }
+    
+    /**
+     * Preview an article in a modal dialog
+     * @param {number} articleId - ID of the article to preview
+     */
+    async function previewArticle(articleId) {
+        try {
+            // Fetch article data
+            const response = await fetch(`/api/articles/${articleId}`);
+            const data = await response.json();
+            
+            if (!data.article) {
+                showNotification('لم يتم العثور على المقال', 'error');
+                return;
+            }
+            
+            // Create modal elements if they don't exist
+            let previewModal = document.getElementById('articlePreviewModal');
+            if (!previewModal) {
+                previewModal = document.createElement('div');
+                previewModal.id = 'articlePreviewModal';
+                previewModal.className = 'modal';
+                
+                previewModal.innerHTML = `
+                    <div class="modal-content" style="max-width: 800px;">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="previewTitle"></h3>
+                            <button class="close-btn" onclick="document.getElementById('articlePreviewModal').style.display = 'none';">&times;</button>
+                        </div>
+                        <div id="previewDate" style="margin-bottom: 15px; color: #6c757d;"></div>
+                        <div id="previewSummary" style="font-weight: bold; margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;"></div>
+                        <div id="previewContent" style="line-height: 1.6;"></div>
+                    </div>
+                `;
+                
+                document.body.appendChild(previewModal);
+            }
+            
+            // Populate modal with article data
+            document.getElementById('previewTitle').textContent = data.article.title;
+            document.getElementById('previewDate').textContent = `تاريخ النشر: ${data.article.created_at}`;
+            document.getElementById('previewSummary').textContent = data.article.summary;
+            document.getElementById('previewContent').innerHTML = data.article.content;
+            
+            // Show the modal
+            previewModal.style.display = 'block';
+            
+        } catch (error) {
+            console.error('Error previewing article:', error);
+            showNotification('حدث خطأ أثناء عرض المقال', 'error');
+        }
     }
 });
