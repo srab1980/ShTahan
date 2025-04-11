@@ -541,7 +541,8 @@ document.addEventListener('DOMContentLoaded', function() {
      * @param {string} message - Notification message
      * @param {string} type - Notification type (info, success, error)
      */
-    function showNotification(message, type = 'info') {
+    // تعريف الوظيفة كمتغير عالمي
+    window.showNotification = function(message, type = 'info') {
         const notification = document.getElementById('notification');
         if (!notification) return;
         
@@ -558,7 +559,8 @@ document.addEventListener('DOMContentLoaded', function() {
      * Preview an article in a modal dialog
      * @param {number} articleId - ID of the article to preview
      */
-    async function previewArticle(articleId) {
+    // تعريف الوظيفة كمتغير عالمي
+    window.previewArticle = async function(articleId) {
         try {
             // Fetch article data
             const response = await fetch(`/api/articles/${articleId}`);
