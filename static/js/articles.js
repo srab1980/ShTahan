@@ -15,100 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Articles container element:', articlesContainer);
     console.log('Articles section element:', articlesSection);
     
-    // Add a container for the "Add New Article" button if articles section exists
-    if (articlesSection) {
-        const sectionTitle = articlesSection.querySelector('.section-title');
-        if (sectionTitle) {
-            const addButtonContainer = document.createElement('div');
-            addButtonContainer.className = 'text-center';
-            addButtonContainer.style.marginTop = '30px';
-            addButtonContainer.innerHTML = `
-                <button id="show-add-article-form" class="btn btn-primary">
-                    <i class="fas fa-plus" style="margin-left: 8px;"></i> إضافة مقال جديد
-                </button>
-            `;
-            sectionTitle.appendChild(addButtonContainer);
-            
-            // Create the form but don't append it yet
-            const formContainer = document.createElement('div');
-            formContainer.id = 'article-form-container';
-            formContainer.className = 'article-form-container';
-            formContainer.style.display = 'none';
-            formContainer.style.maxWidth = '800px';
-            formContainer.style.margin = '30px auto';
-            formContainer.style.backgroundColor = 'white';
-            formContainer.style.padding = '30px';
-            formContainer.style.borderRadius = '10px';
-            formContainer.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
-            
-            formContainer.innerHTML = `
-                <div class="form-header">
-                    <h3 id="form-title">إضافة مقال جديد</h3>
-                    <span class="close-form">&times;</span>
-                </div>
-                <form id="article-form">
-                    <input type="hidden" id="article-id" value="">
-                    <div class="form-group">
-                        <label for="article-title">العنوان:</label>
-                        <input type="text" id="article-title" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="article-summary">ملخص المقال:</label>
-                        <textarea id="article-summary" rows="3" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="article-content">محتوى المقال:</label>
-                        <textarea id="article-content" rows="10" required></textarea>
-                        <div class="toolbar" style="margin-top: 5px; margin-bottom: 5px;">
-                            <button type="button" id="add-article-image-btn" class="btn" style="padding: 5px 10px; font-size: 14px;">
-                                <i class="fas fa-image"></i> إضافة صورة
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group" id="article-image-upload-container" style="display: none;">
-                        <label for="article-image-upload">رفع صورة للمقالة:</label>
-                        <input type="file" id="article-image-upload" accept="image/*">
-                        <div class="upload-preview" id="article-image-preview" style="margin-top: 10px; display: none;"></div>
-                        <div class="upload-progress" id="article-image-progress" style="display: none; margin-top: 5px;">
-                            <div class="progress-bar" style="background-color: #d4af37; height: 5px; width: 0%;"></div>
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-primary" id="save-article-btn">حفظ</button>
-                        <button type="button" class="btn btn-secondary cancel-form">إلغاء</button>
-                    </div>
-                </form>
-            `;
-            
-            articlesSection.appendChild(formContainer);
-            
-            // Event listener for add article button
-            document.getElementById('show-add-article-form').addEventListener('click', showAddArticleForm);
-            
-            // Event listener for close form button
-            const closeFormBtn = formContainer.querySelector('.close-form');
-            closeFormBtn.addEventListener('click', hideArticleForm);
-            
-            // Event listener for cancel button
-            const cancelBtn = formContainer.querySelector('.cancel-form');
-            cancelBtn.addEventListener('click', hideArticleForm);
-            
-            // Event listener for form submission
-            const articleForm = document.getElementById('article-form');
-            articleForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                console.log('Form submitted via standard submit');
-                handleArticleSubmit(e);
-            });
-            
-            // Event listener for save button (primary method)
-            document.getElementById('save-article-btn').addEventListener('click', function() {
-                console.log('Save button clicked');
-                handleArticleSubmit({preventDefault: () => {}});
-            });
-        }
-    }
+    // We've removed the Add New Article button and form for public facing pages
     
     // Fetch articles from API
     async function fetchArticles() {
@@ -178,26 +85,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>${article.summary}</p>
                 <div class="article-actions">
                     <a href="javascript:void(0);" class="btn btn-secondary read-more" data-article-id="${article.id}">اقرأ المزيد</a>
-                    <button class="btn edit-article" data-article-id="${article.id}">
-                        <i class="fas fa-edit"></i> تعديل
-                    </button>
-                    <button class="btn delete-article" data-article-id="${article.id}">
-                        <i class="fas fa-trash"></i> حذف
-                    </button>
                 </div>
             `;
             
             articlesContainer.appendChild(articleCard);
             
-            // Add event listeners
+            // Add event listener for read more button
             const readMoreBtn = articleCard.querySelector('.read-more');
             readMoreBtn.addEventListener('click', () => openArticleModal(article));
-            
-            const editBtn = articleCard.querySelector('.edit-article');
-            editBtn.addEventListener('click', () => showEditArticleForm(article));
-            
-            const deleteBtn = articleCard.querySelector('.delete-article');
-            deleteBtn.addEventListener('click', () => confirmDeleteArticle(article.id));
         });
         
         console.log('Articles rendered successfully');
@@ -397,11 +292,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="article-content">
                         ${article.content}
                     </div>
-                    <div class="article-actions" style="margin-top: 30px; text-align: center;">
-                        <button class="btn btn-secondary edit-article-modal" data-article-id="${article.id}">
-                            <i class="fas fa-edit"></i> تعديل المقال
-                        </button>
-                    </div>
                 </div>
             </div>
         `;
@@ -419,16 +309,6 @@ document.addEventListener('DOMContentLoaded', function() {
             modal.style.display = 'none';
             setTimeout(() => {
                 modal.remove();
-            }, 300);
-        });
-        
-        // Add event listener to edit button in modal
-        const editBtn = modal.querySelector('.edit-article-modal');
-        editBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-            setTimeout(() => {
-                modal.remove();
-                showEditArticleForm(article);
             }, 300);
         });
         
