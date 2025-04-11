@@ -73,14 +73,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch('/api/auth-status');
             const data = await response.json();
             
-            if (data.authenticated) {
-                // If this is the login page and user is already authenticated, redirect to home
-                if (window.location.pathname === '/login') {
+            // Only redirect if on login page and already authenticated
+            if (data.authenticated && window.location.pathname === '/login') {
+                if (data.role === 'admin' || data.role === 'editor') {
+                    window.location.href = '/admin';
+                } else {
                     window.location.href = '/';
                 }
             }
         } catch (error) {
             console.error('Auth status check error:', error);
+            // Don't redirect on error, just stay on current page
         }
     }
 });
