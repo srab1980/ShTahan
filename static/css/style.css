@@ -958,7 +958,81 @@ img {
     }
     
     .hero-text h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
+        line-height: 1.4;
+    }
+    
+    .hero-text p {
+        font-size: 1rem;
+    }
+    
+    .bio-content {
+        flex-direction: column;
+    }
+    
+    .bio-card, .bio-image {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .testimonial-card {
+        min-width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .achievement-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .achievement-icon {
+        margin-bottom: 15px;
+        margin-left: 0;
+    }
+    
+    .books-filter {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .filter-group {
+        margin-bottom: 15px;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .contact-info {
+        text-align: center;
+    }
+}
+
+/* تحسينات إضافية للأجهزة الأصغر */
+@media screen and (max-width: 576px) {
+    .container {
+        width: 95%;
+        padding: 0 10px;
+    }
+    
+    .section {
+        padding: 50px 0;
+    }
+    
+    .hero-text h1 {
+        font-size: 1.5rem;
+    }
+    
+    .books-grid, .articles-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .book-card, .article-card {
+        margin-bottom: 20px;
+    }
+    
+    .btn {
+        width: 100%;
+        padding: 10px 20px;
+        text-align: center;
     }
 }
 
