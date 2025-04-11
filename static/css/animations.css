@@ -1,0 +1,111 @@
+/**
+ * Animations CSS for Sheikh Mustafa Al-Tahhan website
+ * Defines animation styles for scroll-triggered reveal animations
+ */
+
+/* Base animation styles */
+.has-animation {
+    transition: all 0.8s ease-out;
+}
+
+/* Hidden state - elements start hidden/transformed */
+.animate-hidden {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+/* Visible state - elements animate to this state */
+.animate-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Staggered animations for different elements */
+.section-title.animate-hidden {
+    transform: translateY(20px);
+}
+
+.book-card.animate-hidden,
+.article-card.animate-hidden,
+.gallery-item.animate-hidden {
+    transform: translateY(40px);
+    transition-duration: 0.9s;
+}
+
+/* Apply different animation directions depending on position (for grids) */
+.book-card:nth-child(odd).animate-hidden,
+.article-card:nth-child(odd).animate-hidden,
+.gallery-item:nth-child(odd).animate-hidden {
+    transform: translateY(40px) translateX(-10px);
+}
+
+.book-card:nth-child(even).animate-hidden,
+.article-card:nth-child(even).animate-hidden,
+.gallery-item:nth-child(even).animate-hidden {
+    transform: translateY(40px) translateX(10px);
+}
+
+/* Fade effect for text content */
+.section-description.animate-hidden {
+    opacity: 0;
+    transform: translateY(15px);
+    transition-duration: 1s;
+}
+
+/* Delayed animations for staggered effect */
+.book-card:nth-child(2).animate-hidden,
+.article-card:nth-child(2).animate-hidden,
+.gallery-item:nth-child(2).animate-hidden {
+    transition-delay: 0.1s;
+}
+
+.book-card:nth-child(3).animate-hidden,
+.article-card:nth-child(3).animate-hidden,
+.gallery-item:nth-child(3).animate-hidden {
+    transition-delay: 0.2s;
+}
+
+.book-card:nth-child(4).animate-hidden,
+.article-card:nth-child(4).animate-hidden,
+.gallery-item:nth-child(4).animate-hidden {
+    transition-delay: 0.3s;
+}
+
+/* Special animation for contact form */
+.contact-form.animate-hidden {
+    transform: scale(0.95);
+    opacity: 0;
+    transition-duration: 1s;
+}
+
+.contact-form.animate-visible {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* Reduce animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .has-animation {
+        transition-duration: 0.1s;
+    }
+    
+    .animate-hidden {
+        transform: translateY(5px);
+    }
+    
+    .book-card.animate-hidden,
+    .article-card.animate-hidden,
+    .gallery-item.animate-hidden,
+    .book-card:nth-child(odd).animate-hidden,
+    .article-card:nth-child(odd).animate-hidden,
+    .gallery-item:nth-child(odd).animate-hidden,
+    .book-card:nth-child(even).animate-hidden,
+    .article-card:nth-child(even).animate-hidden,
+    .gallery-item:nth-child(even).animate-hidden {
+        transform: translateY(5px);
+    }
+    
+    .contact-form.animate-hidden {
+        transform: scale(0.98);
+    }
+}
