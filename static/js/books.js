@@ -94,28 +94,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         <a href="${book.download}" class="btn btn-secondary" target="_blank">
                             <i class="fas fa-download"></i> تحميل الكتاب
                         </a>
-                        <button class="btn edit-book" data-id="${book.id}">
-                            <i class="fas fa-edit"></i> تعديل
-                        </button>
-                        <button class="btn delete-book" data-id="${book.id}">
-                            <i class="fas fa-trash"></i> حذف
-                        </button>
                     </div>
                 </div>
             `;
             
             booksContainer.appendChild(bookCard);
-            
-            // Add event listeners for edit and delete buttons
-            const editBtn = bookCard.querySelector('.edit-book');
-            editBtn.addEventListener('click', () => {
-                populateEditForm(book);
-            });
-            
-            const deleteBtn = bookCard.querySelector('.delete-book');
-            deleteBtn.addEventListener('click', () => {
-                confirmDeleteBook(book.id);
-            });
         });
     }
     
