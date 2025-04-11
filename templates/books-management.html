@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الكتب - موقع الشيخ مصطفى الطحان</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .admin-title h1 {
+            color: #1a2a3a;
+            margin: 0;
+        }
+        
+        .admin-user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .admin-user-info .user-role {
+            margin-left: 15px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            background-color: #1a2a3a;
+            color: white;
+        }
+        
+        .admin-user-info .logout-btn {
+            margin-right: 15px;
+            padding: 7px 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            color: #1a2a3a;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .admin-user-info .logout-btn:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .admin-navigation {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .admin-nav-links {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .admin-nav-links li {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .admin-nav-links li a {
+            display: block;
+            padding: 15px;
+            color: #1a2a3a;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .admin-nav-links li a:hover,
+        .admin-nav-links li a.active {
+            background-color: #1a2a3a;
+            color: white;
+        }
+        
+        .admin-nav-links li a i {
+            margin-left: 5px;
+        }
+        
+        .admin-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section-title h2 {
+            color: #1a2a3a;
+            margin: 0;
+        }
+        
+        .add-book-btn {
+            padding: 8px 16px;
+            background-color: #1a2a3a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .add-book-btn i {
+            margin-left: 8px;
+        }
+        
+        .add-book-btn:hover {
+            background-color: #d4af37;
+        }
+        
+        .books-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .books-table th,
+        .books-table td {
+            padding: 12px 15px;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .books-table th {
+            background-color: #f8f9fa;
+            color: #1a2a3a;
+            font-weight: bold;
+        }
+        
+        .books-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .books-table tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .book-cover-thumbnail {
+            width: 50px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 3px;
+        }
+        
+        .book-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .book-actions button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .edit-btn {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .view-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .book-actions button:hover {
+            opacity: 0.8;
+        }
+        
+        /* Book Modal Form */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-title {
+            margin: 0;
+            color: #1a2a3a;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #1a2a3a;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .upload-preview {
+            margin-top: 10px;
+        }
+        
+        .upload-progress {
+            margin-top: 5px;
+            height: 5px;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: #d4af37;
+            width: 0%;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .cancel-btn {
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .save-btn {
+            padding: 10px 20px;
+            background-color: #1a2a3a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .cancel-btn:hover,
+        .save-btn:hover {
+            opacity: 0.8;
+        }
+        
+        /* Filter controls */
+        .filters-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+        }
+        
+        .filter-group label {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        
+        .filter-group select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .admin-nav-links {
+                flex-direction: column;
+            }
+            
+            .admin-user-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .admin-user-info .user-role {
+                margin-left: 0;
+                margin-bottom: 10px;
+            }
+            
+            .admin-user-info .logout-btn {
+                margin-right: 0;
+                margin-top: 10px;
+            }
+            
+            .filters-container {
+                flex-direction: column;
+            }
+            
+            .books-table th,
+            .books-table td {
+                padding: 8px;
+            }
+            
+            .book-actions {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="admin-title">
+                <h1>إدارة الكتب</h1>
+            </div>
+            <div class="admin-user-info">
+                <span class="user-role" id="userRole">مدير</span>
+                <span id="userName">مرحباً، <strong>المستخدم</strong></span>
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                </a>
+            </div>
+        </header>
+        
+        <nav class="admin-navigation">
+            <ul class="admin-nav-links">
+                <li><a href="/admin"><i class="fas fa-tachometer-alt"></i> الرئيسية</a></li>
+                <li><a href="/admin/books" class="active"><i class="fas fa-book"></i> الكتب</a></li>
+                <li><a href="#"><i class="fas fa-newspaper"></i> المقالات</a></li>
+                <li><a href="#"><i class="fas fa-images"></i> معرض الصور</a></li>
+                <li><a href="#"><i class="fas fa-envelope"></i> الرسائل</a></li>
+                <li><a href="/admin/users"><i class="fas fa-users"></i> إدارة المستخدمين</a></li>
+            </ul>
+        </nav>
+        
+        <div class="admin-content">
+            <div class="section-title">
+                <h2>قائمة الكتب</h2>
+                <button class="add-book-btn" id="addBookBtn">
+                    <i class="fas fa-plus"></i> إضافة كتاب جديد
+                </button>
+            </div>
+            
+            <div class="filters-container">
+                <div class="filter-group">
+                    <label for="language-filter">اللغة:</label>
+                    <select id="language-filter">
+                        <option value="all">الكل</option>
+                        <option value="العربية">العربية</option>
+                        <option value="الإنجليزية">الإنجليزية</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="category-filter">التصنيف:</label>
+                    <select id="category-filter">
+                        <option value="all">الكل</option>
+                        <option value="تربية">تربية</option>
+                        <option value="دعوة">دعوة</option>
+                        <option value="فكر">فكر</option>
+                        <option value="مذكرات">مذكرات</option>
+                        <option value="تاريخ">تاريخ</option>
+                        <option value="تراجم">تراجم</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="books-list">
+                <table class="books-table">
+                    <thead>
+                        <tr>
+                            <th>الغلاف</th>
+                            <th>العنوان</th>
+                            <th>اللغة</th>
+                            <th>التصنيف</th>
+                            <th>وصف مختصر</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="booksTableBody">
+                        <!-- Book rows will be populated via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Book Modal Form -->
+    <div id="bookModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">إضافة كتاب جديد</h3>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            
+            <form id="bookForm">
+                <input type="hidden" id="bookId" value="">
+                
+                <div class="form-group">
+                    <label for="title">عنوان الكتاب</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="language">اللغة</label>
+                    <select id="language" name="language" required>
+                        <option value="العربية">العربية</option>
+                        <option value="الإنجليزية">الإنجليزية</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">التصنيف</label>
+                    <select id="category" name="category" required>
+                        <option value="تربية">تربية</option>
+                        <option value="دعوة">دعوة</option>
+                        <option value="فكر">فكر</option>
+                        <option value="مذكرات">مذكرات</option>
+                        <option value="تاريخ">تاريخ</option>
+                        <option value="تراجم">تراجم</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cover">رابط الغلاف</label>
+                    <input type="url" id="cover" name="cover" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="coverUpload">أو رفع غلاف جديد</label>
+                    <input type="file" id="coverUpload" name="coverUpload" accept="image/*">
+                    <div class="upload-preview" id="coverPreview"></div>
+                    <div class="upload-progress" id="coverProgress">
+                        <div class="progress-bar"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="download">رابط تحميل الكتاب</label>
+                    <input type="url" id="download" name="download" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pdfUpload">أو رفع ملف PDF جديد</label>
+                    <input type="file" id="pdfUpload" name="pdfUpload" accept=".pdf">
+                    <div class="upload-progress" id="pdfProgress">
+                        <div class="progress-bar"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">وصف مختصر</label>
+                    <textarea id="description" name="description" required></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="cancel-btn" id="cancelBtn">إلغاء</button>
+                    <button type="submit" class="save-btn">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="/static/js/books-management.js"></script>
+</body>
+</html>

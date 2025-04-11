@@ -1,0 +1,601 @@
+/**
+ * Books Management module for Sheikh Mustafa Al-Tahhan website
+ * Handles book administration in the dashboard including:
+ * - Listing books with filters
+ * - Adding new books
+ * - Editing existing books
+ * - Deleting books
+ * - Uploading book covers and PDFs
+ */
+
+document.addEventListener('DOMContentLoaded', function() {
+    // DOM elements
+    const booksTableBody = document.getElementById('booksTableBody');
+    const addBookBtn = document.getElementById('addBookBtn');
+    const bookModal = document.getElementById('bookModal');
+    const closeModal = document.getElementById('closeModal');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const bookForm = document.getElementById('bookForm');
+    const modalTitle = document.getElementById('modalTitle');
+    const coverUpload = document.getElementById('coverUpload');
+    const pdfUpload = document.getElementById('pdfUpload');
+    const coverPreview = document.getElementById('coverPreview');
+    const coverProgress = document.getElementById('coverProgress');
+    const pdfProgress = document.getElementById('pdfProgress');
+    const languageFilter = document.getElementById('language-filter');
+    const categoryFilter = document.getElementById('category-filter');
+    
+    // Store all books data for filtering
+    let booksData = [];
+    
+    // Initial data loading
+    fetchBooks();
+    
+    // Check auth status to confirm admin/editor role
+    checkAuthStatus();
+    
+    // Event listeners
+    if (addBookBtn) {
+        addBookBtn.addEventListener('click', openAddBookModal);
+    }
+    
+    if (closeModal) {
+        closeModal.addEventListener('click', closeBookModal);
+    }
+    
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', closeBookModal);
+    }
+    
+    if (bookForm) {
+        bookForm.addEventListener('submit', handleBookFormSubmit);
+    }
+    
+    if (coverUpload) {
+        coverUpload.addEventListener('change', handleCoverUpload);
+    }
+    
+    if (pdfUpload) {
+        pdfUpload.addEventListener('change', handlePdfUpload);
+    }
+    
+    if (languageFilter && categoryFilter) {
+        languageFilter.addEventListener('change', filterBooks);
+        categoryFilter.addEventListener('change', filterBooks);
+    }
+    
+    // Close modal when clicking outside of it
+    window.addEventListener('click', function(event) {
+        if (event.target === bookModal) {
+            closeBookModal();
+        }
+    });
+    
+    /**
+     * Check if the user has admin or editor privileges
+     */
+    async function checkAuthStatus() {
+        try {
+            const response = await fetch('/api/auth-status');
+            const data = await response.json();
+            
+            if (!data.authenticated) {
+                window.location.href = '/login-form?check_auth=false';
+                return;
+            }
+            
+            // Update user info in the header
+            const userRole = document.getElementById('userRole');
+            const userName = document.getElementById('userName');
+            
+            if (userRole) {
+                userRole.textContent = getRoleLabel(data.role);
+            }
+            
+            if (userName) {
+                userName.innerHTML = `مرحباً، <strong>${data.username}</strong>`;
+            }
+            
+            // If not admin or editor, redirect to home
+            if (data.role !== 'admin' && data.role !== 'editor') {
+                showNotification('ليس لديك صلاحية الوصول إلى هذه الصفحة', 'error');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+            }
+        } catch (error) {
+            console.error('Auth status check error:', error);
+        }
+    }
+    
+    /**
+     * Get Arabic label for user role
+     */
+    function getRoleLabel(role) {
+        switch(role) {
+            case 'admin':
+                return 'مدير';
+            case 'editor':
+                return 'محرر';
+            default:
+                return 'مستخدم';
+        }
+    }
+    
+    /**
+     * Fetch all books from the API
+     */
+    async function fetchBooks() {
+        try {
+            const response = await fetch('/api/books');
+            const data = await response.json();
+            
+            if (response.ok) {
+                booksData = data.books;
+                renderBooks(booksData);
+            } else {
+                showNotification(`خطأ: ${data.error || 'حدث خطأ في تحميل البيانات'}`, 'error');
+            }
+        } catch (error) {
+            console.error('Error fetching books:', error);
+            showNotification('حدث خطأ في الاتصال بالخادم', 'error');
+        }
+    }
+    
+    /**
+     * Render books in the table
+     */
+    function renderBooks(books) {
+        if (!booksTableBody) return;
+        
+        if (books.length === 0) {
+            booksTableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px;">
+                        لا توجد كتب متاحة بهذه المعايير
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        booksTableBody.innerHTML = '';
+        
+        books.forEach(book => {
+            const row = document.createElement('tr');
+            
+            // Truncate description
+            const shortDescription = book.description.length > 100 
+                ? book.description.substring(0, 100) + '...' 
+                : book.description;
+            
+            row.innerHTML = `
+                <td>
+                    <img src="${book.cover}" alt="${book.title}" class="book-cover-thumbnail">
+                </td>
+                <td>${book.title}</td>
+                <td>${book.language}</td>
+                <td>${book.category}</td>
+                <td>${shortDescription}</td>
+                <td class="book-actions">
+                    <button class="view-btn" data-id="${book.id}">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="edit-btn" data-id="${book.id}">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="delete-btn" data-id="${book.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            
+            booksTableBody.appendChild(row);
+            
+            // Add event listeners to the buttons
+            const viewBtn = row.querySelector('.view-btn');
+            const editBtn = row.querySelector('.edit-btn');
+            const deleteBtn = row.querySelector('.delete-btn');
+            
+            viewBtn.addEventListener('click', () => {
+                window.open(`/api/books/${book.id}`, '_blank');
+            });
+            
+            editBtn.addEventListener('click', () => {
+                openEditBookModal(book.id);
+            });
+            
+            deleteBtn.addEventListener('click', () => {
+                confirmDeleteBook(book.id);
+            });
+        });
+    }
+    
+    /**
+     * Filter books by language and category
+     */
+    function filterBooks() {
+        if (!languageFilter || !categoryFilter) return;
+        
+        const selectedLanguage = languageFilter.value;
+        const selectedCategory = categoryFilter.value;
+        
+        let filteredBooks = [...booksData];
+        
+        if (selectedLanguage !== 'all') {
+            filteredBooks = filteredBooks.filter(book => book.language === selectedLanguage);
+        }
+        
+        if (selectedCategory !== 'all') {
+            filteredBooks = filteredBooks.filter(book => book.category === selectedCategory);
+        }
+        
+        renderBooks(filteredBooks);
+    }
+    
+    /**
+     * Open modal for adding a new book
+     */
+    function openAddBookModal() {
+        if (!bookModal || !bookForm) return;
+        
+        // Clear the form
+        bookForm.reset();
+        
+        // Reset hidden book ID
+        document.getElementById('bookId').value = '';
+        
+        // Clear preview
+        if (coverPreview) {
+            coverPreview.innerHTML = '';
+        }
+        
+        // Update modal title
+        if (modalTitle) {
+            modalTitle.textContent = 'إضافة كتاب جديد';
+        }
+        
+        // Update submit button text
+        const submitBtn = bookForm.querySelector('.save-btn');
+        if (submitBtn) {
+            submitBtn.textContent = 'حفظ';
+        }
+        
+        // Show the modal
+        bookModal.style.display = 'block';
+    }
+    
+    /**
+     * Open modal for editing an existing book
+     */
+    async function openEditBookModal(bookId) {
+        if (!bookModal || !bookForm) return;
+        
+        try {
+            const response = await fetch(`/api/books/${bookId}`);
+            const book = await response.json();
+            
+            if (response.ok) {
+                // Set form values
+                document.getElementById('bookId').value = book.id;
+                document.getElementById('title').value = book.title;
+                document.getElementById('language').value = book.language;
+                document.getElementById('category').value = book.category;
+                document.getElementById('cover').value = book.cover;
+                document.getElementById('download').value = book.download;
+                document.getElementById('description').value = book.description;
+                
+                // Show cover preview
+                if (coverPreview) {
+                    coverPreview.innerHTML = `
+                        <img src="${book.cover}" alt="${book.title}" style="max-width: 100%; max-height: 150px; border-radius: 5px;">
+                    `;
+                }
+                
+                // Update modal title
+                if (modalTitle) {
+                    modalTitle.textContent = 'تعديل الكتاب';
+                }
+                
+                // Update submit button text
+                const submitBtn = bookForm.querySelector('.save-btn');
+                if (submitBtn) {
+                    submitBtn.textContent = 'حفظ التعديلات';
+                }
+                
+                // Show the modal
+                bookModal.style.display = 'block';
+            } else {
+                showNotification(`خطأ: ${book.error || 'حدث خطأ في تحميل بيانات الكتاب'}`, 'error');
+            }
+        } catch (error) {
+            console.error('Error fetching book details:', error);
+            showNotification('حدث خطأ في الاتصال بالخادم', 'error');
+        }
+    }
+    
+    /**
+     * Close the book modal
+     */
+    function closeBookModal() {
+        if (!bookModal) return;
+        
+        bookModal.style.display = 'none';
+    }
+    
+    /**
+     * Handle book form submission (add or edit)
+     */
+    async function handleBookFormSubmit(e) {
+        e.preventDefault();
+        
+        // Get all form values
+        const bookId = document.getElementById('bookId').value;
+        const bookData = {
+            title: document.getElementById('title').value,
+            language: document.getElementById('language').value,
+            category: document.getElementById('category').value,
+            cover: document.getElementById('cover').value,
+            download: document.getElementById('download').value,
+            description: document.getElementById('description').value
+        };
+        
+        try {
+            let url = '/api/books';
+            let method = 'POST';
+            
+            // If editing an existing book
+            if (bookId) {
+                url = `/api/books/${bookId}`;
+                method = 'PUT';
+            }
+            
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(bookData)
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                showNotification(
+                    bookId ? 'تم تحديث الكتاب بنجاح' : 'تمت إضافة الكتاب بنجاح',
+                    'success'
+                );
+                
+                // Close the modal and refresh the book list
+                closeBookModal();
+                fetchBooks();
+            } else {
+                showNotification(`خطأ: ${result.error || 'حدث خطأ أثناء معالجة الطلب'}`, 'error');
+            }
+        } catch (error) {
+            console.error('Error saving book:', error);
+            showNotification('حدث خطأ في الاتصال بالخادم', 'error');
+        }
+    }
+    
+    /**
+     * Handle cover image upload
+     */
+    async function handleCoverUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        // Check if it's an image
+        if (!file.type.startsWith('image/')) {
+            showNotification('يرجى اختيار ملف صورة صالح', 'error');
+            return;
+        }
+        
+        // Upload the file
+        try {
+            // Show progress bar
+            if (coverProgress) {
+                coverProgress.style.display = 'block';
+                coverProgress.querySelector('.progress-bar').style.width = '50%';
+            }
+            
+            // Create form data and append file
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            // Send the file to the server
+            const response = await fetch('/api/upload/book-cover', {
+                method: 'POST',
+                body: formData
+            });
+            
+            // Update progress bar to 100%
+            if (coverProgress) {
+                coverProgress.querySelector('.progress-bar').style.width = '100%';
+            }
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                // Show success notification
+                showNotification('تم رفع صورة الغلاف بنجاح', 'success');
+                
+                // Update the cover URL field
+                document.getElementById('cover').value = result.file_url;
+                
+                // Show preview
+                if (coverPreview) {
+                    coverPreview.innerHTML = `
+                        <img src="${result.file_url}" alt="Cover Preview" style="max-width: 100%; max-height: 150px; border-radius: 5px;">
+                    `;
+                }
+                
+                // Hide progress bar after a delay
+                setTimeout(() => {
+                    if (coverProgress) coverProgress.style.display = 'none';
+                }, 1000);
+            } else {
+                // Show error notification
+                showNotification(`خطأ: ${result.error || 'حدث خطأ أثناء رفع الصورة'}`, 'error');
+                
+                // Hide progress bar
+                if (coverProgress) coverProgress.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error uploading cover:', error);
+            showNotification('حدث خطأ في الاتصال بالخادم', 'error');
+            
+            // Hide progress bar
+            if (coverProgress) coverProgress.style.display = 'none';
+        }
+    }
+    
+    /**
+     * Handle PDF file upload
+     */
+    async function handlePdfUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        // Check if it's a PDF
+        if (file.type !== 'application/pdf') {
+            showNotification('يرجى اختيار ملف PDF صالح', 'error');
+            return;
+        }
+        
+        // Upload the file
+        try {
+            // Show progress bar
+            if (pdfProgress) {
+                pdfProgress.style.display = 'block';
+                pdfProgress.querySelector('.progress-bar').style.width = '50%';
+            }
+            
+            // Create form data and append file
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            // Send the file to the server
+            const response = await fetch('/api/upload/book-pdf', {
+                method: 'POST',
+                body: formData
+            });
+            
+            // Update progress bar to 100%
+            if (pdfProgress) {
+                pdfProgress.querySelector('.progress-bar').style.width = '100%';
+            }
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                // Show success notification
+                showNotification('تم رفع ملف PDF بنجاح', 'success');
+                
+                // Update the download URL field
+                document.getElementById('download').value = result.file_url;
+                
+                // Hide progress bar after a delay
+                setTimeout(() => {
+                    if (pdfProgress) pdfProgress.style.display = 'none';
+                }, 1000);
+            } else {
+                // Show error notification
+                showNotification(`خطأ: ${result.error || 'حدث خطأ أثناء رفع الملف'}`, 'error');
+                
+                // Hide progress bar
+                if (pdfProgress) pdfProgress.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error uploading PDF:', error);
+            showNotification('حدث خطأ في الاتصال بالخادم', 'error');
+            
+            // Hide progress bar
+            if (pdfProgress) pdfProgress.style.display = 'none';
+        }
+    }
+    
+    /**
+     * Confirm before deleting a book
+     */
+    function confirmDeleteBook(bookId) {
+        if (confirm('هل أنت متأكد من رغبتك في حذف هذا الكتاب؟')) {
+            deleteBook(bookId);
+        }
+    }
+    
+    /**
+     * Delete a book
+     */
+    async function deleteBook(bookId) {
+        try {
+            const response = await fetch(`/api/books/${bookId}`, {
+                method: 'DELETE'
+            });
+            
+            if (response.ok) {
+                showNotification('تم حذف الكتاب بنجاح', 'success');
+                fetchBooks(); // Refresh the book list
+            } else {
+                const result = await response.json();
+                showNotification(`خطأ: ${result.error || 'حدث خطأ أثناء حذف الكتاب'}`, 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting book:', error);
+            showNotification('حدث خطأ في الاتصال بالخادم', 'error');
+        }
+    }
+    
+    /**
+     * Show notification message
+     */
+    function showNotification(message, type = 'info') {
+        // Remove existing notification
+        const existingNotification = document.querySelector('.notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        
+        // Style the notification
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.left = '50%';
+        notification.style.transform = 'translateX(-50%)';
+        notification.style.padding = '12px 24px';
+        notification.style.borderRadius = '5px';
+        notification.style.zIndex = '9999';
+        notification.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+        
+        // Set color based on type
+        if (type === 'success') {
+            notification.style.backgroundColor = '#d4edda';
+            notification.style.color = '#155724';
+            notification.style.border = '1px solid #c3e6cb';
+        } else if (type === 'error') {
+            notification.style.backgroundColor = '#f8d7da';
+            notification.style.color = '#721c24';
+            notification.style.border = '1px solid #f5c6cb';
+        } else {
+            notification.style.backgroundColor = '#e2e3e5';
+            notification.style.color = '#383d41';
+            notification.style.border = '1px solid #d6d8db';
+        }
+        
+        document.body.appendChild(notification);
+        
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 500);
+        }, 3000);
+    }
+});

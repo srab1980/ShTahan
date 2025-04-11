@@ -87,6 +87,12 @@ def index():
 def admin_dashboard():
     return render_template('admin.html')
 
+@app.route('/admin/books')
+@login_required
+@editor_required
+def books_management():
+    return render_template('books-management.html')
+
 @app.route('/admin/users')
 @login_required
 @admin_required
