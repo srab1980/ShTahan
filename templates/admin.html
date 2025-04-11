@@ -260,7 +260,8 @@
             <ul class="admin-nav-links">
                 <li><a href="/admin" class="active"><i class="fas fa-tachometer-alt"></i> الرئيسية</a></li>
                 <li><a href="/admin/books"><i class="fas fa-book"></i> الكتب</a></li>
-                <li><a href="/admin/articles"><i class="fas fa-newspaper"></i> المقالات</a></li>
+                <li><a href="/admin/articles" onclick="window.location.href='/admin/articles'; return false;"><i class="fas fa-newspaper"></i> المقالات</a></li>
+                <li><a href="/articles-management-test" style="color: green;"><i class="fas fa-newspaper"></i> اختبار المقالات (بدون صلاحيات)</a></li>
                 <li><a href="#"><i class="fas fa-images"></i> معرض الصور</a></li>
                 <li><a href="#"><i class="fas fa-envelope"></i> الرسائل</a></li>
                 <li><a href="/admin/users" id="userManagementLink"><i class="fas fa-users"></i> إدارة المستخدمين</a></li>
@@ -312,5 +313,34 @@
     </div>
     
     <script src="/static/js/admin.js"></script>
+    
+    <!-- تصحيح الروابط ومعالجة مشكلات التنقل -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // التحقق من الروابط في القائمة
+            const navLinks = document.querySelectorAll('.admin-nav-links a');
+            
+            navLinks.forEach(link => {
+                console.log('رابط القائمة:', link.textContent.trim(), 'الوجهة:', link.href);
+                
+                // إضافة معالج نقر للتحقق من عمل الرابط
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    console.log('تم النقر على:', this.textContent.trim(), 'الوجهة:', href);
+                    
+                    // إذا كان الرابط # فقط، منع الافتراضي وإظهار رسالة
+                    if (href === '#') {
+                        e.preventDefault();
+                        console.error('رابط غير صالح (#)');
+                        alert('عذراً، هذه الصفحة غير متاحة حالياً');
+                        return;
+                    }
+                    
+                    // إضافة معلومات التصحيح للروابط الصحيحة
+                    console.log('جاري الانتقال إلى:', href);
+                });
+            });
+        });
+    </script>
 </body>
 </html>

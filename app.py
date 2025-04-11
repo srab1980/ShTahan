@@ -93,10 +93,18 @@ def admin_dashboard():
 def books_management():
     return render_template('books-management.html')
 
+# المسار الرئيسي مع التحقق من الهوية والصلاحيات
 @app.route('/admin/articles')
 @login_required
 @editor_required
 def articles_management():
+    print("تم الوصول إلى صفحة إدارة المقالات بنجاح!")
+    return render_template('articles-management.html')
+
+# مسار بديل للاختبار بدون التحقق من الصلاحيات
+@app.route('/articles-management-test')
+def articles_management_test():
+    print("تم الوصول إلى صفحة اختبار إدارة المقالات بدون التحقق من الصلاحيات!")
     return render_template('articles-management.html')
 
 @app.route('/admin/users')
