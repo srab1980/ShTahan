@@ -85,22 +85,28 @@
     }
     
     .books-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 2rem;
+        width: 100%;
         max-width: 1200px;
         margin: 0 auto;
+        overflow: hidden;
+        border: 2px solid #d4af37; /* Debug border */
     }
     
     .book-card {
-        display: flex;
-        flex-direction: column;
+        width: 32%;
+        margin-right: 2%;
+        margin-bottom: 20px;
+        float: right;
         border-radius: 8px;
         overflow: hidden;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         background-color: white;
-        height: 100%;
+        border: 2px solid #1a2a3a; /* Debug border */
+    }
+    
+    .book-card:nth-child(3n) {
+        margin-right: 0;
     }
     
     .book-card:hover {
@@ -251,22 +257,28 @@
         cursor: not-allowed;
     }
     
-    /* Desktop layout */
-    @media (min-width: 1200px) {
-        .books-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
+    /* Clearfix for the grid */
+    .books-grid:after {
+        content: "";
+        display: table;
+        clear: both;
     }
     
     /* Tablet layout */
-    @media (min-width: 768px) and (max-width: 1199px) {
-        .books-grid {
-            grid-template-columns: repeat(2, 1fr);
+    @media (max-width: 900px) {
+        .book-card {
+            width: 48%;
+            margin-right: 4%;
         }
-    }
-    
-    /* Mobile layout */
-    @media (max-width: 767px) {
+        
+        .book-card:nth-child(3n) {
+            margin-right: 4%;
+        }
+        
+        .book-card:nth-child(2n) {
+            margin-right: 0;
+        }
+        
         .books-filters {
             flex-direction: column;
             align-items: center;
@@ -275,13 +287,13 @@
         .filter-group {
             width: 100%;
         }
-        
+    }
+    
+    /* Mobile layout */
+    @media (max-width: 600px) {
         .book-card {
-            margin-bottom: 1.5rem;
-        }
-        
-        .books-grid {
-            grid-template-columns: 1fr;
+            width: 100%;
+            margin-right: 0;
         }
         
         .book-cover {
