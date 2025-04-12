@@ -45,18 +45,24 @@
         direction: rtl;
     }
     
-    /* Table-based layout styles */
-    .articles-table {
+    /* Simple column-based layout */
+    .article-row-container {
         width: 100%;
-        table-layout: fixed;
-        border-collapse: separate;
-        border-spacing: 20px;
+        display: block;
+        font-size: 0; /* Removes the gap between inline-block elements */
+        margin: 0 -10px; /* Negative margin to counteract padding */
         border: 2px solid #d4af37; /* Debug border */
     }
     
-    .articles-table td {
+    .article-column {
+        display: inline-block;
         vertical-align: top;
         width: 33.333%;
+        padding: 0 10px;
+        margin-bottom: 20px;
+        box-sizing: border-box;
+        font-size: 16px; /* Reset font size */
+        border: 2px solid red; /* Debug border */
     }
     
     .article-card {
@@ -249,18 +255,11 @@
         direction: rtl;
     }
     
-    /* Responsive design for table-based layout */
+    /* Responsive design for column-based layout */
     @media (max-width: 900px) {
-        /* For tablet - convert to 2 column table */
-        .articles-table td {
-            display: block;
+        /* For tablet - 2 columns */
+        .article-column {
             width: 50%;
-            float: right;
-        }
-        
-        .articles-table tr {
-            display: flex;
-            flex-wrap: wrap;
         }
         
         .articles-container {
@@ -269,11 +268,9 @@
     }
     
     @media (max-width: 600px) {
-        /* For mobile - convert to 1 column */
-        .articles-table td {
-            display: block;
+        /* For mobile - 1 column */
+        .article-column {
             width: 100%;
-            float: none;
         }
         
         .search-and-sort {
@@ -325,35 +322,25 @@
             </div>
         </div>
         
-        <table class="articles-table" width="100%" cellspacing="20" cellpadding="0">
-            <tr>
-                {% for article in articles %}
-                <td width="33.333%" {% if loop.index % 3 == 0 %}style="padding-left:0;"{% elif loop.index % 3 == 1 %}style="padding-right:0;"{% endif %}>
-                    <div class="article-card" data-id="{{ article.id }}">
-                        <div class="article-content">
-                            <h3 class="article-title">{{ article.title }}</h3>
-                            <div class="article-meta">
-                                <div class="article-date">
-                                    <i class="far fa-calendar-alt"></i>
-                                    <span>{{ article.created_at.strftime('%Y-%m-%d') }}</span>
-                                </div>
+        <div class="article-row-container">
+            {% for article in articles %}
+            <div class="article-column">
+                <div class="article-card" data-id="{{ article.id }}">
+                    <div class="article-content">
+                        <h3 class="article-title">{{ article.title }}</h3>
+                        <div class="article-meta">
+                            <div class="article-date">
+                                <i class="far fa-calendar-alt"></i>
+                                <span>{{ article.created_at.strftime('%Y-%m-%d') }}</span>
                             </div>
-                            <p class="article-summary">{{ article.summary }}</p>
-                            <a href="#" class="article-action" data-id="{{ article.id }}">قراءة المزيد</a>
                         </div>
+                        <p class="article-summary">{{ article.summary }}</p>
+                        <a href="#" class="article-action" data-id="{{ article.id }}">قراءة المزيد</a>
                     </div>
-                </td>
-                {% if loop.index % 3 == 0 and not loop.last %}
-                </tr><tr>
-                {% endif %}
-                {% endfor %}
-                {% if articles|length % 3 != 0 %}
-                    {% for i in range(3 - (articles|length % 3)) %}
-                    <td width="33.333%"></td>
-                    {% endfor %}
-                {% endif %}
-            </tr>
-        </table>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -418,16 +405,16 @@
             e.preventDefault();
             const searchQuery = searchInput.value.trim().toLowerCase();
             
-            // With table layout, we need to find the parent td for each card
+            // With column layout, find the parent column for each card
             articleCards.forEach(card => {
                 const title = card.querySelector('.article-title').textContent.toLowerCase();
                 const summary = card.querySelector('.article-summary').textContent.toLowerCase();
-                const tableCell = card.closest('td');
+                const column = card.closest('.article-column');
                 
                 if (title.includes(searchQuery) || summary.includes(searchQuery)) {
-                    tableCell.style.display = ''; // Show the table cell
+                    column.style.display = 'inline-block'; // Show the column
                 } else {
-                    tableCell.style.display = 'none'; // Hide the table cell
+                    column.style.display = 'none'; // Hide the column
                 }
             });
         });
