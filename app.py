@@ -46,12 +46,15 @@ os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'articles'), exist_ok=True
 
 # Add route for user journey page
 @app.route('/user-journey')
-@login_required
 def user_journey():
     """Render user journey page"""
     # Add the current year to the template context
     from datetime import datetime
-    return render_template('user_journey.html', now=datetime.now())
+    # Pass the authentication status to the template
+    is_authenticated = current_user.is_authenticated
+    return render_template('user_journey.html', 
+                          now=datetime.now(), 
+                          is_authenticated=is_authenticated)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 

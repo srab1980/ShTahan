@@ -18,13 +18,13 @@ async function initUserJourney() {
         const authData = await authResponse.json();
         
         if (!authData.authenticated) {
-            // Redirect to login if not authenticated
-            window.location.href = '/login-form?redirect=/user-journey';
+            // Show login required message instead of redirecting
+            showLoginRequiredMessage();
             return;
         }
         
         // Update user greeting
-        updateUserGreeting(authData.user);
+        updateUserGreeting(authData);
         
         // Load user statistics
         loadUserStatistics();
@@ -459,4 +459,53 @@ function showError(message) {
             document.body.removeChild(errorElement);
         }, 500);
     }, 4000);
+}
+
+/**
+ * Show login required message in the journey container
+ */
+function showLoginRequiredMessage() {
+    // Get all the main content areas
+    const journeyContainer = document.querySelector('.journey-container');
+    
+    if (journeyContainer) {
+        // Replace contents with login message
+        journeyContainer.innerHTML = `
+            <div class="login-required-message">
+                <div class="icon">
+                    <i class="fas fa-user-lock fa-3x"></i>
+                </div>
+                <h3>يرجى تسجيل الدخول</h3>
+                <p>لعرض رحلة التعلم الشخصية الخاصة بك، يجب عليك تسجيل الدخول أولاً.</p>
+                <a href="/login-form?redirect=/user-journey" class="btn btn-primary">تسجيل الدخول</a>
+            </div>
+        `;
+        
+        // Add some basic styling for the message
+        const style = document.createElement('style');
+        style.textContent = `
+            .login-required-message {
+                text-align: center;
+                padding: 40px 20px;
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+                max-width: 500px;
+                margin: 30px auto;
+            }
+            .login-required-message .icon {
+                color: #1a2a3a;
+                margin-bottom: 20px;
+            }
+            .login-required-message h3 {
+                color: #1a2a3a;
+                margin-bottom: 15px;
+            }
+            .login-required-message p {
+                color: #6c757d;
+                margin-bottom: 25px;
+            }
+        `;
+        document.head.appendChild(style);
+    }
 }
