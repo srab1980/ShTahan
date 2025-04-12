@@ -1,9 +1,9 @@
 {% if not current_user.is_authenticated %}
-<a href="/login-form?check_auth=false" class="btn-login">
+<a href="/login-form?check_auth=false" class="nav-link auth-link">
     <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
 </a>
 {% else %}
-<div class="user-menu">
+<div class="user-menu nav-link">
     <a href="#" class="user-menu-toggle">
         <i class="fas fa-user-circle"></i> 
         <span>{{ current_user.username }}</span>

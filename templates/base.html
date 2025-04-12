@@ -52,10 +52,10 @@
                         <li><a href="/#gallery">معرض الصور</a></li>
                         <li><a href="/#contact">تواصل معنا</a></li>
                         <li><a href="/user-journey">رحلتي التعليمية</a></li>
+                        <li class="auth-item" id="login-button-container">
+                            <!-- سيتم تحميل زر تسجيل الدخول هنا بشكل مستقل -->
+                        </li>
                     </ul>
-                    <div class="nav-auth" id="login-button-container">
-                        <!-- سيتم تحميل زر تسجيل الدخول هنا بشكل مستقل -->
-                    </div>
                 </nav>
             </div>
         </div>
@@ -72,10 +72,32 @@
     .nav-menu {
         flex-grow: 1;
         padding-left: 20px;
+        display: flex;
+        flex-wrap: wrap;
     }
     
-    .nav-auth {
-        margin-right: 15px;
+    /* Style for the login/auth button in navigation */
+    .auth-item {
+        margin-right: 0;
+        margin-left: auto;
+    }
+    
+    .auth-link {
+        color: #1a3c6b;
+        font-weight: bold;
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+    
+    .auth-link i {
+        margin-left: 8px;
+    }
+    
+    .auth-link:hover {
+        background-color: rgba(26, 60, 107, 0.1);
     }
     
     /* تصميم القائمة المنسدلة للمستخدم */
@@ -154,9 +176,20 @@
             align-items: flex-start;
         }
         
-        .nav-auth {
+        .nav-menu {
+            display: block;
+            width: 100%;
+        }
+        
+        .auth-item {
             margin: 15px 0;
             width: 100%;
+        }
+        
+        .auth-link {
+            display: block;
+            width: 100%;
+            text-align: right;
         }
         
         .user-menu {
@@ -249,7 +282,7 @@
                     if (data.authenticated) {
                         // المستخدم مسجل دخول
                         loginButtonContainer.innerHTML = `
-                            <div class="user-menu">
+                            <div class="user-menu nav-link">
                                 <a href="#" class="user-menu-toggle">
                                     <i class="fas fa-user-circle"></i> 
                                     <span>${data.username}</span>
@@ -267,7 +300,7 @@
                     } else {
                         // المستخدم غير مسجل دخول
                         loginButtonContainer.innerHTML = `
-                            <a href="/login-form?check_auth=false" class="btn-login">
+                            <a href="/login-form?check_auth=false" class="nav-link auth-link">
                                 <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
                             </a>
                         `;
@@ -275,7 +308,7 @@
                 } catch (error) {
                     console.error('خطأ في التحقق من حالة تسجيل الدخول:', error);
                     // في حالة وجود خطأ، عرض زر تسجيل الدخول الافتراضي
-                    loginButtonContainer.innerHTML = '<a href="/login-form" class="btn-login"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</a>';
+                    loginButtonContainer.innerHTML = '<a href="/login-form" class="nav-link auth-link"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</a>';
                 }
             }
         });
