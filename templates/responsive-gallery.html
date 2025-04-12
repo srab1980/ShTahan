@@ -985,6 +985,9 @@
             }
         });
     </script>
-    <script src="{{ url_for('static', filename='js/scroll-animations.js') }}"></script>
-</body>
-</html>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/scroll-animations.js') }}"></script>
+<script src="{{ url_for('static', filename='js/activity-tracking.js') }}"></script>
+{% endblock %}
