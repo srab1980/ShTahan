@@ -97,33 +97,29 @@
         color: white;
     }
 
-    /* Simple static 3-column layout */
+    /* Grid-based 3-column layout */
     .articles-fixed-grid {
         width: 100%; 
-        overflow: hidden;
         max-width: 1200px;
         margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        direction: rtl;
     }
 
     .article-card {
-        width: 32%;
-        margin-right: 2%;
-        margin-bottom: 20px;
-        float: right;
         background-color: white;
         border-radius: 8px;
         overflow: hidden;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         transition: transform 0.3s ease;
+        height: 100%;
     }
     
     .article-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-    }
-
-    .article-card:nth-child(3n) {
-        margin-right: 0;
     }
 
     .article-content {
@@ -280,17 +276,8 @@
     /* Responsive design */
     @media (max-width: 900px) {
         /* For tablet - 2 columns */
-        .article-card {
-            width: 48%;
-            margin-right: 4%;
-        }
-        
-        .article-card:nth-child(3n) {
-            margin-right: 4%;
-        }
-        
-        .article-card:nth-child(2n) {
-            margin-right: 0;
+        .articles-fixed-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
         
         .articles-container {
@@ -300,9 +287,8 @@
     
     @media (max-width: 600px) {
         /* For mobile - 1 column */
-        .article-card {
-            width: 100%;
-            margin-right: 0;
+        .articles-fixed-grid {
+            grid-template-columns: 1fr;
         }
         
         .search-and-sort {
