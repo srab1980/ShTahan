@@ -49,7 +49,9 @@ os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'articles'), exist_ok=True
 @login_required
 def user_journey():
     """Render user journey page"""
-    return render_template('user_journey.html')
+    # Add the current year to the template context
+    from datetime import datetime
+    return render_template('user_journey.html', now=datetime.now())
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 
