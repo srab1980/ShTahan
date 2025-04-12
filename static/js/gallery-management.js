@@ -17,6 +17,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (isGalleryManagementPage && galleryGrid) {
         // Add gallery management UI
         createGalleryManagementUI();
+        
+        // Fetch gallery images with management controls
+        fetchGalleryImagesWithControls();
     }
     
     // Create gallery management UI
@@ -378,6 +381,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Update the URL field
                 document.getElementById('image-url').value = result.file_url;
                 
+                // Auto-populate caption if it's empty
+                const captionField = document.getElementById('image-caption');
+                if (captionField && !captionField.value.trim()) {
+                    captionField.value = file.name.replace(/\.[^/.]+$/, ""); // Remove extension from filename
+                }
+                
+                // Automatically submit the form if the image URL is set
+                // This solves the problem of images being lost when navigating away
+                const autoSaveImage = confirm('هل ترغب في حفظ الصورة في قاعدة البيانات الآن؟');
+                if (autoSaveImage) {
+                    document.getElementById('add-image-form').dispatchEvent(new Event('submit'));
+                } else {
+                    // Remind user to click save
+                    showNotification('لا تنس النقر على زر "إضافة الصورة" لحفظها في قاعدة البيانات', 'info');
+                }
+                
                 // Hide progress bar after a delay
                 setTimeout(() => {
                     if (imageProgress) imageProgress.style.display = 'none';
@@ -455,8 +474,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
     
-    // Initialize gallery with management controls if on gallery page
-    if (isGalleryManagementPage) {
-        fetchGalleryImagesWithControls();
-    }
+    // This initialization code is redundant and has been moved to line 22
+    // Left this comment for clarity
 });
