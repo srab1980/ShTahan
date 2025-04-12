@@ -2,6 +2,10 @@
 
 {% block title %}رحلة المستخدم الشخصية | موقع الشيخ مصطفى الطحان{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user-journey.css') }}">
+{% endblock %}
+
 {% block content %}
 <!-- User Journey Map Section -->
 <section id="user-journey" class="section-container rtl-section">

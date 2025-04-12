@@ -57,7 +57,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 db.init_app(app)
 
 # Import models after initializing db
-from models import Book, Article, GalleryImage, ContactMessage, User
+from models import Book, Article, GalleryImage, ContactMessage, User, UserActivity
 
 # Initialize Flask-Login
 login_manager = LoginManager()
@@ -687,6 +687,151 @@ def upload_gallery_image():
         }), 201
     else:
         return jsonify({'error': 'File must be an image (PNG, JPG, JPEG, GIF)'}), 400
+
+# User Journey API Endpoints
+@app.route('/api/user/activities', methods=['GET'])
+@login_required
+def get_user_activities():
+    """Get activities for the current user"""
+    activities = UserActivity.query.filter_by(user_id=current_user.id).order_by(UserActivity.created_at.desc()).limit(50).all()
+    return jsonify({'activities': [activity.to_dict() for activity in activities]})
+
+@app.route('/api/user/record-activity', methods=['POST'])
+@login_required
+def record_user_activity():
+    """Record a new user activity"""
+    data = request.json
+    
+    if 'activity_type' not in data:
+        return jsonify({'error': 'نوع النشاط مطلوب'}), 400
+    
+    activity = current_user.record_activity(
+        activity_type=data['activity_type'],
+        content_id=data.get('content_id'),
+        content_type=data.get('content_type'),
+        content_title=data.get('content_title'),
+        metadata=data.get('metadata')
+    )
+    
+    db.session.commit()
+    
+    return jsonify({
+        'message': 'تم تسجيل النشاط بنجاح',
+        'activity': activity.to_dict()
+    })
+
+@app.route('/api/user/statistics', methods=['GET'])
+@login_required
+def get_user_statistics():
+    """Get activity statistics for the current user"""
+    # Count books viewed
+    books_viewed = UserActivity.query.filter_by(
+        user_id=current_user.id, 
+        activity_type='view_book'
+    ).distinct(UserActivity.content_id).count()
+    
+    # Count articles viewed
+    articles_viewed = UserActivity.query.filter_by(
+        user_id=current_user.id, 
+        activity_type='view_article'
+    ).distinct(UserActivity.content_id).count()
+    
+    # Count books downloaded
+    downloads = UserActivity.query.filter_by(
+        user_id=current_user.id, 
+        activity_type='download_book'
+    ).count()
+    
+    # Count active days
+    active_days_query = db.session.query(
+        db.func.date_trunc('day', UserActivity.created_at)
+    ).filter(
+        UserActivity.user_id == current_user.id
+    ).distinct().count()
+    
+    return jsonify({
+        'books_viewed': books_viewed,
+        'articles_viewed': articles_viewed,
+        'downloads': downloads,
+        'active_days': active_days_query
+    })
+
+@app.route('/api/user/recommendations', methods=['GET'])
+@login_required
+def get_user_recommendations():
+    """Get content recommendations for the current user"""
+    # Get user preferences to personalize recommendations
+    preferences = current_user.get_preferences()
+    preferred_categories = preferences.get('categories', [])
+    preferred_language = preferences.get('preferred_language', 'all')
+    
+    # Base query for books
+    book_query = Book.query
+    
+    # Apply category filter if preferences exist
+    if preferred_categories:
+        book_query = book_query.filter(Book.category.in_(preferred_categories))
+    
+    # Apply language filter if set to something other than 'all'
+    if preferred_language and preferred_language != 'all':
+        book_query = book_query.filter_by(language=preferred_language)
+    
+    # Get recent books to recommend
+    books = book_query.order_by(Book.created_at.desc()).limit(3).all()
+    
+    # Get recent articles to recommend
+    articles = Article.query.order_by(Article.created_at.desc()).limit(3).all()
+    
+    # Create recommendations list
+    recommendations = []
+    
+    # Add books to recommendations
+    for book in books:
+        recommendations.append({
+            'id': book.id,
+            'title': book.title,
+            'type': 'book',
+            'cover': book.cover,
+            'language': book.language,
+            'category': book.category
+        })
+    
+    # Add articles to recommendations
+    for article in articles:
+        recommendations.append({
+            'id': article.id,
+            'title': article.title,
+            'type': 'article',
+            'summary': article.summary
+        })
+    
+    return jsonify({
+        'recommendations': recommendations
+    })
+
+@app.route('/api/user/preferences', methods=['GET'])
+@login_required
+def get_user_preferences():
+    """Get preferences for the current user"""
+    preferences = current_user.get_preferences()
+    return jsonify({'preferences': preferences})
+
+@app.route('/api/user/preferences', methods=['POST'])
+@login_required
+def update_user_preferences():
+    """Update preferences for the current user"""
+    data = request.json
+    
+    if 'preferences' not in data:
+        return jsonify({'error': 'التفضيلات مطلوبة'}), 400
+    
+    current_user.set_preferences(data['preferences'])
+    db.session.commit()
+    
+    return jsonify({
+        'message': 'تم تحديث التفضيلات بنجاح',
+        'preferences': current_user.get_preferences()
+    })
 
 @app.route('/api/upload/article-image', methods=['POST'])
 @login_required
