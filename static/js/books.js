@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const coverPreview = document.getElementById('cover-preview');
     const coverProgress = document.getElementById('cover-progress');
     const pdfProgress = document.getElementById('pdf-progress');
+
+    // تهيئة تتبع النشاط
+    setupActivityTracking();
     
     // Store books data
     let booksData = [];
