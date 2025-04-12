@@ -65,6 +65,14 @@ async function loadUserStatistics() {
         const response = await fetch('/api/user/statistics');
         const data = await response.json();
         
+        // Check for authentication error
+        if (!response.ok) {
+            if (data.error) {
+                console.error('Authentication error:', data.error);
+            }
+            return;
+        }
+        
         // Update statistics cards
         document.getElementById('books-viewed-count').textContent = data.books_viewed || 0;
         document.getElementById('articles-viewed-count').textContent = data.articles_viewed || 0;
@@ -97,6 +105,14 @@ async function loadUserActivities() {
         
         // Clear loading indicator
         timelineContainer.innerHTML = '';
+        
+        // Check for authentication error
+        if (!response.ok) {
+            if (data.error) {
+                console.error('Authentication error:', data.error);
+            }
+            return;
+        }
         
         // Check if there are any activities
         if (!data.activities || data.activities.length === 0) {
@@ -228,6 +244,14 @@ async function loadRecommendations() {
         // Clear loading indicator
         recommendationsContainer.innerHTML = '';
         
+        // Check for authentication error
+        if (!response.ok) {
+            if (data.error) {
+                console.error('Authentication error:', data.error);
+            }
+            return;
+        }
+        
         // Check if there are any recommendations
         if (!data.recommendations || data.recommendations.length === 0) {
             recommendationsContainer.innerHTML = `
@@ -309,6 +333,14 @@ async function loadUserPreferences() {
         const response = await fetch('/api/user/preferences');
         const data = await response.json();
         
+        // Check for authentication error
+        if (!response.ok) {
+            if (data.error) {
+                console.error('Authentication error:', data.error);
+            }
+            return;
+        }
+        
         // Fill form with user preferences
         const preferences = data.preferences || {};
         
@@ -380,6 +412,8 @@ function setupPreferencesForm() {
                 body: JSON.stringify({ preferences })
             });
             
+            const data = await response.json();
+            
             if (response.ok) {
                 showSuccess('تم حفظ التفضيلات بنجاح');
                 
@@ -388,6 +422,11 @@ function setupPreferencesForm() {
                     loadRecommendations();
                 }, 1000);
             } else {
+                // Check for authentication error
+                if (data.error && data.authenticated === false) {
+                    showLoginRequiredMessage();
+                    return;
+                }
                 showError('فشل حفظ التفضيلات');
             }
         } catch (error) {

@@ -709,16 +709,21 @@ def upload_gallery_image():
 
 # User Journey API Endpoints
 @app.route('/api/user/activities', methods=['GET'])
-@login_required
 def get_user_activities():
     """Get activities for the current user"""
+    if not current_user.is_authenticated:
+        return jsonify({'error': 'يرجى تسجيل الدخول للوصول إلى هذه البيانات', 'authenticated': False}), 401
+    
     activities = UserActivity.query.filter_by(user_id=current_user.id).order_by(UserActivity.created_at.desc()).limit(50).all()
-    return jsonify({'activities': [activity.to_dict() for activity in activities]})
+    return jsonify({'activities': [activity.to_dict() for activity in activities], 'authenticated': True})
 
 @app.route('/api/user/record-activity', methods=['POST'])
-@login_required
 def record_user_activity():
     """Record a new user activity"""
+    # Check if user is authenticated
+    if not current_user.is_authenticated:
+        return jsonify({'error': 'يرجى تسجيل الدخول لتسجيل النشاط', 'authenticated': False}), 401
+    
     data = request.json
     
     if 'activity_type' not in data:
@@ -736,13 +741,16 @@ def record_user_activity():
     
     return jsonify({
         'message': 'تم تسجيل النشاط بنجاح',
-        'activity': activity.to_dict()
+        'activity': activity.to_dict(),
+        'authenticated': True
     })
 
 @app.route('/api/user/statistics', methods=['GET'])
-@login_required
 def get_user_statistics():
     """Get activity statistics for the current user"""
+    if not current_user.is_authenticated:
+        return jsonify({'error': 'يرجى تسجيل الدخول للوصول إلى هذه البيانات', 'authenticated': False}), 401
+    
     # Count books viewed
     books_viewed = UserActivity.query.filter_by(
         user_id=current_user.id, 
@@ -772,13 +780,16 @@ def get_user_statistics():
         'books_viewed': books_viewed,
         'articles_viewed': articles_viewed,
         'downloads': downloads,
-        'active_days': active_days_query
+        'active_days': active_days_query,
+        'authenticated': True
     })
 
 @app.route('/api/user/recommendations', methods=['GET'])
-@login_required
 def get_user_recommendations():
     """Get content recommendations for the current user"""
+    if not current_user.is_authenticated:
+        return jsonify({'error': 'يرجى تسجيل الدخول للوصول إلى هذه البيانات', 'authenticated': False}), 401
+    
     # Get user preferences to personalize recommendations
     preferences = current_user.get_preferences()
     preferred_categories = preferences.get('categories', [])
@@ -825,20 +836,25 @@ def get_user_recommendations():
         })
     
     return jsonify({
-        'recommendations': recommendations
+        'recommendations': recommendations,
+        'authenticated': True
     })
 
 @app.route('/api/user/preferences', methods=['GET'])
-@login_required
 def get_user_preferences():
     """Get preferences for the current user"""
+    if not current_user.is_authenticated:
+        return jsonify({'error': 'يرجى تسجيل الدخول للوصول إلى هذه البيانات', 'authenticated': False}), 401
+    
     preferences = current_user.get_preferences()
-    return jsonify({'preferences': preferences})
+    return jsonify({'preferences': preferences, 'authenticated': True})
 
 @app.route('/api/user/preferences', methods=['POST'])
-@login_required
 def update_user_preferences():
     """Update preferences for the current user"""
+    if not current_user.is_authenticated:
+        return jsonify({'error': 'يرجى تسجيل الدخول لتحديث التفضيلات', 'authenticated': False}), 401
+    
     data = request.json
     
     if 'preferences' not in data:
@@ -849,7 +865,8 @@ def update_user_preferences():
     
     return jsonify({
         'message': 'تم تحديث التفضيلات بنجاح',
-        'preferences': current_user.get_preferences()
+        'preferences': current_user.get_preferences(),
+        'authenticated': True
     })
 
 @app.route('/api/upload/article-image', methods=['POST'])
