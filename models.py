@@ -5,6 +5,7 @@ from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
+import json
 
 class Book(db.Model):
     """Model for books and publications"""
@@ -80,6 +81,39 @@ class ContactMessage(db.Model):
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S')
         }
 
+class UserActivity(db.Model):
+    """Model for tracking user activity and interactions"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    activity_type = db.Column(db.String(50), nullable=False)  # 'view_book', 'download_book', 'view_article', etc.
+    content_id = db.Column(db.Integer, nullable=True)  # ID of the related content (book, article, etc.)
+    content_type = db.Column(db.String(50), nullable=True)  # 'book', 'article', 'gallery', etc.
+    content_title = db.Column(db.String(255), nullable=True)  # Title or name of the content
+    activity_data = db.Column(db.Text, nullable=True)  # Optional JSON metadata
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    user = db.relationship('User', backref=db.backref('activities', lazy=True))
+    
+    def to_dict(self):
+        """Convert model to dictionary"""
+        result = {
+            'id': self.id,
+            'user_id': self.user_id,
+            'activity_type': self.activity_type,
+            'content_id': self.content_id,
+            'content_type': self.content_type,
+            'content_title': self.content_title,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+        if self.activity_data:
+            try:
+                result['activity_data'] = json.loads(self.activity_data)
+            except json.JSONDecodeError:
+                result['activity_data'] = None
+                
+        return result
+
 class User(UserMixin, db.Model):
     """Model for users with role-based access control"""
     id = db.Column(db.Integer, primary_key=True)
@@ -90,6 +124,7 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime, nullable=True)
     active = db.Column(db.Boolean, default=True)
+    preferences = db.Column(db.Text, nullable=True)  # JSON string storing user preferences
     
     def set_password(self, password):
         """Set password hash"""
@@ -107,9 +142,35 @@ class User(UserMixin, db.Model):
         """Check if user is an editor"""
         return self.role == 'editor' or self.role == 'admin'
     
+    def get_preferences(self):
+        """Get user preferences as dictionary"""
+        if not self.preferences:
+            return {}
+        try:
+            return json.loads(self.preferences)
+        except json.JSONDecodeError:
+            return {}
+    
+    def set_preferences(self, preferences_dict):
+        """Set user preferences from dictionary"""
+        self.preferences = json.dumps(preferences_dict)
+    
+    def record_activity(self, activity_type, content_id=None, content_type=None, content_title=None, metadata=None):
+        """Record user activity"""
+        activity = UserActivity(
+            user_id=self.id,
+            activity_type=activity_type,
+            content_id=content_id,
+            content_type=content_type,
+            content_title=content_title,
+            activity_data=json.dumps(metadata) if metadata else None
+        )
+        db.session.add(activity)
+        return activity
+    
     def to_dict(self):
         """Convert model to dictionary (excluding password)"""
-        return {
+        result = {
             'id': self.id,
             'username': self.username,
             'email': self.email,
@@ -118,3 +179,12 @@ class User(UserMixin, db.Model):
             'last_login': self.last_login.strftime('%Y-%m-%d %H:%M:%S') if self.last_login else None,
             'active': self.active
         }
+        
+        # Include preferences if available
+        if self.preferences:
+            try:
+                result['preferences'] = json.loads(self.preferences)
+            except json.JSONDecodeError:
+                result['preferences'] = {}
+                
+        return result

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}رحلة المستخدم الشخصية | موقع الشيخ مصطفى الطحان{% endblock %}
+
+{% block content %}
+<!-- User Journey Map Section -->
+<section id="user-journey" class="section-container rtl-section">
+    <div class="section-title">
+        <h2>رحلة التعلم الشخصية</h2>
+        <p class="section-subtitle">اكتشف رحلتك التفاعلية ومسار تعلمك عبر المحتوى</p>
+    </div>
+
+    <div class="journey-container">
+        <!-- User Greeting -->
+        <div class="user-greeting">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-details">
+                    <h3 id="user-name">أهلاً بك</h3>
+                    <p id="user-status">سعداء برؤيتك مجدداً</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Journey Summary Stats -->
+        <div class="journey-stats">
+            <div class="stat-card">
+                <i class="fas fa-book"></i>
+                <h4>الكتب المطلعة</h4>
+                <p id="books-viewed-count">0</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-newspaper"></i>
+                <h4>المقالات المقروءة</h4>
+                <p id="articles-viewed-count">0</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-file-download"></i>
+                <h4>التنزيلات</h4>
+                <p id="downloads-count">0</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-calendar-alt"></i>
+                <h4>أيام النشاط</h4>
+                <p id="active-days-count">0</p>
+            </div>
+        </div>
+
+        <!-- Journey Timeline -->
+        <div class="journey-timeline">
+            <h3>الأنشطة الأخيرة</h3>
+            <div id="activities-timeline" class="timeline">
+                <!-- Timeline items will be inserted here dynamically -->
+                <div class="timeline-loading">
+                    <div class="loader-pulse"></div>
+                    <p>جاري تحميل الأنشطة...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Recommendations -->
+        <div class="recommended-content">
+            <h3>محتوى قد يعجبك</h3>
+            <div id="recommendations-container" class="recommendations-grid">
+                <!-- Recommendations will be inserted here dynamically -->
+                <div class="recommendations-loading">
+                    <div class="loader-pulse"></div>
+                    <p>جاري تحميل التوصيات...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preferences and Settings -->
+        <div class="user-preferences">
+            <h3>تخصيص التفضيلات</h3>
+            <form id="preferences-form">
+                <div class="form-group">
+                    <label for="pref-language">اللغة المفضلة للمحتوى:</label>
+                    <select id="pref-language" name="preferred_language">
+                        <option value="all">الكل</option>
+                        <option value="arabic">العربية</option>
+                        <option value="english">الإنجليزية</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pref-categories">المواضيع المفضلة:</label>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="categories" value="تفسير"> تفسير
+                        </label>
+                        <label>
+                            <input type="checkbox" name="categories" value="فقه"> فقه
+                        </label>
+                        <label>
+                            <input type="checkbox" name="categories" value="عقيدة"> عقيدة
+                        </label>
+                        <label>
+                            <input type="checkbox" name="categories" value="سيرة"> سيرة
+                        </label>
+                        <label>
+                            <input type="checkbox" name="categories" value="أخلاق"> أخلاق وتزكية
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pref-notifications">الإشعارات:</label>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="notifications" value="new_content"> إشعار عند إضافة محتوى جديد
+                        </label>
+                        <label>
+                            <input type="checkbox" name="notifications" value="recommendations"> إرسال توصيات أسبوعية
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">حفظ التفضيلات</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/user-journey.js') }}"></script>
+{% endblock %}

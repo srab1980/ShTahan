@@ -43,6 +43,13 @@ app.config['UPLOAD_FOLDER'] = 'static/uploads'
 os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'gallery'), exist_ok=True)
 os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'books'), exist_ok=True)
 os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'articles'), exist_ok=True)
+
+# Add route for user journey page
+@app.route('/user-journey')
+@login_required
+def user_journey():
+    """Render user journey page"""
+    return render_template('user_journey.html')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 
@@ -209,7 +216,8 @@ def auth_status():
             'authenticated': True,
             'username': current_user.username,
             'role': current_user.role,
-            'id': current_user.id
+            'id': current_user.id,
+            'last_login': current_user.last_login.strftime('%Y-%m-%d %H:%M:%S') if current_user.last_login else None
         })
     else:
         return jsonify({'authenticated': False})
