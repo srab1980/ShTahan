@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>معرض الصور - الشيخ مصطفى الطحان</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
-    <style>
+{% extends 'base.html' %}
+
+{% block title %}معرض الصور - الشيخ مصطفى الطحان{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+<style>
         :root {
             --main-color: #1a3c6b;
             --gold-color: #d4af37;
@@ -197,21 +195,15 @@
             }
         }
     </style>
-</head>
-<body>
-    <header>
-        <div class="container">
-            <h1>موقع الشيخ مصطفى الطحان</h1>
-        </div>
-    </header>
+{% endblock %}
 
-    <main>
-        <div class="container">
-            <div id="gallery" class="section">
-                <div class="page-title section-title">
-                    <h2>معرض الصور</h2>
-                    <div class="separator"></div>
-                </div>
+{% block content %}
+<div class="container">
+    <div id="gallery" class="section">
+        <div class="page-title section-title">
+            <h2>معرض الصور</h2>
+            <div class="separator"></div>
+        </div>
                 
                 <!-- إضافة خيارات العرض -->
                 <div class="view-options" style="text-align: center; margin-bottom: 20px;">
@@ -231,14 +223,10 @@
                 </div>
             </div>
         </div>
-    </main>
+{% endblock %}
 
-    <!-- Load the FontAwesome for icons -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
-    
-    <!-- Load our gallery display script -->
-    <script src="{{ url_for('static', filename='js/gallery.js') }}"></script>
+{% block scripts %}
+<!-- Load our gallery display script -->
+<script src="{{ url_for('static', filename='js/gallery.js') }}"></script>
 <script src="{{ url_for('static', filename='js/activity-tracking.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/scroll-animations.js') }}"></script>
-</body>
-</html>
+{% endblock %}
