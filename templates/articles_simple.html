@@ -48,22 +48,22 @@
     .articles-grid {
         display: flex;
         flex-wrap: wrap;
-        margin: 0 -15px;
-        justify-content: space-between; /* This will spread items evenly across the container */
         width: 100%;
         box-sizing: border-box;
+        gap: 20px; /* Using gap instead of margin for better spacing */
+        justify-content: center; /* Center the cards */
     }
     
     .article-card {
-        width: calc(33.333% - 30px);
-        margin: 15px;
+        flex: 1 0 calc(33.333% - 20px); /* Flexible cards that grow to fill space */
+        max-width: calc(33.333% - 20px); /* Maximum width to maintain 3 columns */
         background-color: white;
         border-radius: 8px;
         overflow: hidden;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         display: flex;
         flex-direction: column;
-        min-width: 300px; /* Ensure cards don't get too small */
+        min-width: 280px; /* Slightly smaller minimum to allow 3 cards */
     }
     
     .article-content {
@@ -243,21 +243,24 @@
     @media (min-width: 1921px) {
         /* For ultra-wide screens - show 4 cards per row */
         .article-card {
-            width: calc(25% - 30px);
+            flex: 1 0 calc(25% - 20px);
+            max-width: calc(25% - 20px);
         }
     }
     
-    @media (max-width: 1500px) {
-        /* For standard desktop screens */
+    @media (min-width: 1201px) and (max-width: 1920px) {
+        /* For standard desktop screens - show 3 cards per row */
         .article-card {
-            width: calc(33.333% - 30px);
+            flex: 1 0 calc(33.333% - 20px);
+            max-width: calc(33.333% - 20px);
         }
     }
     
-    @media (max-width: 1200px) {
-        /* For smaller desktop and tablet landscape */
+    @media (min-width: 768px) and (max-width: 1200px) {
+        /* For smaller desktop and tablet landscape - show 2 cards per row */
         .article-card {
-            width: calc(50% - 30px);
+            flex: 1 0 calc(50% - 20px);
+            max-width: calc(50% - 20px);
         }
     }
     
@@ -268,11 +271,11 @@
         }
     }
     
-    @media (max-width: 768px) {
-        /* For mobile screens */
+    @media (max-width: 767px) {
+        /* For mobile screens - single column */
         .article-card {
-            width: 100%;
-            margin: 15px 0;
+            flex: 1 0 100%;
+            max-width: 100%;
         }
         
         .search-and-sort {
@@ -290,6 +293,10 @@
         
         .articles-container {
             padding: 0 10px;
+        }
+        
+        .articles-grid {
+            gap: 15px;
         }
     }
 </style>
