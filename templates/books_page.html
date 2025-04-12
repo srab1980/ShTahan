@@ -101,6 +101,9 @@
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         background-color: white;
+        display: flex;
+        flex-direction: column;
+        height: 500px; /* Fixed height for consistency */
     }
     
     .book-card:nth-child(3n) {
@@ -133,6 +136,7 @@
         flex-grow: 1;
         display: flex;
         flex-direction: column;
+        height: calc(100% - 300px); /* Adjust based on book-cover height */
     }
     
     .book-title {
@@ -161,6 +165,13 @@
         color: #495057;
         margin-bottom: 1.5rem;
         flex-grow: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        max-height: 4.5em;
+        line-height: 1.5em;
     }
     
     .book-actions {
@@ -292,10 +303,16 @@
         .book-card {
             width: 100%;
             margin-right: 0;
+            height: auto;
+            min-height: 450px;
         }
         
         .book-cover {
             height: 250px;
+        }
+        
+        .book-details {
+            height: auto;
         }
     }
 </style>
