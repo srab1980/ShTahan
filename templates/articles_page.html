@@ -332,10 +332,10 @@
         <button class="sort-btn" data-sort="popular">الأكثر قراءة</button>
     </div>
     
-    <div id="articles-container" style="max-width: 1200px; margin: 0 auto; width: 100%; box-sizing: border-box; padding: 0 15px;">
+    <div id="articles-container" style="width: 1200px; max-width: 100%; margin: 0 auto; padding: 0 15px; box-sizing: border-box; direction: rtl;">
         <div id="articles-list">
-            <div class="article-row-container" style="width: 100%; box-sizing: border-box; margin: 0 auto;">
-                <div id="articles-grid" style="display: flex; flex-wrap: wrap; margin: -15px; width: calc(100% + 30px);">
+            <div class="row clearfix" style="margin: 0 -15px; width: auto; clear: both; overflow: hidden;">
+                <div id="articles-grid" style="width: 100%; position: relative;">
                     <!-- Articles will be loaded dynamically here -->
                     <div class="loading-indicator" style="width: 100%; text-align: center; padding: 50px 0;">
                         <div class="spinner"></div>
@@ -344,7 +344,7 @@
                 </div>
             </div>
             
-            <div id="pagination" class="pagination">
+            <div id="pagination" class="pagination" style="clear: both;">
                 <!-- Pagination will be generated dynamically -->
             </div>
         </div>
@@ -377,27 +377,41 @@
         let currentSort = 'newest';
         let searchQuery = '';
         
-        // Force flexbox layout
+        // We're not using this function anymore with the new layout approach
         function forceGridLayout() {
-            // Make sure the flexbox layout is applied even if styles are overridden
-            articlesGrid.style.display = 'flex';
-            articlesGrid.style.flexWrap = 'wrap';
-            articlesGrid.style.margin = '-15px';
-            articlesGrid.style.width = 'calc(100% + 30px)';
+            // No need to force any layout, we'll use direct styles for each card
+            articlesGrid.style.width = '100%';
+            articlesGrid.style.display = 'block'; 
         }
         
-        // Force grid layout on window resize and update card widths
+        // Handle window resize to update article card widths
         window.addEventListener('resize', function() {
-            forceGridLayout();
-            
             // Update article card widths based on screen size
-            document.querySelectorAll('.article-card').forEach(card => {
+            document.querySelectorAll('.article-card').forEach((card, index) => {
                 if (window.innerWidth < 768) {
-                    card.style.width = 'calc(100% - 30px)';
+                    card.style.width = '100%';
+                    card.style.float = 'none';
+                    card.style.clear = 'both';
                 } else if (window.innerWidth < 1200) {
-                    card.style.width = 'calc(50% - 30px)';
+                    card.style.width = '48%';
+                    card.style.float = 'right';
+                    card.style.marginLeft = '2%';
+                    // Clear every 2nd item
+                    if (index % 2 === 0) {
+                        card.style.clear = 'right';
+                    } else {
+                        card.style.clear = 'none';
+                    }
                 } else {
-                    card.style.width = 'calc(33.333% - 30px)';
+                    card.style.width = '31.333%';
+                    card.style.float = 'right';
+                    card.style.marginLeft = '2%';
+                    // Clear every 3rd item
+                    if (index % 3 === 0) {
+                        card.style.clear = 'right';
+                    } else {
+                        card.style.clear = 'none';
+                    }
                 }
             });
         });
@@ -493,19 +507,30 @@
                 articleCard.className = 'article-card';
                 articleCard.dataset.id = article.id;
                 
-                // Add explicit inline styles for width based on screen size
+                // Use float-based layout with fixed width and explicit column sizing
                 if (window.innerWidth < 768) {
-                    articleCard.style.width = 'calc(100% - 30px)';
+                    articleCard.style.width = '100%';
+                    articleCard.style.float = 'none';
                 } else if (window.innerWidth < 1200) {
-                    articleCard.style.width = 'calc(50% - 30px)';
+                    articleCard.style.width = '48%';
+                    articleCard.style.float = 'right';
+                    articleCard.style.marginLeft = '2%';
+                    // Clear every 2nd item
+                    if (articlesToDisplay.indexOf(article) % 2 === 0) {
+                        articleCard.style.clear = 'right';
+                    }
                 } else {
-                    articleCard.style.width = 'calc(33.333% - 30px)';
+                    articleCard.style.width = '31.333%';
+                    articleCard.style.float = 'right';
+                    articleCard.style.marginLeft = '2%';
+                    // Clear every 3rd item
+                    if (articlesToDisplay.indexOf(article) % 3 === 0) {
+                        articleCard.style.clear = 'right';
+                    }
                 }
                 
                 // Ensure other important styles are applied inline
-                articleCard.style.margin = '15px';
-                articleCard.style.display = 'flex';
-                articleCard.style.flexDirection = 'column';
+                articleCard.style.marginBottom = '30px';
                 articleCard.style.backgroundColor = 'white';
                 articleCard.style.borderRadius = '8px';
                 articleCard.style.overflow = 'hidden';
@@ -533,6 +558,13 @@
             
             // Make sure grid layout is enforced even after DOM updates
             forceGridLayout();
+            
+            // Add a clearfix element to ensure proper layout
+            const clearfix = document.createElement('div');
+            clearfix.style.clear = 'both';
+            clearfix.style.width = '100%';
+            clearfix.style.height = '0';
+            articlesGrid.appendChild(clearfix);
         }
         
         // Render pagination controls
