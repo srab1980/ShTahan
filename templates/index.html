@@ -310,6 +310,14 @@
                 <div class="separator"></div>
             </div>
             
+            <!-- View All Books Button with improved visibility - Moved to top -->
+            <div class="view-all-container" style="text-align: center; margin: 2rem auto; padding: 15px; background-color: #f5f5f5; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                <a href="/books" class="btn btn-primary" style="padding: 15px 30px; font-size: 1.2rem; background-color: #1a3c6b; color: white; border: none; border-radius: 5px; text-decoration: none; display: inline-block; transition: all 0.3s ease; font-weight: bold;">
+                    <i class="fas fa-book" style="margin-left: 10px;"></i>
+                    مشاهدة جميع الكتب والمؤلفات
+                </a>
+            </div>
+            
             <div class="books-filter">
                 <div class="filter-group">
                     <label for="language-filter">اللغة:</label>
@@ -337,14 +345,6 @@
             <div class="books-grid" id="books-container">
                 <!-- Books will be loaded from books.json here -->
             </div>
-            
-            <!-- View All Books Button -->
-            <div class="view-all-container" style="text-align: center; margin-top: 2rem;">
-                <a href="/books" class="btn btn-primary" style="padding: 10px 20px; font-size: 1.1rem;">
-                    <i class="fas fa-book"></i>
-                    عرض جميع الكتب
-                </a>
-            </div>
 
         </div>
     </section>
@@ -356,20 +356,21 @@
                 <h2>المقالات</h2>
                 <div class="separator"></div>
             </div>
+            
+            <!-- View All Articles Button with improved visibility - Moved to top -->
+            <div class="view-all-articles-container" style="text-align: center; margin: 2rem auto; padding: 15px; background-color: #f5f5f5; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                <a href="/articles" class="btn btn-primary" style="padding: 15px 30px; font-size: 1.2rem; background-color: #1a3c6b; color: white; border: none; border-radius: 5px; text-decoration: none; display: inline-block; transition: all 0.3s ease; font-weight: bold;">
+                    <i class="fas fa-newspaper" style="margin-left: 10px;"></i>
+                    مشاهدة جميع المقالات
+                </a>
+            </div>
+            
             <div class="articles-container">
                 <!-- سيتم تحميل المقالات ديناميكياً هنا عبر JavaScript -->
                 <div class="loading-spinner" style="text-align: center; width: 100%; padding: 30px;">
                     <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #d4af37;"></i>
                     <p>جاري تحميل المقالات...</p>
                 </div>
-            </div>
-
-            <!-- View All Articles Button -->
-            <div class="view-all-articles-container" style="text-align: center; margin-top: 2rem;">
-                <a href="/articles" class="btn btn-primary" style="padding: 10px 20px; font-size: 1.1rem;">
-                    <i class="fas fa-newspaper"></i>
-                    عرض جميع المقالات
-                </a>
             </div>
         </div>
     </section>
