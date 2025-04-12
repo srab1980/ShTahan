@@ -147,7 +147,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         articlesContainer.innerHTML = '';
         
-        articles.forEach(article => {
+        // Sort articles by date (newest first)
+        const sortedArticles = [...articles].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        // Limit to 6 articles on the homepage
+        const isHomepage = window.location.pathname === '/';
+        const articlesToDisplay = isHomepage ? sortedArticles.slice(0, 6) : sortedArticles;
+        
+        articlesToDisplay.forEach(article => {
             console.log('Rendering article:', article.id, article.title);
             
             const articleCard = document.createElement('div');
@@ -168,6 +175,29 @@ document.addEventListener('DOMContentLoaded', function() {
             const readMoreBtn = articleCard.querySelector('.read-more');
             readMoreBtn.addEventListener('click', () => openArticleModal(article));
         });
+        
+        // Add "View All Articles" button if on homepage and there are more articles
+        if (isHomepage && articles.length > 6) {
+            const articlesSection = document.getElementById('articles');
+            if (articlesSection) {
+                // Check if view-all container doesn't already exist
+                if (!document.querySelector('.view-all-articles-container')) {
+                    const viewAllContainer = document.createElement('div');
+                    viewAllContainer.className = 'view-all-articles-container';
+                    viewAllContainer.style.textAlign = 'center';
+                    viewAllContainer.style.marginTop = '2rem';
+                    
+                    viewAllContainer.innerHTML = `
+                        <a href="/articles" class="btn btn-primary" style="padding: 10px 20px; font-size: 1.1rem;">
+                            <i class="fas fa-newspaper"></i>
+                            عرض جميع المقالات (${articles.length})
+                        </a>
+                    `;
+                    
+                    articlesSection.appendChild(viewAllContainer);
+                }
+            }
+        }
         
         console.log('Articles rendered successfully');
     }

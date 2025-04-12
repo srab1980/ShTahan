@@ -148,7 +148,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         booksContainer.innerHTML = '';
         
-        books.forEach(book => {
+        // Sort books by date (newest first)
+        const sortedBooks = [...books].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        // Limit to 8 books on the homepage
+        const isHomepage = window.location.pathname === '/';
+        const booksToDisplay = isHomepage ? sortedBooks.slice(0, 8) : sortedBooks;
+        
+        booksToDisplay.forEach(book => {
             const bookCard = document.createElement('div');
             bookCard.className = 'book-card';
             bookCard.dataset.id = book.id;
@@ -174,6 +181,30 @@ document.addEventListener('DOMContentLoaded', function() {
             
             booksContainer.appendChild(bookCard);
         });
+        
+        // Add "View All Books" button if on homepage and there are more books
+        if (isHomepage && books.length > 8) {
+            // Add a container for the view-all button after books section
+            const booksSection = document.getElementById('books');
+            if (booksSection) {
+                // Check if view-all container doesn't already exist
+                if (!document.querySelector('.view-all-container')) {
+                    const viewAllContainer = document.createElement('div');
+                    viewAllContainer.className = 'view-all-container';
+                    viewAllContainer.style.textAlign = 'center';
+                    viewAllContainer.style.marginTop = '2rem';
+                    
+                    viewAllContainer.innerHTML = `
+                        <a href="/books" class="btn btn-primary" style="padding: 10px 20px; font-size: 1.1rem;">
+                            <i class="fas fa-book"></i>
+                            عرض جميع الكتب (${books.length})
+                        </a>
+                    `;
+                    
+                    booksSection.appendChild(viewAllContainer);
+                }
+            }
+        }
     }
     
     // Populate edit form with book data
