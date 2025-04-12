@@ -90,6 +90,8 @@
     .articles-grid {
         display: grid;
         gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
     }
     
     .article-card {
@@ -268,12 +270,21 @@
         background-color: #e9ecef;
     }
     
-    @media (min-width: 768px) {
+    /* Desktop layout */
+    @media (min-width: 1200px) {
+        .articles-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    /* Tablet layout */
+    @media (min-width: 768px) and (max-width: 1199px) {
         .articles-grid {
             grid-template-columns: repeat(2, 1fr);
         }
     }
     
+    /* Mobile layout */
     @media (max-width: 767px) {
         .articles-grid {
             grid-template-columns: 1fr;
