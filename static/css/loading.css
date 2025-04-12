@@ -1,0 +1,227 @@
+/**
+ * أنماط مؤشرات التحميل المتحركة
+ * موقع الشيخ مصطفى الطحان
+ */
+
+.loader-container {
+  position: relative;
+  width: 100%;
+  text-align: center;
+  padding: 20px 0;
+  min-height: 100px;
+}
+
+/* مؤشر التحميل الدوار */
+.loader-spinner {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(212, 175, 55, 0.2);
+  border-radius: 50%;
+  border-top-color: #d4af37;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 10px;
+}
+
+/* مؤشر التحميل النابض */
+.loader-pulse {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #1a3c6b;
+  animation: pulse 1.2s ease-in-out infinite;
+  margin-bottom: 10px;
+}
+
+/* مؤشر التحميل المتحرك أفقيا */
+.loader-bar {
+  height: 4px;
+  width: 100%;
+  background-color: #f3f3f3;
+  overflow: hidden;
+  position: relative;
+  margin: 10px 0;
+}
+
+.loader-bar::before {
+  content: '';
+  display: block;
+  position: absolute;
+  right: -50%;
+  width: 50%;
+  height: 100%;
+  background-color: #d4af37;
+  animation: loading-bar 2s linear infinite;
+}
+
+/* مؤشر التحميل النقطي */
+.loader-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0;
+}
+
+.loader-dots .dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+  border-radius: 50%;
+  background-color: #d4af37;
+  animation: dot-pulse 1.4s ease-in-out infinite;
+}
+
+.loader-dots .dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loader-dots .dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* مؤشر نص التحميل */
+.loader-text {
+  font-family: 'Tajawal', sans-serif;
+  color: #666;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+/* مؤشر تحميل البطاقات */
+.card-placeholder {
+  background-color: #f5f5f5;
+  border-radius: 10px;
+  height: 200px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-placeholder::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0) 0%, 
+    rgba(255,255,255,0.6) 50%, 
+    rgba(255,255,255,0) 100%);
+  animation: shimmer 2s infinite;
+}
+
+/* التعليمات التنفيذية للرسوم المتحركة */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.6); opacity: 0.3; }
+  50% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.6); opacity: 0.3; }
+}
+
+@keyframes loading-bar {
+  0% { right: -50%; }
+  100% { right: 100%; }
+}
+
+@keyframes dot-pulse {
+  0%, 100% { transform: scale(0.7); opacity: 0.5; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* تعديلات مع الوضع الليلي (إذا تم تنفيذه في المستقبل) */
+@media (prefers-color-scheme: dark) {
+  .card-placeholder {
+    background-color: #2a2a2a;
+  }
+  
+  .card-placeholder::after {
+    background: linear-gradient(90deg, 
+      rgba(60,60,60,0) 0%, 
+      rgba(60,60,60,0.6) 50%, 
+      rgba(60,60,60,0) 100%);
+  }
+  
+  .loader-text {
+    color: #aaa;
+  }
+}
+
+/* إعدادات استجابة مختلفة */
+@media (max-width: 768px) {
+  .loader-spinner {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .loader-pulse {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .loader-text {
+    font-size: 14px;
+  }
+}
+
+/* مسار تقدم محدد */
+.progress-container {
+  width: 100%;
+  height: 8px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  margin: 10px 0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #d4af37;
+  width: 0;
+  transition: width 0.3s ease;
+  border-radius: 5px;
+}
+
+/* مؤشر تحميل المحتوى - الكتب والمقالات */
+.content-loader {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.content-loader .item {
+  height: 180px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.content-loader .item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0) 0%, 
+    rgba(255,255,255,0.6) 50%, 
+    rgba(255,255,255,0) 100%);
+  animation: shimmer 2s infinite;
+}
+
+.content-loader .item:nth-child(even) {
+  height: 220px;
+}

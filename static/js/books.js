@@ -53,6 +53,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fetch books from API with caching for better performance
     async function fetchBooks() {
         try {
+            // Display animated loading indicator
+            if (booksContainer) {
+                booksContainer.innerHTML = `
+                    <div class="loader-container">
+                        <div class="loader-spinner"></div>
+                        <div class="loader-text">جاري تحميل الكتب...</div>
+                    </div>
+                `;
+            }
+            
             // Check for cached books data
             const cachedBooks = localStorage.getItem('cachedBooks');
             const cachedTimestamp = localStorage.getItem('booksTimestamp');
@@ -70,8 +80,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Cache not available or too old, fetch fresh data
+            console.log('Sending request to /api/books');
             const response = await fetch('/api/books');
+            console.log('Response received:', response.status);
             const data = await response.json();
+            console.log('Books data:', data);
             booksData = data.books;
             
             // Save to cache
@@ -93,7 +106,15 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // No cached data available, show error
             if (booksContainer) {
-                booksContainer.innerHTML = '<p class="error-message" style="text-align: center; color: #721c24; background-color: #f8d7da; padding: 15px; border-radius: 5px;">حدث خطأ في تحميل البيانات</p>';
+                booksContainer.innerHTML = `
+                    <div class="error-message" style="text-align: center; padding: 20px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 32px; color: #dc3545; margin-bottom: 15px;"></i>
+                        <p>حدث خطأ في تحميل البيانات. يرجى المحاولة مرة أخرى لاحقاً.</p>
+                        <button onclick="location.reload()" class="btn btn-primary" style="margin-top: 15px;">
+                            <i class="fas fa-sync-alt"></i> إعادة المحاولة
+                        </button>
+                    </div>
+                `;
             }
         }
     }

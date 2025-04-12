@@ -45,13 +45,28 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Show loading state
+        // Show animated loading state with enhanced design
         articlesContainer.innerHTML = `
-            <div class="loading-spinner" style="text-align: center; width: 100%; padding: 30px;">
-                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #d4af37;"></i>
-                <p>جاري تحميل المقالات...</p>
+            <div class="loader-container">
+                <div class="loader-pulse"></div>
+                <div class="loader-text">جاري تحميل المقالات...</div>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: 30%;"></div>
+                </div>
             </div>
         `;
+        
+        // Simulate progress animation for better user experience
+        const progressBar = articlesContainer.querySelector('.progress-bar');
+        let width = 30;
+        const progressInterval = setInterval(() => {
+            if (width >= 80) {
+                clearInterval(progressInterval);
+            } else {
+                width += 5;
+                progressBar.style.width = `${width}%`;
+            }
+        }, 200);
         
         try {
             console.log('Sending request to /api/articles');
@@ -60,15 +75,39 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             console.log('Articles data:', data);
             
+            // Complete progress bar animation
+            if (progressBar) {
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+                progressBar.style.transition = 'width 0.3s ease-in-out';
+            }
+            
             // Cache the articles data
             sessionStorage.setItem('cachedArticles', JSON.stringify(data.articles));
             sessionStorage.setItem('articlesTimestamp', currentTime.toString());
             
-            renderArticles(data.articles);
+            // Minor delay before rendering to show the completed loading animation
+            setTimeout(() => {
+                renderArticles(data.articles);
+            }, 300);
         } catch (error) {
             console.error('Error fetching articles:', error);
+            
+            // Stop loading animation
+            if (progressBar) {
+                clearInterval(progressInterval);
+            }
+            
             if (articlesContainer) {
-                articlesContainer.innerHTML = '<p class="error-message" style="text-align: center; color: #721c24; background-color: #f8d7da; padding: 15px; border-radius: 5px;">حدث خطأ في تحميل المقالات</p>';
+                articlesContainer.innerHTML = `
+                    <div class="error-message" style="text-align: center; padding: 20px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 32px; color: #dc3545; margin-bottom: 15px; display: block;"></i>
+                        <p>حدث خطأ في تحميل المقالات. يرجى المحاولة مرة أخرى لاحقًا.</p>
+                        <button onclick="location.reload()" class="btn btn-primary" style="margin-top: 15px;">
+                            <i class="fas fa-sync-alt"></i> إعادة المحاولة
+                        </button>
+                    </div>
+                `;
             }
         }
     }
