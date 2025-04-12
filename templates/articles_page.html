@@ -2,188 +2,254 @@
 
 {% block title %}مقالات الشيخ مصطفى الطحان{% endblock %}
 
-{% block styles %}
+{% block head %}
+{{ super() }}
 <style>
-    .articles-container {
-        margin: 6rem auto 3rem;
-        padding-top: 2rem;
-    }
-    
-    .articles-header {
+    .page-header {
+        background-color: #d4af37;
+        color: white;
+        padding: 25px 0;
+        margin-bottom: 30px;
         text-align: center;
-        margin-bottom: 2rem;
+        margin-top: 6rem; /* Extra margin to prevent navbar overlap */
+        width: 100%;
+        box-sizing: border-box;
     }
     
-    .articles-header h1 {
-        color: var(--main-color);
+    .page-header .container {
+        max-width: 1800px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 2%;
+    }
+    
+    .page-header h1 {
         font-size: 2.5rem;
         margin-bottom: 0.5rem;
+        color: #1a2a3a;
     }
     
-    .articles-header .separator {
-        width: 80px;
-        height: 3px;
-        background-color: var(--gold-color);
+    .page-header p {
+        font-size: 1.2rem;
+        margin-top: 0;
+        color: #1a2a3a;
+        opacity: 0.9;
+    }
+    
+    .articles-container {
+        width: 100%;
+        max-width: 1800px; /* Increased max-width for fullscreen */
         margin: 0 auto;
+        padding: 0 2%; /* Use percentage for dynamic padding */
+        box-sizing: border-box;
+        direction: rtl;
     }
     
-    .sorting-options {
+    .search-and-sort {
         display: flex;
-        justify-content: center;
-        gap: 1rem;
-        margin-bottom: 2rem;
-        padding: 1rem;
-        background-color: #f8f9fa;
-        border-radius: 8px;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        width: 100%;
+        gap: 15px;
+    }
+    
+    #search-form {
+        display: flex;
+        align-items: center;
+        width: 300px; /* Fixed width for search form */
+    }
+    
+    #search-input {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px 0 0 4px;
+        font-size: 14px;
+        width: 240px; /* Fixed width for search input */
+    }
+    
+    #search-btn {
+        background-color: #1a2a3a;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        cursor: pointer;
+        border-radius: 0 4px 4px 0;
+        width: 60px; /* Fixed width for button */
+    }
+    
+    .sort-options {
+        display: flex;
+        gap: 10px;
     }
     
     .sort-btn {
-        background-color: transparent;
-        border: 1px solid var(--main-color);
-        color: var(--main-color);
-        padding: 0.5rem 1rem;
-        border-radius: 4px;
+        background-color: #f5f5f5;
+        border: none;
+        padding: 8px 15px;
         cursor: pointer;
-        transition: all 0.3s ease;
+        border-radius: 4px;
+        transition: all 0.3s;
     }
     
     .sort-btn.active {
-        background-color: var(--main-color);
+        background-color: #1a2a3a;
         color: white;
     }
-    
-    .sort-btn:hover {
-        background-color: var(--main-color);
-        color: white;
+
+    /* Simple static 3-column layout */
+    .articles-fixed-grid {
+        width: 100%; 
+        border: 2px solid #d4af37;
+        overflow: hidden;
     }
-    
-    .search-form {
-        display: flex;
-        margin-bottom: 2rem;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    .search-input {
-        flex: 1;
-        padding: 0.75rem;
-        border: 1px solid #ddd;
-        border-radius: 4px 0 0 4px;
-        font-size: 1rem;
-    }
-    
-    .search-btn {
-        background-color: var(--main-color);
-        color: white;
-        border: none;
-        padding: 0 1.5rem;
-        border-radius: 0 4px 4px 0;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-    
-    .search-btn:hover {
-        background-color: #14325c;
-    }
-    
-    /* Articles layout container */
-    #articles-container {
-        max-width: 1200px !important;
-        margin: 0 auto !important;
-        width: 100%;
-    }
-    
-    #articles-grid {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        margin: -15px !important;
-        width: calc(100% + 30px) !important;
-    }
-    
-    /* Article card styles */
+
     .article-card {
-        display: flex;
-        flex-direction: column;
+        width: 32%;
+        margin-right: 2%;
+        margin-bottom: 20px;
+        float: right;
+        border: 2px solid #1a2a3a;
         background-color: white;
         border-radius: 8px;
         overflow: hidden;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        width: calc(33.333% - 30px);
-        margin: 15px;
+        transition: transform 0.3s ease;
     }
     
     .article-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 16px rgba(0,0,0,0.15);
     }
-    
+
+    .article-card:nth-child(3n) {
+        margin-right: 0;
+    }
+
     .article-content {
         padding: 1.5rem;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    /* Tablet layout - 2 columns */
-    @media (max-width: 1199px) and (min-width: 768px) {
-        .article-card {
-            width: calc(50% - 30px);
-        }
-    }
-    
-    /* Mobile layout - 1 column */
-    @media (max-width: 767px) {
-        .article-card {
-            width: calc(100% - 30px);
-        }
     }
     
     .article-title {
         font-size: 1.5rem;
-        color: var(--main-color);
-        margin-bottom: 0.75rem;
-        font-weight: bold;
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        color: #1a2a3a;
     }
     
     .article-meta {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        color: #6c757d;
         margin-bottom: 1rem;
+        color: #666;
         font-size: 0.9rem;
     }
     
     .article-date {
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+    }
+    
+    .article-date i {
+        margin-left: 5px;
     }
     
     .article-summary {
-        color: #495057;
-        margin-bottom: 1.5rem;
+        color: #444;
         line-height: 1.6;
-        flex-grow: 1;
+        margin-bottom: 1.5rem;
     }
     
     .article-action {
-        align-self: flex-start;
-        background-color: var(--main-color);
-        color: white;
+        color: #d4af37;
         text-decoration: none;
-        padding: 0.6rem 1.2rem;
-        border-radius: 4px;
-        transition: background-color 0.3s ease;
         font-weight: bold;
+        display: inline-block;
+        padding: 8px 0;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s;
     }
     
     .article-action:hover {
-        background-color: #14325c;
+        border-bottom-color: #d4af37;
+    }
+
+    /* Article detail view */
+    .article-detail-view {
+        direction: rtl;
     }
     
+    .article-full {
+        background-color: white;
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .article-full-title {
+        color: #1a2a3a;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 2rem;
+    }
+    
+    .article-full-meta {
+        margin-bottom: 2rem;
+        color: #666;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 1rem;
+    }
+    
+    .article-full-content {
+        line-height: 1.8;
+        color: #333;
+    }
+    
+    .back-to-articles {
+        display: inline-block;
+        color: #d4af37;
+        text-decoration: none;
+        font-weight: bold;
+        margin-top: 1rem;
+    }
+    
+    .back-to-articles i {
+        margin-left: 5px;
+    }
+    
+    /* Pagination styles */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin: 30px 0;
+        clear: both;
+    }
+    
+    .pagination-btn {
+        background-color: #f5f5f5;
+        border: none;
+        color: #333;
+        padding: 8px 16px;
+        margin: 0 5px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.3s;
+    }
+    
+    .pagination-btn:hover:not(.disabled):not(.active) {
+        background-color: #e0e0e0;
+    }
+    
+    .pagination-btn.active {
+        background-color: #d4af37;
+        color: white;
+    }
+    
+    .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    /* Loading indicator */
     .loading-indicator {
         text-align: center;
         padding: 2rem;
@@ -193,7 +259,7 @@
         width: 40px;
         height: 40px;
         border: 4px solid rgba(0, 0, 0, 0.1);
-        border-left-color: var(--main-color);
+        border-left-color: #1a2a3a;
         border-radius: 50%;
         animation: spin 1s linear infinite;
         margin: 0 auto 1rem;
@@ -211,146 +277,100 @@
         color: #6c757d;
     }
     
-    .pagination {
-        display: flex;
-        justify-content: center;
-        margin-top: 3rem;
-        gap: 0.5rem;
+    /* Responsive design */
+    @media (max-width: 900px) {
+        /* For tablet - 2 columns */
+        .article-card {
+            width: 48%;
+            margin-right: 4%;
+        }
+        
+        .article-card:nth-child(3n) {
+            margin-right: 4%;
+        }
+        
+        .article-card:nth-child(2n) {
+            margin-right: 0;
+        }
+        
+        .articles-container {
+            padding: 0 15px;
+        }
     }
     
-    .pagination-btn {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    
-    .pagination-btn.active {
-        background-color: var(--main-color);
-        color: white;
-        border-color: var(--main-color);
-    }
-    
-    .pagination-btn:hover:not(.active) {
-        background-color: #f8f9fa;
-    }
-    
-    .pagination-btn.disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-    
-    .article-full {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        padding: 2rem;
-        margin-bottom: 2rem;
-    }
-    
-    .article-full-title {
-        font-size: 2rem;
-        color: var(--main-color);
-        margin-bottom: 1rem;
-    }
-    
-    .article-full-meta {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        color: #6c757d;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #eee;
-    }
-    
-    .article-full-content {
-        line-height: 1.8;
-        color: #333;
-        font-size: 1.1rem;
-    }
-    
-    .article-full-content p {
-        margin-bottom: 1.5rem;
-    }
-    
-    .back-to-articles {
-        display: inline-block;
-        margin-top: 2rem;
-        background-color: #f8f9fa;
-        color: #495057;
-        text-decoration: none;
-        padding: 0.6rem 1.2rem;
-        border-radius: 4px;
-        transition: all 0.3s ease;
-    }
-    
-    .back-to-articles:hover {
-        background-color: #e9ecef;
-    }
-    
-    /* Mobile layout */
-    @media (max-width: 767px) {        
-        .search-form {
+    @media (max-width: 600px) {
+        /* For mobile - 1 column */
+        .article-card {
+            width: 100%;
+            margin-right: 0;
+        }
+        
+        .search-and-sort {
             flex-direction: column;
+            gap: 15px;
         }
         
-        .search-input {
-            border-radius: 4px;
-            margin-bottom: 0.5rem;
+        #search-form {
+            width: 100%;
         }
         
-        .search-btn {
-            border-radius: 4px;
-            padding: 0.75rem;
+        #search-input {
+            flex-grow: 1;
+            width: auto;
         }
+        
+        #search-btn {
+            width: 50px;
+        }
+        
+        .articles-container {
+            padding: 0 10px;
+        }
+    }
+
+    /* Clearfix for the grid */
+    .clearfix:after {
+        content: "";
+        display: table;
+        clear: both;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container articles-container">
-    <div class="articles-header">
+<div class="page-header">
+    <div class="container">
         <h1>مقالات الشيخ مصطفى الطحان</h1>
-        <div class="separator"></div>
+        <p>مجموعة من المقالات المختارة التي كتبها الشيخ مصطفى الطحان عن مواضيع متنوعة</p>
     </div>
+</div>
+
+<div class="articles-container">
+    <div id="article-detail-view" style="display: none;" class="article-detail-view"></div>
     
-    <form class="search-form" id="search-form">
-        <input type="text" class="search-input" id="search-input" placeholder="ابحث في المقالات...">
-        <button type="submit" class="search-btn">
-            <i class="fas fa-search"></i>
-        </button>
-    </form>
-    
-    <div class="sorting-options">
-        <button class="sort-btn active" data-sort="newest">الأحدث</button>
-        <button class="sort-btn" data-sort="popular">الأكثر قراءة</button>
-    </div>
-    
-    <div id="articles-container" style="width: 1200px; max-width: 100%; margin: 0 auto; padding: 0 15px; box-sizing: border-box; direction: rtl;">
-        <div id="articles-list">
-            <div class="row clearfix" style="margin: 0 -15px; width: auto; clear: both; overflow: hidden;">
-                <div id="articles-grid" style="width: 100%; position: relative;">
-                    <!-- Articles will be loaded dynamically here -->
-                    <div class="loading-indicator" style="width: 100%; text-align: center; padding: 50px 0;">
-                        <div class="spinner"></div>
-                        <p>جاري تحميل المقالات...</p>
-                    </div>
-                </div>
-            </div>
+    <div id="articles-list-view">
+        <div class="search-and-sort">
+            <form id="search-form">
+                <input type="text" id="search-input" placeholder="ابحث عن مقال...">
+                <button type="submit" id="search-btn"><i class="fas fa-search"></i></button>
+            </form>
             
-            <div id="pagination" class="pagination" style="clear: both;">
-                <!-- Pagination will be generated dynamically -->
+            <div class="sort-options">
+                <button class="sort-btn active" data-sort="newest">الأحدث</button>
+                <button class="sort-btn" data-sort="popular">الأكثر قراءة</button>
             </div>
         </div>
         
-        <div id="article-detail" style="display: none;">
-            <!-- Article detail will be displayed here -->
+        <div id="articles-grid" class="articles-fixed-grid clearfix">
+            <!-- Articles will be loaded dynamically here -->
+            <div class="loading-indicator">
+                <div class="spinner"></div>
+                <p>جاري تحميل المقالات...</p>
+            </div>
+        </div>
+        
+        <div id="pagination" class="pagination">
+            <!-- Pagination will be generated dynamically -->
         </div>
     </div>
 </div>
@@ -361,13 +381,13 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Elements
         const articlesGrid = document.getElementById('articles-grid');
-        const pagination = document.getElementById('pagination');
-        const sortButtons = document.querySelectorAll('.sort-btn');
+        const articleLinks = document.querySelectorAll('.article-action');
+        const articlesListView = document.getElementById('articles-list-view');
+        const articleDetailView = document.getElementById('article-detail-view');
         const searchForm = document.getElementById('search-form');
         const searchInput = document.getElementById('search-input');
-        const articlesContainer = document.getElementById('articles-container');
-        const articlesList = document.getElementById('articles-list');
-        const articleDetail = document.getElementById('article-detail');
+        const sortButtons = document.querySelectorAll('.sort-btn');
+        const pagination = document.getElementById('pagination');
         
         // State
         let articles = [];
@@ -376,48 +396,6 @@
         let articlesPerPage = 6;
         let currentSort = 'newest';
         let searchQuery = '';
-        
-        // We're not using this function anymore with the new layout approach
-        function forceGridLayout() {
-            // No need to force any layout, we'll use direct styles for each card
-            articlesGrid.style.width = '100%';
-            articlesGrid.style.display = 'block'; 
-        }
-        
-        // Handle window resize to update article card widths
-        window.addEventListener('resize', function() {
-            // Update article card widths based on screen size
-            document.querySelectorAll('.article-card').forEach((card, index) => {
-                if (window.innerWidth < 768) {
-                    card.style.width = '100%';
-                    card.style.float = 'none';
-                    card.style.clear = 'both';
-                } else if (window.innerWidth < 1200) {
-                    card.style.width = '48%';
-                    card.style.float = 'right';
-                    card.style.marginLeft = '2%';
-                    // Clear every 2nd item
-                    if (index % 2 === 0) {
-                        card.style.clear = 'right';
-                    } else {
-                        card.style.clear = 'none';
-                    }
-                } else {
-                    card.style.width = '31.333%';
-                    card.style.float = 'right';
-                    card.style.marginLeft = '2%';
-                    // Clear every 3rd item
-                    if (index % 3 === 0) {
-                        card.style.clear = 'right';
-                    } else {
-                        card.style.clear = 'none';
-                    }
-                }
-            });
-        });
-        
-        // Apply grid layout immediately
-        forceGridLayout();
         
         // Fetch articles
         async function fetchArticles() {
@@ -507,37 +485,8 @@
                 articleCard.className = 'article-card';
                 articleCard.dataset.id = article.id;
                 
-                // Use float-based layout with fixed width and explicit column sizing
-                if (window.innerWidth < 768) {
-                    articleCard.style.width = '100%';
-                    articleCard.style.float = 'none';
-                } else if (window.innerWidth < 1200) {
-                    articleCard.style.width = '48%';
-                    articleCard.style.float = 'right';
-                    articleCard.style.marginLeft = '2%';
-                    // Clear every 2nd item
-                    if (articlesToDisplay.indexOf(article) % 2 === 0) {
-                        articleCard.style.clear = 'right';
-                    }
-                } else {
-                    articleCard.style.width = '31.333%';
-                    articleCard.style.float = 'right';
-                    articleCard.style.marginLeft = '2%';
-                    // Clear every 3rd item
-                    if (articlesToDisplay.indexOf(article) % 3 === 0) {
-                        articleCard.style.clear = 'right';
-                    }
-                }
-                
-                // Ensure other important styles are applied inline
-                articleCard.style.marginBottom = '30px';
-                articleCard.style.backgroundColor = 'white';
-                articleCard.style.borderRadius = '8px';
-                articleCard.style.overflow = 'hidden';
-                articleCard.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-                
                 articleCard.innerHTML = `
-                    <div class="article-content" style="padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column;">
+                    <div class="article-content">
                         <h3 class="article-title">${article.title}</h3>
                         <div class="article-meta">
                             <div class="article-date">
@@ -545,7 +494,7 @@
                                 <span>${formatDate(article.created_at)}</span>
                             </div>
                         </div>
-                        <p class="article-summary">${article.summary}</p>
+                        <p class="article-summary">${truncateText(article.summary, 150)}</p>
                         <a href="#" class="article-action" data-id="${article.id}">قراءة المزيد</a>
                     </div>
                 `;
@@ -553,18 +502,121 @@
                 articlesGrid.appendChild(articleCard);
             });
             
-            // Add event listeners to article actions
+            // Add event listeners to article cards
             addArticleEventListeners();
+        }
+        
+        // Add event listeners to article cards
+        function addArticleEventListeners() {
+            document.querySelectorAll('.article-action').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const articleId = this.dataset.id;
+                    showArticleDetail(articleId);
+                });
+            });
             
-            // Make sure grid layout is enforced even after DOM updates
-            forceGridLayout();
+            document.querySelectorAll('.article-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Only trigger if not clicking on the action button
+                    if (!e.target.classList.contains('article-action')) {
+                        const articleId = this.dataset.id;
+                        showArticleDetail(articleId);
+                    }
+                });
+            });
+        }
+        
+        // Search form submission
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            searchQuery = searchInput.value.trim().toLowerCase();
+            processArticles();
+        });
+        
+        // Sort buttons
+        sortButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Update active state
+                sortButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update sort and reprocess
+                currentSort = this.dataset.sort;
+                processArticles();
+            });
+        });
+        
+        // Show article detail
+        async function showArticleDetail(articleId) {
+            try {
+                // Find article in cached data first
+                let article = articles.find(a => a.id == articleId);
+                
+                // If not found, fetch from API
+                if (!article) {
+                    const response = await fetch(`/api/articles/${articleId}`);
+                    const data = await response.json();
+                    if (data.article) {
+                        article = data.article;
+                    } else {
+                        throw new Error('Article not found');
+                    }
+                }
+                
+                articlesListView.style.display = 'none';
+                articleDetailView.style.display = 'block';
+                
+                articleDetailView.innerHTML = `
+                    <div class="article-full">
+                        <h1 class="article-full-title">${article.title}</h1>
+                        <div class="article-full-meta">
+                            <div class="article-date">
+                                <i class="far fa-calendar-alt"></i>
+                                <span>${formatDate(article.created_at)}</span>
+                            </div>
+                        </div>
+                        <div class="article-full-content">
+                            ${article.content}
+                        </div>
+                    </div>
+                    <a href="#" class="back-to-articles" id="back-to-articles">
+                        <i class="fas fa-arrow-right"></i> العودة لقائمة المقالات
+                    </a>
+                `;
+                
+                // Update page title with article title
+                document.title = `${article.title} - مقالات الشيخ مصطفى الطحان`;
+                
+                // Add back button event listener
+                document.getElementById('back-to-articles').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    backToArticlesList();
+                });
+                
+                // Record view activity
+                try {
+                    if (typeof recordActivity === 'function') {
+                        recordActivity('view_article', articleId, 'article', article.title);
+                    }
+                } catch (error) {
+                    console.log('Activity tracking not available');
+                }
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error showing article detail:', error);
+            }
+        }
+        
+        // Go back to articles list
+        function backToArticlesList() {
+            articleDetailView.style.display = 'none';
+            articlesListView.style.display = 'block';
             
-            // Add a clearfix element to ensure proper layout
-            const clearfix = document.createElement('div');
-            clearfix.style.clear = 'both';
-            clearfix.style.width = '100%';
-            clearfix.style.height = '0';
-            articlesGrid.appendChild(clearfix);
+            // Reset page title
+            document.title = 'مقالات الشيخ مصطفى الطحان';
         }
         
         // Render pagination controls
@@ -633,166 +685,23 @@
             pagination.appendChild(nextBtn);
         }
         
-        // Add event listeners to article cards
-        function addArticleEventListeners() {
-            document.querySelectorAll('.article-action').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const articleId = this.dataset.id;
-                    const article = articles.find(a => a.id == articleId);
-                    
-                    if (article) {
-                        showArticleDetail(article);
-                        // Record view activity
-                        try {
-                            if (typeof recordActivity === 'function') {
-                                recordActivity('view_article', article.id, 'article', article.title);
-                            }
-                        } catch (error) {
-                            console.error('Error recording activity:', error);
-                        }
-                    }
-                });
-            });
-            
-            document.querySelectorAll('.article-card').forEach(card => {
-                card.addEventListener('click', function(e) {
-                    // Only trigger if not clicking on the action button
-                    if (!e.target.classList.contains('article-action')) {
-                        const articleId = this.dataset.id;
-                        const article = articles.find(a => a.id == articleId);
-                        
-                        if (article) {
-                            showArticleDetail(article);
-                            // Record view activity
-                            try {
-                                if (typeof recordActivity === 'function') {
-                                    recordActivity('view_article', article.id, 'article', article.title);
-                                }
-                            } catch (error) {
-                                console.error('Error recording activity:', error);
-                            }
-                        }
-                    }
-                });
-            });
-        }
-        
-        // Show article detail
-        function showArticleDetail(article) {
-            articlesList.style.display = 'none';
-            articleDetail.style.display = 'block';
-            
-            articleDetail.innerHTML = `
-                <div class="article-full">
-                    <h1 class="article-full-title">${article.title}</h1>
-                    <div class="article-full-meta">
-                        <div class="article-date">
-                            <i class="far fa-calendar-alt"></i>
-                            <span>${formatDate(article.created_at)}</span>
-                        </div>
-                    </div>
-                    <div class="article-full-content">
-                        ${article.content}
-                    </div>
-                </div>
-                <a href="#" class="back-to-articles" id="back-to-articles">
-                    <i class="fas fa-arrow-right"></i> العودة لقائمة المقالات
-                </a>
-            `;
-            
-            // Update page title with article title
-            document.title = `${article.title} - مقالات الشيخ مصطفى الطحان`;
-            
-            // Update URL with article ID (without refreshing page)
-            const url = new URL(window.location);
-            url.searchParams.set('article', article.id);
-            window.history.pushState({}, '', url);
-            
-            // Add back button event listener
-            document.getElementById('back-to-articles').addEventListener('click', function(e) {
-                e.preventDefault();
-                backToArticlesList();
-            });
-            
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        
-        // Go back to articles list
-        function backToArticlesList() {
-            articleDetail.style.display = 'none';
-            articlesList.style.display = 'block';
-            
-            // Reset page title
-            document.title = 'مقالات الشيخ مصطفى الطحان';
-            
-            // Update URL (remove article parameter)
-            const url = new URL(window.location);
-            url.searchParams.delete('article');
-            window.history.pushState({}, '', url);
-            
-            // Ensure grid layout is properly restored when returning to list view
-            setTimeout(forceGridLayout, 10);
-        }
-        
-        // Record view activity for articles page
+        // Record page view activity
         function recordViewActivity() {
             try {
                 if (typeof recordActivity === 'function') {
                     recordActivity('view_articles_page', null, 'page', 'صفحة المقالات');
                 }
             } catch (error) {
-                console.error('Error recording activity:', error);
-            }
-        }
-        
-        // Event listeners for search, sorting, and URL handling
-        searchForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            searchQuery = searchInput.value.trim();
-            processArticles();
-        });
-        
-        sortButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const sortValue = this.dataset.sort;
-                if (sortValue !== currentSort) {
-                    currentSort = sortValue;
-                    // Update active state
-                    sortButtons.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    processArticles();
-                }
-            });
-        });
-        
-        // Handle browser back/forward buttons
-        window.addEventListener('popstate', function() {
-            checkUrlForArticle();
-        });
-        
-        // Check if URL has article parameter
-        function checkUrlForArticle() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const articleId = urlParams.get('article');
-            
-            if (articleId) {
-                // Find the article
-                const article = articles.find(a => a.id == articleId);
-                if (article) {
-                    showArticleDetail(article);
-                } else {
-                    // If article not found, go back to list
-                    backToArticlesList();
-                    showErrorMessage('المقال غير موجود');
-                }
-            } else {
-                backToArticlesList();
+                console.log('Activity tracking not available');
             }
         }
         
         // Helper functions
+        function truncateText(text, maxLength) {
+            if (text.length <= maxLength) return text;
+            return text.slice(0, maxLength) + '...';
+        }
+        
         function formatDate(dateString) {
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             return new Date(dateString).toLocaleDateString('ar-EG', options);
@@ -808,19 +717,8 @@
         
         // Initialize
         fetchArticles();
-        
-        // Check URL for article parameter on page load
-        checkUrlForArticle();
-        
-        // Refresh articles data in background periodically
-        setInterval(function() {
-            fetchArticles();
-        }, 5 * 60 * 1000); // Refresh every 5 minutes
     });
 </script>
-
-<!-- Add Font Awesome for icons if not already included -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 
 <!-- Load activity tracking script -->
 <script src="{{ url_for('static', filename='js/activity-tracking.js') }}"></script>
