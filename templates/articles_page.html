@@ -95,10 +95,10 @@
     }
     
     #articles-grid {
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 30px !important;
-        width: 100% !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        margin: -15px !important;
+        width: calc(100% + 30px) !important;
     }
     
     /* Article card styles */
@@ -110,7 +110,8 @@
         overflow: hidden;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        width: 100%;
+        width: calc(33.333% - 30px);
+        margin: 15px;
     }
     
     .article-card:hover {
@@ -127,15 +128,15 @@
     
     /* Tablet layout - 2 columns */
     @media (max-width: 1199px) and (min-width: 768px) {
-        #articles-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
+        .article-card {
+            width: calc(50% - 30px);
         }
     }
     
     /* Mobile layout - 1 column */
     @media (max-width: 767px) {
-        #articles-grid {
-            grid-template-columns: 1fr !important;
+        .article-card {
+            width: calc(100% - 30px);
         }
     }
     
@@ -331,13 +332,15 @@
         <button class="sort-btn" data-sort="popular">الأكثر قراءة</button>
     </div>
     
-    <div id="articles-container" style="max-width: 1200px; margin: 0 auto;">
+    <div id="articles-container" style="max-width: 1200px; margin: 0 auto; width: 100%; box-sizing: border-box; padding: 0 15px;">
         <div id="articles-list">
-            <div class="articles-grid" id="articles-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;">
-                <!-- Articles will be loaded dynamically here -->
-                <div class="loading-indicator">
-                    <div class="spinner"></div>
-                    <p>جاري تحميل المقالات...</p>
+            <div class="article-row-container" style="width: 100%; box-sizing: border-box; margin: 0 auto;">
+                <div id="articles-grid" style="display: flex; flex-wrap: wrap; margin: -15px; width: calc(100% + 30px);">
+                    <!-- Articles will be loaded dynamically here -->
+                    <div class="loading-indicator" style="width: 100%; text-align: center; padding: 50px 0;">
+                        <div class="spinner"></div>
+                        <p>جاري تحميل المقالات...</p>
+                    </div>
                 </div>
             </div>
             
@@ -374,24 +377,30 @@
         let currentSort = 'newest';
         let searchQuery = '';
         
-        // Force the grid layout
+        // Force flexbox layout
         function forceGridLayout() {
-            // Make sure the grid layout is applied even if styles are overridden
-            articlesGrid.style.display = 'grid';
-            articlesGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
-            articlesGrid.style.gap = '30px';
-            articlesGrid.style.width = '100%';
-            
-            // Apply responsive styles based on current screen width
-            if (window.innerWidth < 768) {
-                articlesGrid.style.gridTemplateColumns = '1fr';
-            } else if (window.innerWidth < 1200) {
-                articlesGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
-            }
+            // Make sure the flexbox layout is applied even if styles are overridden
+            articlesGrid.style.display = 'flex';
+            articlesGrid.style.flexWrap = 'wrap';
+            articlesGrid.style.margin = '-15px';
+            articlesGrid.style.width = 'calc(100% + 30px)';
         }
         
-        // Force grid layout on window resize
-        window.addEventListener('resize', forceGridLayout);
+        // Force grid layout on window resize and update card widths
+        window.addEventListener('resize', function() {
+            forceGridLayout();
+            
+            // Update article card widths based on screen size
+            document.querySelectorAll('.article-card').forEach(card => {
+                if (window.innerWidth < 768) {
+                    card.style.width = 'calc(100% - 30px)';
+                } else if (window.innerWidth < 1200) {
+                    card.style.width = 'calc(50% - 30px)';
+                } else {
+                    card.style.width = 'calc(33.333% - 30px)';
+                }
+            });
+        });
         
         // Apply grid layout immediately
         forceGridLayout();
@@ -484,8 +493,26 @@
                 articleCard.className = 'article-card';
                 articleCard.dataset.id = article.id;
                 
+                // Add explicit inline styles for width based on screen size
+                if (window.innerWidth < 768) {
+                    articleCard.style.width = 'calc(100% - 30px)';
+                } else if (window.innerWidth < 1200) {
+                    articleCard.style.width = 'calc(50% - 30px)';
+                } else {
+                    articleCard.style.width = 'calc(33.333% - 30px)';
+                }
+                
+                // Ensure other important styles are applied inline
+                articleCard.style.margin = '15px';
+                articleCard.style.display = 'flex';
+                articleCard.style.flexDirection = 'column';
+                articleCard.style.backgroundColor = 'white';
+                articleCard.style.borderRadius = '8px';
+                articleCard.style.overflow = 'hidden';
+                articleCard.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+                
                 articleCard.innerHTML = `
-                    <div class="article-content">
+                    <div class="article-content" style="padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column;">
                         <h3 class="article-title">${article.title}</h3>
                         <div class="article-meta">
                             <div class="article-date">
