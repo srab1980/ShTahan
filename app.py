@@ -167,7 +167,7 @@ def articles_page():
     from models import Article
     # Load articles directly from the database
     articles = Article.query.order_by(Article.created_at.desc()).all()
-    return render_template('articles_page_simple.html', articles=articles, now=datetime.now())
+    return render_template('articles_page_fixed.html', articles=articles, now=datetime.now())
     
 
 @app.route('/login-link')
