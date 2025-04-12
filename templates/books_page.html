@@ -1,0 +1,875 @@
+{% extends 'base.html' %}
+
+{% block title %}كتب الشيخ مصطفى الطحان{% endblock %}
+
+{% block styles %}
+<style>
+    .books-container {
+        margin-top: 2rem;
+    }
+    
+    .books-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .books-header h1 {
+        color: var(--main-color);
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .books-header .separator {
+        width: 80px;
+        height: 3px;
+        background-color: var(--gold-color);
+        margin: 0 auto;
+    }
+    
+    .books-filters {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        min-width: 200px;
+    }
+    
+    .filter-group label {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: var(--main-color);
+    }
+    
+    .filter-group select {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    
+    .sorting-options {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .sort-btn {
+        background-color: transparent;
+        border: 1px solid var(--main-color);
+        color: var(--main-color);
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .sort-btn.active {
+        background-color: var(--main-color);
+        color: white;
+    }
+    
+    .sort-btn:hover {
+        background-color: var(--main-color);
+        color: white;
+    }
+    
+    .books-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+    
+    .book-card {
+        display: flex;
+        flex-direction: column;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background-color: white;
+        height: 100%;
+    }
+    
+    .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    }
+    
+    .book-cover {
+        height: 300px;
+        overflow: hidden;
+    }
+    
+    .book-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .book-card:hover .book-cover img {
+        transform: scale(1.05);
+    }
+    
+    .book-details {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .book-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--main-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .book-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .book-meta span {
+        background-color: #f8f9fa;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+    }
+    
+    .book-description {
+        color: #495057;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+    
+    .book-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: auto;
+    }
+    
+    .book-action-btn {
+        flex: 1;
+        text-align: center;
+        padding: 0.75rem;
+        border-radius: 4px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .view-btn {
+        background-color: var(--main-color);
+        color: white;
+    }
+    
+    .download-btn {
+        background-color: var(--gold-color);
+        color: white;
+    }
+    
+    .book-action-btn:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+    
+    .no-books {
+        text-align: center;
+        padding: 2rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        color: #6c757d;
+    }
+    
+    .loading-indicator {
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-left-color: var(--main-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+        gap: 0.5rem;
+    }
+    
+    .pagination-btn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination-btn.active {
+        background-color: var(--main-color);
+        color: white;
+        border-color: var(--main-color);
+    }
+    
+    .pagination-btn:hover:not(.active) {
+        background-color: #f8f9fa;
+    }
+    
+    .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    @media (max-width: 768px) {
+        .books-filters {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .filter-group {
+            width: 100%;
+        }
+        
+        .book-card {
+            margin-bottom: 1.5rem;
+        }
+        
+        .books-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .books-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .book-cover {
+            height: 250px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container books-container">
+    <div class="books-header">
+        <h1>كتب ومؤلفات الشيخ مصطفى الطحان</h1>
+        <div class="separator"></div>
+    </div>
+    
+    <div class="books-filters">
+        <div class="filter-group">
+            <label for="language-filter">اللغة</label>
+            <select id="language-filter">
+                <option value="all">جميع اللغات</option>
+                <option value="العربية">العربية</option>
+                <option value="الإنجليزية">الإنجليزية</option>
+                <option value="التركية">التركية</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="category-filter">التصنيف</label>
+            <select id="category-filter">
+                <option value="all">جميع التصنيفات</option>
+                <option value="الفقه">الفقه</option>
+                <option value="العقيدة">العقيدة</option>
+                <option value="السيرة">السيرة</option>
+                <option value="التربية">التربية</option>
+                <option value="الدعوة">الدعوة</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="sorting-options">
+        <button class="sort-btn active" data-sort="newest">الأحدث</button>
+        <button class="sort-btn" data-sort="popular">الأكثر مشاهدة</button>
+    </div>
+    
+    <div id="books-grid" class="books-grid">
+        <!-- Books will be loaded dynamically here -->
+        <div class="loading-indicator">
+            <div class="spinner"></div>
+            <p>جاري تحميل الكتب...</p>
+        </div>
+    </div>
+    
+    <div id="pagination" class="pagination">
+        <!-- Pagination will be generated dynamically -->
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elements
+        const booksGrid = document.getElementById('books-grid');
+        const languageFilter = document.getElementById('language-filter');
+        const categoryFilter = document.getElementById('category-filter');
+        const sortButtons = document.querySelectorAll('.sort-btn');
+        const pagination = document.getElementById('pagination');
+        
+        // State
+        let books = [];
+        let filteredBooks = [];
+        let currentPage = 1;
+        let booksPerPage = 12;
+        let currentSort = 'newest';
+        let currentLanguage = 'all';
+        let currentCategory = 'all';
+        
+        // Fetch books
+        async function fetchBooks() {
+            try {
+                const cachedBooks = localStorage.getItem('booksData');
+                const cachedTimestamp = localStorage.getItem('booksTimestamp');
+                
+                // Use cached data if it's less than 5 minutes old
+                if (cachedBooks && cachedTimestamp) {
+                    const now = new Date().getTime();
+                    if (now - parseInt(cachedTimestamp) < 5 * 60 * 1000) {
+                        books = JSON.parse(cachedBooks);
+                        processBooks();
+                        return;
+                    }
+                }
+                
+                const response = await fetch('/api/books');
+                const data = await response.json();
+                
+                if (data.books) {
+                    books = data.books;
+                    // Cache the books data
+                    localStorage.setItem('booksData', JSON.stringify(books));
+                    localStorage.setItem('booksTimestamp', new Date().getTime().toString());
+                    processBooks();
+                }
+            } catch (error) {
+                console.error('Error fetching books:', error);
+                showErrorMessage('حدث خطأ أثناء تحميل الكتب. يرجى المحاولة مرة أخرى لاحقاً.');
+            }
+        }
+        
+        // Process books (filter, sort, paginate)
+        function processBooks() {
+            // Apply filters
+            filteredBooks = books.filter(book => {
+                const languageMatch = currentLanguage === 'all' || book.language === currentLanguage;
+                const categoryMatch = currentCategory === 'all' || book.category === currentCategory;
+                return languageMatch && categoryMatch;
+            });
+            
+            // Apply sorting
+            if (currentSort === 'newest') {
+                filteredBooks.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            } else if (currentSort === 'popular') {
+                // Assume we have view counts or a popularity metric
+                // For now, just randomize for demonstration
+                filteredBooks.sort(() => Math.random() - 0.5);
+            }
+            
+            // Reset to first page when filters change
+            currentPage = 1;
+            
+            // Render books and pagination
+            renderBooks();
+            renderPagination();
+            
+            // Record activity
+            recordViewActivity();
+        }
+        
+        // Render books for current page
+        function renderBooks() {
+            const startIndex = (currentPage - 1) * booksPerPage;
+            const endIndex = startIndex + booksPerPage;
+            const booksToDisplay = filteredBooks.slice(startIndex, endIndex);
+            
+            booksGrid.innerHTML = '';
+            
+            if (booksToDisplay.length === 0) {
+                booksGrid.innerHTML = `
+                    <div class="no-books">
+                        <p>لا توجد كتب متاحة تطابق معايير البحث</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            booksToDisplay.forEach(book => {
+                const bookCard = document.createElement('div');
+                bookCard.className = 'book-card';
+                bookCard.dataset.id = book.id;
+                
+                bookCard.innerHTML = `
+                    <div class="book-cover">
+                        <img src="${book.cover}" alt="${book.title}" loading="lazy">
+                    </div>
+                    <div class="book-details">
+                        <h3 class="book-title">${book.title}</h3>
+                        <div class="book-meta">
+                            <span class="book-language">${book.language}</span>
+                            <span class="book-category">${book.category}</span>
+                        </div>
+                        <p class="book-description">${truncateText(book.description, 100)}</p>
+                        <div class="book-actions">
+                            <a href="#" class="book-action-btn view-btn view-book-btn" data-id="${book.id}">عرض التفاصيل</a>
+                            ${book.download && book.download !== '#' ? 
+                                `<a href="${book.download}" class="book-action-btn download-btn" target="_blank" data-id="${book.id}">تحميل الكتاب</a>` : 
+                                ''}
+                        </div>
+                    </div>
+                `;
+                
+                booksGrid.appendChild(bookCard);
+            });
+            
+            // Add event listeners to book cards
+            addBookEventListeners();
+        }
+        
+        // Render pagination controls
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
+            
+            pagination.innerHTML = '';
+            
+            if (totalPages <= 1) {
+                return;
+            }
+            
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = `pagination-btn ${currentPage === 1 ? 'disabled' : ''}`;
+            prevBtn.textContent = '«';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderBooks();
+                    renderPagination();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+            pagination.appendChild(prevBtn);
+            
+            // Page numbers
+            const totalPagesToShow = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(totalPagesToShow / 2));
+            let endPage = Math.min(totalPages, startPage + totalPagesToShow - 1);
+            
+            // Adjust if we're near the end
+            if (endPage - startPage < totalPagesToShow - 1) {
+                startPage = Math.max(1, endPage - totalPagesToShow + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => {
+                    if (i !== currentPage) {
+                        currentPage = i;
+                        renderBooks();
+                        renderPagination();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+                pagination.appendChild(pageBtn);
+            }
+            
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = `pagination-btn ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextBtn.textContent = '»';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderBooks();
+                    renderPagination();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+            pagination.appendChild(nextBtn);
+        }
+        
+        // Add event listeners to book cards
+        function addBookEventListeners() {
+            // View book details
+            document.querySelectorAll('.view-book-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const bookId = this.dataset.id;
+                    const book = books.find(b => b.id == bookId);
+                    
+                    if (book) {
+                        showBookDetails(book);
+                        // Record view activity
+                        try {
+                            if (typeof recordActivity === 'function') {
+                                recordActivity('view_book', book.id, 'book', book.title);
+                            }
+                        } catch (error) {
+                            console.error('Error recording activity:', error);
+                        }
+                    }
+                });
+            });
+            
+            // Book download links
+            document.querySelectorAll('.download-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const bookId = this.dataset.id;
+                    const book = books.find(b => b.id == bookId);
+                    
+                    if (book) {
+                        // Record download activity
+                        try {
+                            if (typeof recordActivity === 'function') {
+                                recordActivity('download_book', book.id, 'book', book.title);
+                            }
+                        } catch (error) {
+                            console.error('Error recording activity:', error);
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Show book details in a modal
+        function showBookDetails(book) {
+            // Create modal if it doesn't exist
+            let modal = document.getElementById('book-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'book-modal';
+                modal.className = 'modal';
+                document.body.appendChild(modal);
+                
+                // Add modal styles if not already in document
+                if (!document.getElementById('modal-styles')) {
+                    const style = document.createElement('style');
+                    style.id = 'modal-styles';
+                    style.textContent = `
+                        .modal {
+                            display: none;
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background-color: rgba(0,0,0,0.5);
+                            z-index: 1000;
+                            overflow-y: auto;
+                            padding: 20px;
+                        }
+                        
+                        .modal.active {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+                        
+                        .modal-content {
+                            background-color: white;
+                            border-radius: 8px;
+                            max-width: 800px;
+                            width: 90%;
+                            max-height: 90vh;
+                            overflow-y: auto;
+                            position: relative;
+                            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                            animation: modal-open 0.3s ease;
+                        }
+                        
+                        @keyframes modal-open {
+                            from { opacity: 0; transform: translateY(-30px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+                        
+                        .modal-header {
+                            padding: 1.5rem;
+                            border-bottom: 1px solid #eee;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                        }
+                        
+                        .modal-title {
+                            font-size: 1.5rem;
+                            color: var(--main-color);
+                            margin: 0;
+                        }
+                        
+                        .modal-close {
+                            background: none;
+                            border: none;
+                            font-size: 1.5rem;
+                            cursor: pointer;
+                            color: #777;
+                            transition: color 0.3s ease;
+                        }
+                        
+                        .modal-close:hover {
+                            color: #333;
+                        }
+                        
+                        .modal-body {
+                            padding: 1.5rem;
+                        }
+                        
+                        .book-detail-grid {
+                            display: grid;
+                            grid-template-columns: 1fr 2fr;
+                            gap: 2rem;
+                        }
+                        
+                        .book-detail-cover {
+                            width: 100%;
+                            border-radius: 8px;
+                            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                        }
+                        
+                        .book-detail-info h3 {
+                            margin-top: 0;
+                            color: var(--main-color);
+                        }
+                        
+                        .book-detail-meta {
+                            display: flex;
+                            flex-wrap: wrap;
+                            gap: 1rem;
+                            margin: 1rem 0;
+                        }
+                        
+                        .book-detail-meta-item {
+                            display: flex;
+                            align-items: center;
+                            gap: 0.5rem;
+                            background-color: #f8f9fa;
+                            padding: 0.5rem 0.75rem;
+                            border-radius: 4px;
+                            font-size: 0.9rem;
+                        }
+                        
+                        .book-detail-description {
+                            margin: 1.5rem 0;
+                            line-height: 1.7;
+                        }
+                        
+                        .book-detail-actions {
+                            display: flex;
+                            gap: 1rem;
+                            margin-top: 1.5rem;
+                        }
+                        
+                        .book-detail-btn {
+                            padding: 0.75rem 1.5rem;
+                            border-radius: 4px;
+                            font-weight: bold;
+                            text-decoration: none;
+                            text-align: center;
+                            transition: all 0.3s ease;
+                        }
+                        
+                        .book-detail-download {
+                            background-color: var(--gold-color);
+                            color: white;
+                            flex: 1;
+                        }
+                        
+                        .book-detail-download:hover {
+                            opacity: 0.9;
+                        }
+                        
+                        @media (max-width: 768px) {
+                            .book-detail-grid {
+                                grid-template-columns: 1fr;
+                            }
+                            
+                            .book-detail-cover {
+                                max-width: 300px;
+                                margin: 0 auto;
+                            }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+            
+            // Populate modal with book details
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">${book.title}</h2>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="book-detail-grid">
+                            <div>
+                                <img src="${book.cover}" alt="${book.title}" class="book-detail-cover">
+                            </div>
+                            <div class="book-detail-info">
+                                <h3>${book.title}</h3>
+                                <div class="book-detail-meta">
+                                    <div class="book-detail-meta-item">
+                                        <i class="fas fa-language"></i>
+                                        <span>${book.language}</span>
+                                    </div>
+                                    <div class="book-detail-meta-item">
+                                        <i class="fas fa-bookmark"></i>
+                                        <span>${book.category}</span>
+                                    </div>
+                                    <div class="book-detail-meta-item">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        <span>${formatDate(book.created_at)}</span>
+                                    </div>
+                                </div>
+                                <div class="book-detail-description">
+                                    ${book.description}
+                                </div>
+                                ${book.download && book.download !== '#' ? `
+                                <div class="book-detail-actions">
+                                    <a href="${book.download}" class="book-detail-btn book-detail-download" target="_blank" data-id="${book.id}">
+                                        <i class="fas fa-download"></i> تحميل الكتاب
+                                    </a>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Show modal
+            modal.classList.add('active');
+            
+            // Add close event
+            const closeBtn = modal.querySelector('.modal-close');
+            closeBtn.addEventListener('click', () => {
+                modal.classList.remove('active');
+            });
+            
+            // Close when clicking outside modal content
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+            
+            // Add download activity tracking
+            const downloadBtn = modal.querySelector('.book-detail-download');
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', function() {
+                    try {
+                        if (typeof recordActivity === 'function') {
+                            recordActivity('download_book', book.id, 'book', book.title);
+                        }
+                    } catch (error) {
+                        console.error('Error recording activity:', error);
+                    }
+                });
+            }
+        }
+        
+        // Record view activity for books page
+        function recordViewActivity() {
+            try {
+                if (typeof recordActivity === 'function') {
+                    recordActivity('view_books_page', null, 'page', 'صفحة الكتب');
+                }
+            } catch (error) {
+                console.error('Error recording activity:', error);
+            }
+        }
+        
+        // Helper functions
+        function truncateText(text, maxLength) {
+            if (text.length <= maxLength) return text;
+            return text.substr(0, maxLength) + '...';
+        }
+        
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('ar-EG', options);
+        }
+        
+        function showErrorMessage(message) {
+            booksGrid.innerHTML = `
+                <div class="no-books">
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+        
+        // Event listeners for filters and sorting
+        languageFilter.addEventListener('change', function() {
+            currentLanguage = this.value;
+            processBooks();
+        });
+        
+        categoryFilter.addEventListener('change', function() {
+            currentCategory = this.value;
+            processBooks();
+        });
+        
+        sortButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const sortValue = this.dataset.sort;
+                if (sortValue !== currentSort) {
+                    currentSort = sortValue;
+                    // Update active state
+                    sortButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    processBooks();
+                }
+            });
+        });
+        
+        // Initialize
+        fetchBooks();
+        
+        // Refresh books data in background periodically
+        setInterval(function() {
+            fetchBooks();
+        }, 5 * 60 * 1000); // Refresh every 5 minutes
+    });
+</script>
+
+<!-- Add Font Awesome for icons if not already included -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+
+<!-- Load activity tracking script -->
+<script src="{{ url_for('static', filename='js/activity-tracking.js') }}"></script>
+{% endblock %}

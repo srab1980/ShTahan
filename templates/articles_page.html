@@ -1,0 +1,723 @@
+{% extends 'base.html' %}
+
+{% block title %}مقالات الشيخ مصطفى الطحان{% endblock %}
+
+{% block styles %}
+<style>
+    .articles-container {
+        margin: 3rem auto;
+    }
+    
+    .articles-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .articles-header h1 {
+        color: var(--main-color);
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .articles-header .separator {
+        width: 80px;
+        height: 3px;
+        background-color: var(--gold-color);
+        margin: 0 auto;
+    }
+    
+    .sorting-options {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+    
+    .sort-btn {
+        background-color: transparent;
+        border: 1px solid var(--main-color);
+        color: var(--main-color);
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .sort-btn.active {
+        background-color: var(--main-color);
+        color: white;
+    }
+    
+    .sort-btn:hover {
+        background-color: var(--main-color);
+        color: white;
+    }
+    
+    .search-form {
+        display: flex;
+        margin-bottom: 2rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .search-input {
+        flex: 1;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px 0 0 4px;
+        font-size: 1rem;
+    }
+    
+    .search-btn {
+        background-color: var(--main-color);
+        color: white;
+        border: none;
+        padding: 0 1.5rem;
+        border-radius: 0 4px 4px 0;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    
+    .search-btn:hover {
+        background-color: #14325c;
+    }
+    
+    .articles-grid {
+        display: grid;
+        gap: 2rem;
+    }
+    
+    .article-card {
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .article-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    }
+    
+    .article-content {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .article-title {
+        font-size: 1.5rem;
+        color: var(--main-color);
+        margin-bottom: 0.75rem;
+        font-weight: bold;
+    }
+    
+    .article-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .article-date {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .article-summary {
+        color: #495057;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+        flex-grow: 1;
+    }
+    
+    .article-action {
+        align-self: flex-start;
+        background-color: var(--main-color);
+        color: white;
+        text-decoration: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+        font-weight: bold;
+    }
+    
+    .article-action:hover {
+        background-color: #14325c;
+    }
+    
+    .loading-indicator {
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-left-color: var(--main-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .no-articles {
+        text-align: center;
+        padding: 2rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        color: #6c757d;
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 3rem;
+        gap: 0.5rem;
+    }
+    
+    .pagination-btn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination-btn.active {
+        background-color: var(--main-color);
+        color: white;
+        border-color: var(--main-color);
+    }
+    
+    .pagination-btn:hover:not(.active) {
+        background-color: #f8f9fa;
+    }
+    
+    .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .article-full {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .article-full-title {
+        font-size: 2rem;
+        color: var(--main-color);
+        margin-bottom: 1rem;
+    }
+    
+    .article-full-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .article-full-content {
+        line-height: 1.8;
+        color: #333;
+        font-size: 1.1rem;
+    }
+    
+    .article-full-content p {
+        margin-bottom: 1.5rem;
+    }
+    
+    .back-to-articles {
+        display: inline-block;
+        margin-top: 2rem;
+        background-color: #f8f9fa;
+        color: #495057;
+        text-decoration: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+    
+    .back-to-articles:hover {
+        background-color: #e9ecef;
+    }
+    
+    @media (min-width: 768px) {
+        .articles-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .articles-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .search-form {
+            flex-direction: column;
+        }
+        
+        .search-input {
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .search-btn {
+            border-radius: 4px;
+            padding: 0.75rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container articles-container">
+    <div class="articles-header">
+        <h1>مقالات الشيخ مصطفى الطحان</h1>
+        <div class="separator"></div>
+    </div>
+    
+    <form class="search-form" id="search-form">
+        <input type="text" class="search-input" id="search-input" placeholder="ابحث في المقالات...">
+        <button type="submit" class="search-btn">
+            <i class="fas fa-search"></i>
+        </button>
+    </form>
+    
+    <div class="sorting-options">
+        <button class="sort-btn active" data-sort="newest">الأحدث</button>
+        <button class="sort-btn" data-sort="popular">الأكثر قراءة</button>
+    </div>
+    
+    <div id="articles-container">
+        <div id="articles-list">
+            <div class="articles-grid" id="articles-grid">
+                <!-- Articles will be loaded dynamically here -->
+                <div class="loading-indicator">
+                    <div class="spinner"></div>
+                    <p>جاري تحميل المقالات...</p>
+                </div>
+            </div>
+            
+            <div id="pagination" class="pagination">
+                <!-- Pagination will be generated dynamically -->
+            </div>
+        </div>
+        
+        <div id="article-detail" style="display: none;">
+            <!-- Article detail will be displayed here -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elements
+        const articlesGrid = document.getElementById('articles-grid');
+        const pagination = document.getElementById('pagination');
+        const sortButtons = document.querySelectorAll('.sort-btn');
+        const searchForm = document.getElementById('search-form');
+        const searchInput = document.getElementById('search-input');
+        const articlesContainer = document.getElementById('articles-container');
+        const articlesList = document.getElementById('articles-list');
+        const articleDetail = document.getElementById('article-detail');
+        
+        // State
+        let articles = [];
+        let filteredArticles = [];
+        let currentPage = 1;
+        let articlesPerPage = 6;
+        let currentSort = 'newest';
+        let searchQuery = '';
+        
+        // Fetch articles
+        async function fetchArticles() {
+            try {
+                const cachedArticles = localStorage.getItem('articlesData');
+                const cachedTimestamp = localStorage.getItem('articlesTimestamp');
+                
+                // Use cached data if it's less than 5 minutes old
+                if (cachedArticles && cachedTimestamp) {
+                    const now = new Date().getTime();
+                    if (now - parseInt(cachedTimestamp) < 5 * 60 * 1000) {
+                        articles = JSON.parse(cachedArticles);
+                        processArticles();
+                        return;
+                    }
+                }
+                
+                const response = await fetch('/api/articles');
+                const data = await response.json();
+                
+                if (data.articles) {
+                    articles = data.articles;
+                    // Cache the articles data
+                    localStorage.setItem('articlesData', JSON.stringify(articles));
+                    localStorage.setItem('articlesTimestamp', new Date().getTime().toString());
+                    processArticles();
+                }
+            } catch (error) {
+                console.error('Error fetching articles:', error);
+                showErrorMessage('حدث خطأ أثناء تحميل المقالات. يرجى المحاولة مرة أخرى لاحقاً.');
+            }
+        }
+        
+        // Process articles (filter, sort, paginate)
+        function processArticles() {
+            // Apply search filter
+            filteredArticles = articles.filter(article => {
+                if (!searchQuery) return true;
+                
+                const query = searchQuery.toLowerCase();
+                return (
+                    article.title.toLowerCase().includes(query) ||
+                    article.summary.toLowerCase().includes(query) ||
+                    article.content.toLowerCase().includes(query)
+                );
+            });
+            
+            // Apply sorting
+            if (currentSort === 'newest') {
+                filteredArticles.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            } else if (currentSort === 'popular') {
+                // For demonstration, just randomize the order
+                // In a real app, you would use actual view counts or a popularity metric
+                filteredArticles.sort(() => Math.random() - 0.5);
+            }
+            
+            // Reset to first page when filters change
+            currentPage = 1;
+            
+            // Render articles and pagination
+            renderArticles();
+            renderPagination();
+            
+            // Record activity
+            recordViewActivity();
+        }
+        
+        // Render articles for current page
+        function renderArticles() {
+            const startIndex = (currentPage - 1) * articlesPerPage;
+            const endIndex = startIndex + articlesPerPage;
+            const articlesToDisplay = filteredArticles.slice(startIndex, endIndex);
+            
+            articlesGrid.innerHTML = '';
+            
+            if (articlesToDisplay.length === 0) {
+                articlesGrid.innerHTML = `
+                    <div class="no-articles">
+                        <p>لا توجد مقالات متاحة تطابق معايير البحث</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            articlesToDisplay.forEach(article => {
+                const articleCard = document.createElement('div');
+                articleCard.className = 'article-card';
+                articleCard.dataset.id = article.id;
+                
+                articleCard.innerHTML = `
+                    <div class="article-content">
+                        <h3 class="article-title">${article.title}</h3>
+                        <div class="article-meta">
+                            <div class="article-date">
+                                <i class="far fa-calendar-alt"></i>
+                                <span>${formatDate(article.created_at)}</span>
+                            </div>
+                        </div>
+                        <p class="article-summary">${article.summary}</p>
+                        <a href="#" class="article-action" data-id="${article.id}">قراءة المزيد</a>
+                    </div>
+                `;
+                
+                articlesGrid.appendChild(articleCard);
+            });
+            
+            // Add event listeners to article actions
+            addArticleEventListeners();
+        }
+        
+        // Render pagination controls
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
+            
+            pagination.innerHTML = '';
+            
+            if (totalPages <= 1) {
+                return;
+            }
+            
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = `pagination-btn ${currentPage === 1 ? 'disabled' : ''}`;
+            prevBtn.textContent = '«';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderArticles();
+                    renderPagination();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+            pagination.appendChild(prevBtn);
+            
+            // Page numbers
+            const totalPagesToShow = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(totalPagesToShow / 2));
+            let endPage = Math.min(totalPages, startPage + totalPagesToShow - 1);
+            
+            // Adjust if we're near the end
+            if (endPage - startPage < totalPagesToShow - 1) {
+                startPage = Math.max(1, endPage - totalPagesToShow + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => {
+                    if (i !== currentPage) {
+                        currentPage = i;
+                        renderArticles();
+                        renderPagination();
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+                pagination.appendChild(pageBtn);
+            }
+            
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = `pagination-btn ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextBtn.textContent = '»';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderArticles();
+                    renderPagination();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+            pagination.appendChild(nextBtn);
+        }
+        
+        // Add event listeners to article cards
+        function addArticleEventListeners() {
+            document.querySelectorAll('.article-action').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const articleId = this.dataset.id;
+                    const article = articles.find(a => a.id == articleId);
+                    
+                    if (article) {
+                        showArticleDetail(article);
+                        // Record view activity
+                        try {
+                            if (typeof recordActivity === 'function') {
+                                recordActivity('view_article', article.id, 'article', article.title);
+                            }
+                        } catch (error) {
+                            console.error('Error recording activity:', error);
+                        }
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.article-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Only trigger if not clicking on the action button
+                    if (!e.target.classList.contains('article-action')) {
+                        const articleId = this.dataset.id;
+                        const article = articles.find(a => a.id == articleId);
+                        
+                        if (article) {
+                            showArticleDetail(article);
+                            // Record view activity
+                            try {
+                                if (typeof recordActivity === 'function') {
+                                    recordActivity('view_article', article.id, 'article', article.title);
+                                }
+                            } catch (error) {
+                                console.error('Error recording activity:', error);
+                            }
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Show article detail
+        function showArticleDetail(article) {
+            articlesList.style.display = 'none';
+            articleDetail.style.display = 'block';
+            
+            articleDetail.innerHTML = `
+                <div class="article-full">
+                    <h1 class="article-full-title">${article.title}</h1>
+                    <div class="article-full-meta">
+                        <div class="article-date">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>${formatDate(article.created_at)}</span>
+                        </div>
+                    </div>
+                    <div class="article-full-content">
+                        ${article.content}
+                    </div>
+                </div>
+                <a href="#" class="back-to-articles" id="back-to-articles">
+                    <i class="fas fa-arrow-right"></i> العودة لقائمة المقالات
+                </a>
+            `;
+            
+            // Update page title with article title
+            document.title = `${article.title} - مقالات الشيخ مصطفى الطحان`;
+            
+            // Update URL with article ID (without refreshing page)
+            const url = new URL(window.location);
+            url.searchParams.set('article', article.id);
+            window.history.pushState({}, '', url);
+            
+            // Add back button event listener
+            document.getElementById('back-to-articles').addEventListener('click', function(e) {
+                e.preventDefault();
+                backToArticlesList();
+            });
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Go back to articles list
+        function backToArticlesList() {
+            articleDetail.style.display = 'none';
+            articlesList.style.display = 'block';
+            
+            // Reset page title
+            document.title = 'مقالات الشيخ مصطفى الطحان';
+            
+            // Update URL (remove article parameter)
+            const url = new URL(window.location);
+            url.searchParams.delete('article');
+            window.history.pushState({}, '', url);
+        }
+        
+        // Record view activity for articles page
+        function recordViewActivity() {
+            try {
+                if (typeof recordActivity === 'function') {
+                    recordActivity('view_articles_page', null, 'page', 'صفحة المقالات');
+                }
+            } catch (error) {
+                console.error('Error recording activity:', error);
+            }
+        }
+        
+        // Event listeners for search, sorting, and URL handling
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            searchQuery = searchInput.value.trim();
+            processArticles();
+        });
+        
+        sortButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const sortValue = this.dataset.sort;
+                if (sortValue !== currentSort) {
+                    currentSort = sortValue;
+                    // Update active state
+                    sortButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    processArticles();
+                }
+            });
+        });
+        
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', function() {
+            checkUrlForArticle();
+        });
+        
+        // Check if URL has article parameter
+        function checkUrlForArticle() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const articleId = urlParams.get('article');
+            
+            if (articleId) {
+                // Find the article
+                const article = articles.find(a => a.id == articleId);
+                if (article) {
+                    showArticleDetail(article);
+                } else {
+                    // If article not found, go back to list
+                    backToArticlesList();
+                    showErrorMessage('المقال غير موجود');
+                }
+            } else {
+                backToArticlesList();
+            }
+        }
+        
+        // Helper functions
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('ar-EG', options);
+        }
+        
+        function showErrorMessage(message) {
+            articlesGrid.innerHTML = `
+                <div class="no-articles">
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+        
+        // Initialize
+        fetchArticles();
+        
+        // Check URL for article parameter on page load
+        checkUrlForArticle();
+        
+        // Refresh articles data in background periodically
+        setInterval(function() {
+            fetchArticles();
+        }, 5 * 60 * 1000); // Refresh every 5 minutes
+    });
+</script>
+
+<!-- Add Font Awesome for icons if not already included -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+
+<!-- Load activity tracking script -->
+<script src="{{ url_for('static', filename='js/activity-tracking.js') }}"></script>
+{% endblock %}

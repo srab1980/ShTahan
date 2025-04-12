@@ -156,6 +156,16 @@ def responsive_gallery():
     """Render responsive gallery page"""
     return render_template('responsive-gallery.html', now=datetime.now())
     
+@app.route('/books')
+def books_page():
+    """Render the books page with all books"""
+    return render_template('books_page.html', now=datetime.now())
+    
+@app.route('/articles')
+def articles_page():
+    """Render the articles page with all articles"""
+    return render_template('articles_page.html', now=datetime.now())
+    
 @app.route('/login-link')
 def login_link():
     return render_template('login-link.html')
