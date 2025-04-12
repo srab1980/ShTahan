@@ -39,9 +39,24 @@
             height: auto;
         }
         
-        /* User Menu Styles */
+        /* User Menu and Navigation Styles */
         .user-menu {
             position: relative;
+        }
+        
+        /* Special menu links with gold color */
+        .nav-menu a[style*="color: #d4af37"] {
+            border-radius: 5px;
+            padding: 6px 10px;
+            margin-top: 3px;
+            background-color: rgba(212, 175, 55, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-menu a[style*="color: #d4af37"]:hover {
+            background-color: rgba(212, 175, 55, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         
         .user-menu-toggle {
@@ -122,7 +137,13 @@
                         <li><a href="#testimonials">أقوال الشخصيات</a></li>
                         <li><a href="#achievements">الإنجازات</a></li>
                         <li><a href="#books">الكتب والمؤلفات</a></li>
+                        <li><a href="/books" style="color: #d4af37; font-weight: bold; font-size: 0.9em;">
+                            <i class="fas fa-book-open" style="margin-left: 5px;"></i>جميع الكتب
+                        </a></li>
                         <li><a href="#articles">المقالات</a></li>
+                        <li><a href="/articles" style="color: #d4af37; font-weight: bold; font-size: 0.9em;">
+                            <i class="fas fa-newspaper" style="margin-left: 5px;"></i>جميع المقالات
+                        </a></li>
                         <li><a href="#gallery">معرض الصور</a></li>
                         <li><a href="#contact">تواصل معنا</a></li>
                         <li><a href="/user-journey" id="user-journey-link" style="color: #d4af37; font-weight: bold;">
