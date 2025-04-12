@@ -100,7 +100,7 @@ def generate_unique_filename(filename):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', now=datetime.now())
 
 @app.route('/admin')
 @login_required
@@ -148,13 +148,13 @@ def gallery():
     # Check for responsive URL parameter
     responsive = request.args.get('responsive', '0')
     if responsive == '1':
-        return render_template('responsive-gallery.html')
-    return render_template('gallery.html')
+        return render_template('responsive-gallery.html', now=datetime.now())
+    return render_template('gallery.html', now=datetime.now())
 
 @app.route('/responsive-gallery')
 def responsive_gallery():
     """Render responsive gallery page"""
-    return render_template('responsive-gallery.html')
+    return render_template('responsive-gallery.html', now=datetime.now())
     
 @app.route('/login-link')
 def login_link():
