@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a3c6b">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="الشيخ مصطفى الطحان">
+    <title>{% block title %}الموقع الرسمي للشيخ مصطفى الطحان (أبو أيمن){% endblock %}</title>
+    <meta name="description" content="الموقع الرسمي للشيخ مصطفى الطحان - كاتب ومربٍ فاضل ومسيرة من العطاء والفكر والدعوة">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    
+    <!-- تحسين الأداء عبر التحميل المسبق للموارد الهامة -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <!-- تحميل الخطوط المهمة فقط للعرض الأولي -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- تحميل آيقونات Font Awesome بطريقة أكثر كفاءة -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    
+    <!-- CSS المهم للعرض الأولي -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loading.css') }}" media="print" onload="this.media='all'">
+    
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <div class="header-wrapper">
+                <div class="logo">
+                    <a href="/">الشيخ مصطفى الطحان</a>
+                </div>
+                <button type="button" class="menu-toggle" aria-label="القائمة">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <nav class="navigation" id="main-navigation">
+                    <ul class="nav-menu">
+                        <li><a href="/#hero">الرئيسية</a></li>
+                        <li><a href="/#biography">السيرة الذاتية</a></li>
+                        <li><a href="/#testimonials">أقوال الشخصيات</a></li>
+                        <li><a href="/#achievements">الإنجازات</a></li>
+                        <li><a href="/#books">الكتب والمؤلفات</a></li>
+                        <li><a href="/#articles">المقالات</a></li>
+                        <li><a href="/#gallery">معرض الصور</a></li>
+                        <li><a href="/#contact">تواصل معنا</a></li>
+                        <li><a href="/user-journey">رحلتي التعليمية</a></li>
+                        <li class="nav-item-login" id="login-button-container">
+                            <!-- سيتم تحميل زر تسجيل الدخول هنا بشكل مستقل -->
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>الشيخ مصطفى الطحان</h2>
+                    <p>كاتب ومربٍ ومفكر إسلامي</p>
+                </div>
+                <div class="footer-links">
+                    <h3>روابط سريعة</h3>
+                    <ul>
+                        <li><a href="/#hero">الرئيسية</a></li>
+                        <li><a href="/#biography">السيرة الذاتية</a></li>
+                        <li><a href="/#books">الكتب والمؤلفات</a></li>
+                        <li><a href="/#articles">المقالات</a></li>
+                        <li><a href="/#gallery">معرض الصور</a></li>
+                        <li><a href="/user-journey">رحلتي التعليمية</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>تواصل معنا</h3>
+                    <p><i class="fas fa-envelope"></i> info@tahhan-foundation.org</p>
+                    <div class="social-icons">
+                        <a href="#" aria-label="فيسبوك"><i class="fab fa-facebook-square"></i></a>
+                        <a href="#" aria-label="تويتر"><i class="fab fa-twitter-square"></i></a>
+                        <a href="#" aria-label="يوتيوب"><i class="fab fa-youtube-square"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; {{ now.year }} جميع الحقوق محفوظة - مؤسسة الشيخ مصطفى الطحان</p>
+                <p>تم التطوير بواسطة فريق تقنية المعلومات</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- زر العودة للأعلى -->
+    <div style="position: fixed; bottom: 30px; right: 30px; background-color: #1a2a3a; color: white; padding: 10px 15px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 9999; cursor: pointer;" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <i class="fas fa-arrow-up"></i> العودة للأعلى
+    </div>
+
+    <!-- Core JavaScript -->
+    <script src="{{ url_for('static', filename='js/jquery-3.7.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <!-- Dynamic Login Button -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginButtonContainer = document.getElementById('login-button-container');
+            
+            // Fetch the login button/status
+            fetch('/login-button')
+                .then(response => response.text())
+                .then(html => {
+                    loginButtonContainer.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error loading login button:', error);
+                    loginButtonContainer.innerHTML = '<a href="/login-form" class="btn-login"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</a>';
+                });
+        });
+    </script>
+    
+    <!-- Additional Scripts -->
+    {% block scripts %}{% endblock %}
+    
+    <!-- Service Worker Registration for Progressive Web App -->
+    <script src="{{ url_for('static', filename='js/sw-register.js') }}"></script>
+</body>
+</html>
