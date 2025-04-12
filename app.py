@@ -36,7 +36,13 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 }
 
 # Configure file uploads
+# Configure upload folder and ensure directories exist
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
+
+# Create upload directories if they don't exist
+os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'gallery'), exist_ok=True)
+os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'books'), exist_ok=True)
+os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'articles'), exist_ok=True)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 
