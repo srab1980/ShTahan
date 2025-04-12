@@ -45,160 +45,6 @@
         direction: rtl;
     }
     
-    /* Simple column-based layout */
-    .article-row-container {
-        width: 100%;
-        display: block;
-        font-size: 0; /* Removes the gap between inline-block elements */
-        margin: 0 -10px; /* Negative margin to counteract padding */
-        border: 2px solid #d4af37; /* Debug border */
-    }
-    
-    .article-column {
-        display: inline-block;
-        vertical-align: top;
-        width: 33.333%;
-        padding: 0 10px;
-        margin-bottom: 20px;
-        box-sizing: border-box;
-        font-size: 16px; /* Reset font size */
-        border: 2px solid red; /* Debug border */
-    }
-    
-    .article-card {
-        background-color: white;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        display: flex;
-        flex-direction: column;
-        border: 2px solid #1a2a3a; /* Debug border to see each card */
-        height: 100%; /* Ensure full height in grid cell */
-        min-width: 0; /* Prevent overflow in grid */
-    }
-    
-    .article-content {
-        padding: 1.5rem;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .article-title {
-        font-size: 1.5rem;
-        margin-top: 0;
-        margin-bottom: 0.5rem;
-        color: #1a2a3a;
-    }
-    
-    .article-meta {
-        margin-bottom: 1rem;
-        color: #666;
-        font-size: 0.9rem;
-    }
-    
-    .article-date {
-        display: inline-flex;
-        align-items: center;
-    }
-    
-    .article-date i {
-        margin-left: 5px;
-    }
-    
-    .article-summary {
-        color: #444;
-        line-height: 1.6;
-        margin-bottom: 1.5rem;
-    }
-    
-    .article-action {
-        color: #d4af37;
-        text-decoration: none;
-        font-weight: bold;
-        align-self: flex-start;
-        margin-top: auto;
-        display: inline-block;
-        padding: 8px 0;
-        border-bottom: 2px solid transparent;
-        transition: all 0.3s;
-    }
-    
-    .article-action:hover {
-        border-bottom-color: #d4af37;
-    }
-    
-    .article-full {
-        background-color: white;
-        border-radius: 8px;
-        padding: 2rem;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        margin-bottom: 2rem;
-    }
-    
-    .article-full-title {
-        color: #1a2a3a;
-        margin-top: 0;
-        margin-bottom: 1rem;
-        font-size: 2rem;
-    }
-    
-    .article-full-meta {
-        margin-bottom: 2rem;
-        color: #666;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 1rem;
-    }
-    
-    .article-full-content {
-        line-height: 1.8;
-        color: #333;
-    }
-    
-    .back-to-articles {
-        display: inline-block;
-        color: #d4af37;
-        text-decoration: none;
-        font-weight: bold;
-        margin-top: 1rem;
-    }
-    
-    .back-to-articles i {
-        margin-left: 5px;
-    }
-    
-    .pagination {
-        display: flex;
-        justify-content: center;
-        margin: 30px 0;
-        clear: both;
-    }
-    
-    .pagination-btn {
-        background-color: #f5f5f5;
-        border: none;
-        color: #333;
-        padding: 8px 16px;
-        margin: 0 5px;
-        cursor: pointer;
-        border-radius: 4px;
-        transition: all 0.3s;
-    }
-    
-    .pagination-btn:hover:not(.disabled):not(.active) {
-        background-color: #e0e0e0;
-    }
-    
-    .pagination-btn.active {
-        background-color: #d4af37;
-        color: white;
-    }
-    
-    .pagination-btn.disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-    
     .search-and-sort {
         display: flex;
         justify-content: space-between;
@@ -250,16 +96,134 @@
         background-color: #1a2a3a;
         color: white;
     }
+
+    /* Simple static 3-column layout */
+    .articles-fixed-grid {
+        width: 100%; 
+        border: 2px solid #d4af37;
+        overflow: hidden;
+    }
+
+    .article-card {
+        width: 32%;
+        margin-right: 2%;
+        margin-bottom: 20px;
+        float: right;
+        border: 2px solid #1a2a3a;
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .article-card:nth-child(3n) {
+        margin-right: 0;
+    }
+
+    .article-content {
+        padding: 1.5rem;
+    }
     
+    .article-title {
+        font-size: 1.5rem;
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        color: #1a2a3a;
+    }
+    
+    .article-meta {
+        margin-bottom: 1rem;
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .article-date {
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .article-date i {
+        margin-left: 5px;
+    }
+    
+    .article-summary {
+        color: #444;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    
+    .article-action {
+        color: #d4af37;
+        text-decoration: none;
+        font-weight: bold;
+        display: inline-block;
+        padding: 8px 0;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s;
+    }
+    
+    .article-action:hover {
+        border-bottom-color: #d4af37;
+    }
+
+    /* Article detail view */
     .article-detail-view {
         direction: rtl;
     }
     
-    /* Responsive design for column-based layout */
+    .article-full {
+        background-color: white;
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .article-full-title {
+        color: #1a2a3a;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 2rem;
+    }
+    
+    .article-full-meta {
+        margin-bottom: 2rem;
+        color: #666;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 1rem;
+    }
+    
+    .article-full-content {
+        line-height: 1.8;
+        color: #333;
+    }
+    
+    .back-to-articles {
+        display: inline-block;
+        color: #d4af37;
+        text-decoration: none;
+        font-weight: bold;
+        margin-top: 1rem;
+    }
+    
+    .back-to-articles i {
+        margin-left: 5px;
+    }
+    
+    /* Responsive design */
     @media (max-width: 900px) {
         /* For tablet - 2 columns */
-        .article-column {
-            width: 50%;
+        .article-card {
+            width: 48%;
+            margin-right: 4%;
+        }
+        
+        .article-card:nth-child(3n) {
+            margin-right: 4%;
+        }
+        
+        .article-card:nth-child(2n) {
+            margin-right: 0;
         }
         
         .articles-container {
@@ -269,8 +233,9 @@
     
     @media (max-width: 600px) {
         /* For mobile - 1 column */
-        .article-column {
+        .article-card {
             width: 100%;
+            margin-right: 0;
         }
         
         .search-and-sort {
@@ -294,6 +259,13 @@
         .articles-container {
             padding: 0 10px;
         }
+    }
+
+    /* Clearfix for the grid */
+    .clearfix:after {
+        content: "";
+        display: table;
+        clear: both;
     }
 </style>
 {% endblock %}
@@ -322,21 +294,19 @@
             </div>
         </div>
         
-        <div class="article-row-container">
+        <div class="articles-fixed-grid clearfix">
             {% for article in articles %}
-            <div class="article-column">
-                <div class="article-card" data-id="{{ article.id }}">
-                    <div class="article-content">
-                        <h3 class="article-title">{{ article.title }}</h3>
-                        <div class="article-meta">
-                            <div class="article-date">
-                                <i class="far fa-calendar-alt"></i>
-                                <span>{{ article.created_at.strftime('%Y-%m-%d') }}</span>
-                            </div>
+            <div class="article-card" data-id="{{ article.id }}">
+                <div class="article-content">
+                    <h3 class="article-title">{{ article.title }}</h3>
+                    <div class="article-meta">
+                        <div class="article-date">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>{{ article.created_at.strftime('%Y-%m-%d') }}</span>
                         </div>
-                        <p class="article-summary">{{ article.summary }}</p>
-                        <a href="#" class="article-action" data-id="{{ article.id }}">قراءة المزيد</a>
                     </div>
+                    <p class="article-summary">{{ article.summary }}</p>
+                    <a href="#" class="article-action" data-id="{{ article.id }}">قراءة المزيد</a>
                 </div>
             </div>
             {% endfor %}
@@ -405,16 +375,15 @@
             e.preventDefault();
             const searchQuery = searchInput.value.trim().toLowerCase();
             
-            // With column layout, find the parent column for each card
+            // With direct card layout, search is simpler
             articleCards.forEach(card => {
                 const title = card.querySelector('.article-title').textContent.toLowerCase();
                 const summary = card.querySelector('.article-summary').textContent.toLowerCase();
-                const column = card.closest('.article-column');
                 
                 if (title.includes(searchQuery) || summary.includes(searchQuery)) {
-                    column.style.display = 'inline-block'; // Show the column
+                    card.style.display = 'block'; // Show the card
                 } else {
-                    column.style.display = 'none'; // Hide the column
+                    card.style.display = 'none'; // Hide the card
                 }
             });
         });
