@@ -128,10 +128,8 @@
                         <li><a href="/user-journey" id="user-journey-link" style="color: #d4af37; font-weight: bold;">
                             <i class="fas fa-route" style="margin-left: 5px;"></i>رحلتي التعليمية
                         </a></li>
-                        <li class="nav-item-login">
-                            <a href="/login-form?check_auth=false" class="btn-login">
-                                <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
-                            </a>
+                        <li class="nav-item-login" id="login-menu-container">
+                            <!-- سيتم تحميل محتوى تسجيل الدخول هنا -->
                         </li>
                     </ul>
                 </nav>
@@ -469,6 +467,54 @@
     <script src="{{ url_for('static', filename='js/gallery.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/contact.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/activity-tracking.js') }}" defer></script>
+    
+    <!-- دالة التحقق من حالة تسجيل الدخول وعرض قائمة المستخدم -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // التحقق من حالة تسجيل الدخول
+            checkAuthStatus();
+            
+            // دالة التحقق من حالة تسجيل الدخول
+            async function checkAuthStatus() {
+                try {
+                    const response = await fetch('/api/auth-status');
+                    const data = await response.json();
+                    
+                    // تحديث عنصر تسجيل الدخول بناءً على حالة المستخدم
+                    const loginContainer = document.getElementById('login-menu-container');
+                    
+                    if (data.authenticated) {
+                        // المستخدم مسجل دخول
+                        loginContainer.innerHTML = `
+                            <div class="user-menu">
+                                <a href="#" class="user-menu-toggle">
+                                    <i class="fas fa-user-circle"></i> 
+                                    <span>${data.username}</span>
+                                </a>
+                                <div class="user-menu-dropdown">
+                                    <a href="/user-journey" class="user-menu-item">
+                                        <i class="fas fa-route"></i> رحلتي التعليمية
+                                    </a>
+                                    <a href="/logout" class="user-menu-item logout-link">
+                                        <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // المستخدم غير مسجل دخول
+                        loginContainer.innerHTML = `
+                            <a href="/login-form?check_auth=false" class="btn-login">
+                                <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                            </a>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('خطأ في التحقق من حالة تسجيل الدخول:', error);
+                }
+            }
+        });
+    </script>
     
     <!-- زر العودة للأعلى -->
     <div style="position: fixed; bottom: 30px; right: 30px; background-color: #1a2a3a; color: white; padding: 10px 15px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 9999; cursor: pointer;" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">

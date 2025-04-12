@@ -116,16 +116,48 @@
         document.addEventListener('DOMContentLoaded', function() {
             const loginButtonContainer = document.getElementById('login-button-container');
             
-            // Fetch the login button/status
-            fetch('/login-button')
-                .then(response => response.text())
-                .then(html => {
-                    loginButtonContainer.innerHTML = html;
-                })
-                .catch(error => {
-                    console.error('Error loading login button:', error);
+            // التحقق من حالة تسجيل الدخول
+            checkAuthStatus();
+            
+            // دالة التحقق من حالة تسجيل الدخول
+            async function checkAuthStatus() {
+                try {
+                    const response = await fetch('/api/auth-status');
+                    const data = await response.json();
+                    
+                    // تحديث عنصر تسجيل الدخول بناءً على حالة المستخدم
+                    if (data.authenticated) {
+                        // المستخدم مسجل دخول
+                        loginButtonContainer.innerHTML = `
+                            <div class="user-menu">
+                                <a href="#" class="user-menu-toggle">
+                                    <i class="fas fa-user-circle"></i> 
+                                    <span>${data.username}</span>
+                                </a>
+                                <div class="user-menu-dropdown">
+                                    <a href="/user-journey" class="user-menu-item">
+                                        <i class="fas fa-route"></i> رحلتي التعليمية
+                                    </a>
+                                    <a href="/logout" class="user-menu-item logout-link">
+                                        <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // المستخدم غير مسجل دخول
+                        loginButtonContainer.innerHTML = `
+                            <a href="/login-form?check_auth=false" class="btn-login">
+                                <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                            </a>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('خطأ في التحقق من حالة تسجيل الدخول:', error);
+                    // في حالة وجود خطأ، عرض زر تسجيل الدخول الافتراضي
                     loginButtonContainer.innerHTML = '<a href="/login-form" class="btn-login"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</a>';
-                });
+                }
+            }
         });
     </script>
     
