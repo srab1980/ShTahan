@@ -178,8 +178,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Add "View All Articles" button if on homepage and there are more articles
         if (isHomepage && articles.length > 6) {
-            const articlesSection = document.getElementById('articles');
-            if (articlesSection) {
+            // Add view all button directly after the articles container
+            if (articlesContainer && articlesContainer.parentNode) {
                 // Check if view-all container doesn't already exist
                 if (!document.querySelector('.view-all-articles-container')) {
                     const viewAllContainer = document.createElement('div');
@@ -194,8 +194,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         </a>
                     `;
                     
-                    articlesSection.appendChild(viewAllContainer);
+                    // Insert after the articles container
+                    articlesContainer.parentNode.insertBefore(viewAllContainer, articlesContainer.nextSibling);
+                    
+                    console.log("Added 'View All Articles' button");
                 }
+            } else {
+                console.log("Could not find articles container parent to add 'View All' button");
             }
         }
         

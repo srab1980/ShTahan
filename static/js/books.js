@@ -184,9 +184,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Add "View All Books" button if on homepage and there are more books
         if (isHomepage && books.length > 8) {
-            // Add a container for the view-all button after books section
-            const booksSection = document.getElementById('books');
-            if (booksSection) {
+            // Add view all button directly after the books container
+            if (booksContainer && booksContainer.parentNode) {
                 // Check if view-all container doesn't already exist
                 if (!document.querySelector('.view-all-container')) {
                     const viewAllContainer = document.createElement('div');
@@ -201,8 +200,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         </a>
                     `;
                     
-                    booksSection.appendChild(viewAllContainer);
+                    // Insert after the books container
+                    booksContainer.parentNode.insertBefore(viewAllContainer, booksContainer.nextSibling);
+                    
+                    console.log("Added 'View All Books' button");
                 }
+            } else {
+                console.log("Could not find books container parent to add 'View All' button");
             }
         }
     }
