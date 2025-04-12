@@ -176,31 +176,19 @@ document.addEventListener('DOMContentLoaded', function() {
             readMoreBtn.addEventListener('click', () => openArticleModal(article));
         });
         
-        // Add "View All Articles" button if on homepage and there are more articles
+        // Update articles count in "View All Articles" button if it exists
         if (isHomepage && articles.length > 6) {
-            // Add view all button directly after the articles container
-            if (articlesContainer && articlesContainer.parentNode) {
-                // Check if view-all container doesn't already exist
-                if (!document.querySelector('.view-all-articles-container')) {
-                    const viewAllContainer = document.createElement('div');
-                    viewAllContainer.className = 'view-all-articles-container';
-                    viewAllContainer.style.textAlign = 'center';
-                    viewAllContainer.style.marginTop = '2rem';
-                    
-                    viewAllContainer.innerHTML = `
-                        <a href="/articles" class="btn btn-primary" style="padding: 10px 20px; font-size: 1.1rem;">
-                            <i class="fas fa-newspaper"></i>
-                            عرض جميع المقالات (${articles.length})
-                        </a>
+            // Find existing View All button if any
+            const viewAllBtn = document.querySelector('.view-all-articles-container a');
+            if (viewAllBtn) {
+                // Update the count if needed
+                if (!viewAllBtn.textContent.includes(`(${articles.length})`)) {
+                    viewAllBtn.innerHTML = `
+                        <i class="fas fa-newspaper"></i>
+                        عرض جميع المقالات (${articles.length})
                     `;
-                    
-                    // Insert after the articles container
-                    articlesContainer.parentNode.insertBefore(viewAllContainer, articlesContainer.nextSibling);
-                    
-                    console.log("Added 'View All Articles' button");
+                    console.log("Updated 'View All Articles' button count");
                 }
-            } else {
-                console.log("Could not find articles container parent to add 'View All' button");
             }
         }
         

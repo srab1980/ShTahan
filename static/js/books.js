@@ -182,31 +182,19 @@ document.addEventListener('DOMContentLoaded', function() {
             booksContainer.appendChild(bookCard);
         });
         
-        // Add "View All Books" button if on homepage and there are more books
+        // Update book count in "View All Books" button if it exists
         if (isHomepage && books.length > 8) {
-            // Add view all button directly after the books container
-            if (booksContainer && booksContainer.parentNode) {
-                // Check if view-all container doesn't already exist
-                if (!document.querySelector('.view-all-container')) {
-                    const viewAllContainer = document.createElement('div');
-                    viewAllContainer.className = 'view-all-container';
-                    viewAllContainer.style.textAlign = 'center';
-                    viewAllContainer.style.marginTop = '2rem';
-                    
-                    viewAllContainer.innerHTML = `
-                        <a href="/books" class="btn btn-primary" style="padding: 10px 20px; font-size: 1.1rem;">
-                            <i class="fas fa-book"></i>
-                            عرض جميع الكتب (${books.length})
-                        </a>
+            // Find existing View All button if any
+            const viewAllBtn = document.querySelector('.view-all-container a');
+            if (viewAllBtn) {
+                // Update the count if needed
+                if (!viewAllBtn.textContent.includes(`(${books.length})`)) {
+                    viewAllBtn.innerHTML = `
+                        <i class="fas fa-book"></i>
+                        عرض جميع الكتب (${books.length})
                     `;
-                    
-                    // Insert after the books container
-                    booksContainer.parentNode.insertBefore(viewAllContainer, booksContainer.nextSibling);
-                    
-                    console.log("Added 'View All Books' button");
+                    console.log("Updated 'View All Books' button count");
                 }
-            } else {
-                console.log("Could not find books container parent to add 'View All' button");
             }
         }
     }
