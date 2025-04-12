@@ -1,456 +1,341 @@
 /**
- * User Journey Map module for Sheikh Mustafa Al-Tahhan website
- * Provides personalized user journey visualization and activity tracking
+ * User Journey module for Sheikh Mustafa Al-Tahhan website
+ * Handles personal user journey visualization and preferences
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize the user journey interface
+    // Initialize user journey functionality
     initUserJourney();
-    
-    // Set up preferences form listener
-    const preferencesForm = document.getElementById('preferences-form');
-    if (preferencesForm) {
-        preferencesForm.addEventListener('submit', saveUserPreferences);
-    }
 });
 
 /**
- * Initialize user journey interface by loading user data and activities
+ * Initialize the user journey page
  */
 async function initUserJourney() {
-    // Check authentication status
-    const authStatus = await checkAuthStatus();
-    if (!authStatus.authenticated) {
-        // Redirect to login if not authenticated
-        window.location.href = '/login-form?redirect=/user-journey';
-        return;
-    }
-    
-    // Update user greeting
-    updateUserGreeting(authStatus);
-    
-    // Load user activities
-    await loadUserActivities();
-    
-    // Load statistics
-    await loadActivityStatistics();
-    
-    // Load recommendations based on user activities
-    await loadRecommendations();
-    
-    // Load user preferences
-    await loadUserPreferences();
-}
-
-/**
- * Check if the user is authenticated
- * @returns {Object} Authentication status
- */
-async function checkAuthStatus() {
     try {
-        const response = await fetch('/api/auth-status');
-        const data = await response.json();
-        return data;
+        // Check if the user is authenticated
+        const authResponse = await fetch('/api/auth-status');
+        const authData = await authResponse.json();
+        
+        if (!authData.authenticated) {
+            // Redirect to login if not authenticated
+            window.location.href = '/login-form?redirect=/user-journey';
+            return;
+        }
+        
+        // Update user greeting
+        updateUserGreeting(authData.user);
+        
+        // Load user statistics
+        loadUserStatistics();
+        
+        // Load user activities timeline
+        loadUserActivities();
+        
+        // Load content recommendations
+        loadRecommendations();
+        
+        // Load user preferences
+        loadUserPreferences();
+        
+        // Set up preference form handler
+        setupPreferencesForm();
     } catch (error) {
-        console.error('Error checking authentication status:', error);
-        return { authenticated: false };
+        console.error('Error initializing user journey:', error);
+        showError('حدث خطأ أثناء تحميل رحلة المستخدم. يرجى المحاولة مرة أخرى.');
     }
 }
 
 /**
- * Update user greeting with name and status
- * @param {Object} authData - Authentication data
+ * Update the user greeting section with user info
+ * @param {Object} user - User information object
  */
-function updateUserGreeting(authData) {
+function updateUserGreeting(user) {
     const userNameElement = document.getElementById('user-name');
-    const userStatusElement = document.getElementById('user-status');
-    
-    if (userNameElement && authData.authenticated) {
-        userNameElement.textContent = `أهلاً، ${authData.username}`;
-    }
-    
-    if (userStatusElement && authData.last_login) {
-        const lastLogin = new Date(authData.last_login);
-        const timeDiff = Math.floor((new Date() - lastLogin) / (1000 * 60 * 60 * 24));
-        
-        if (timeDiff === 0) {
-            userStatusElement.textContent = 'آخر زيارة: اليوم';
-        } else if (timeDiff === 1) {
-            userStatusElement.textContent = 'آخر زيارة: الأمس';
-        } else {
-            userStatusElement.textContent = `آخر زيارة: منذ ${timeDiff} أيام`;
-        }
+    if (userNameElement) {
+        userNameElement.textContent = `أهلاً بك، ${user.username}`;
     }
 }
 
 /**
- * Load user activities from the API
+ * Load and display user statistics
  */
-async function loadUserActivities() {
-    const timelineContainer = document.getElementById('activities-timeline');
-    if (!timelineContainer) return;
-    
-    try {
-        const response = await fetch('/api/user/activities');
-        
-        if (!response.ok) {
-            throw new Error('Failed to load activities');
-        }
-        
-        const data = await response.json();
-        renderActivitiesTimeline(data.activities);
-    } catch (error) {
-        console.error('Error loading user activities:', error);
-        timelineContainer.innerHTML = `
-            <div class="error-message">
-                <i class="fas fa-exclamation-circle"></i>
-                <p>حدث خطأ أثناء تحميل الأنشطة</p>
-                <button onclick="loadUserActivities()" class="btn btn-sm btn-primary">إعادة المحاولة</button>
-            </div>
-        `;
-    }
-}
-
-/**
- * Render activities timeline
- * @param {Array} activities - User activities
- */
-function renderActivitiesTimeline(activities) {
-    const timelineContainer = document.getElementById('activities-timeline');
-    if (!timelineContainer) return;
-    
-    // Clear loading indicator
-    timelineContainer.innerHTML = '';
-    
-    if (!activities || activities.length === 0) {
-        timelineContainer.innerHTML = `
-            <div class="empty-timeline">
-                <i class="fas fa-info-circle"></i>
-                <p>لم يتم تسجيل أي نشاط بعد</p>
-                <p class="sub-text">تصفح الكتب والمقالات وستظهر أنشطتك هنا</p>
-            </div>
-        `;
-        return;
-    }
-    
-    // Sort activities by date (newest first)
-    activities.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    
-    // Group activities by day
-    const groupedActivities = groupActivitiesByDay(activities);
-    
-    // Create timeline HTML
-    let timelineHTML = '';
-    
-    Object.keys(groupedActivities).forEach(day => {
-        const dayActivities = groupedActivities[day];
-        
-        timelineHTML += `
-            <div class="timeline-day">
-                <div class="timeline-date">${formatDate(day)}</div>
-                <div class="timeline-items">
-        `;
-        
-        dayActivities.forEach(activity => {
-            const activityIcon = getActivityIcon(activity.activity_type);
-            const activityTitle = getActivityTitle(activity);
-            const activityLink = getActivityLink(activity);
-            
-            timelineHTML += `
-                <div class="timeline-item">
-                    <div class="timeline-icon">
-                        <i class="${activityIcon}"></i>
-                    </div>
-                    <div class="timeline-content">
-                        <h4>${activityTitle}</h4>
-                        <p>${formatTime(activity.created_at)}</p>
-                        ${activityLink ? `<a href="${activityLink}" class="timeline-link">مشاهدة</a>` : ''}
-                    </div>
-                </div>
-            `;
-        });
-        
-        timelineHTML += `
-                </div>
-            </div>
-        `;
-    });
-    
-    timelineContainer.innerHTML = timelineHTML;
-}
-
-/**
- * Group activities by day
- * @param {Array} activities - User activities
- * @returns {Object} Activities grouped by day
- */
-function groupActivitiesByDay(activities) {
-    const grouped = {};
-    
-    activities.forEach(activity => {
-        const date = new Date(activity.created_at);
-        const day = date.toISOString().split('T')[0];
-        
-        if (!grouped[day]) {
-            grouped[day] = [];
-        }
-        
-        grouped[day].push(activity);
-    });
-    
-    return grouped;
-}
-
-/**
- * Get icon for activity type
- * @param {string} activityType - Type of activity
- * @returns {string} Font Awesome icon class
- */
-function getActivityIcon(activityType) {
-    const icons = {
-        'view_book': 'fas fa-book',
-        'download_book': 'fas fa-file-download',
-        'view_article': 'fas fa-newspaper',
-        'view_gallery': 'fas fa-images',
-        'login': 'fas fa-sign-in-alt',
-        'update_preferences': 'fas fa-user-cog',
-        'contact': 'fas fa-envelope'
-    };
-    
-    return icons[activityType] || 'fas fa-history';
-}
-
-/**
- * Get readable title for activity
- * @param {Object} activity - Activity data
- * @returns {string} Activity title
- */
-function getActivityTitle(activity) {
-    const titles = {
-        'view_book': `تصفح كتاب: ${activity.content_title || 'غير معروف'}`,
-        'download_book': `تنزيل كتاب: ${activity.content_title || 'غير معروف'}`,
-        'view_article': `قراءة مقال: ${activity.content_title || 'غير معروف'}`,
-        'view_gallery': 'تصفح معرض الصور',
-        'login': 'تسجيل الدخول',
-        'update_preferences': 'تحديث التفضيلات الشخصية',
-        'contact': 'إرسال رسالة تواصل'
-    };
-    
-    return titles[activity.activity_type] || 'نشاط غير معروف';
-}
-
-/**
- * Get link for activity content
- * @param {Object} activity - Activity data
- * @returns {string|null} Link to content or null
- */
-function getActivityLink(activity) {
-    if (!activity.content_id) return null;
-    
-    const links = {
-        'view_book': `/books?id=${activity.content_id}`,
-        'download_book': `/books?id=${activity.content_id}`,
-        'view_article': `/articles?id=${activity.content_id}`,
-        'view_gallery': '/gallery'
-    };
-    
-    return links[activity.activity_type] || null;
-}
-
-/**
- * Format date in Arabic
- * @param {string} dateStr - Date string
- * @returns {string} Formatted date
- */
-function formatDate(dateStr) {
-    const date = new Date(dateStr);
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    
-    if (date.toDateString() === today.toDateString()) {
-        return 'اليوم';
-    } else if (date.toDateString() === yesterday.toDateString()) {
-        return 'الأمس';
-    } else {
-        // Format date in Arabic style
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        return date.toLocaleDateString('ar-EG', options);
-    }
-}
-
-/**
- * Format time in Arabic
- * @param {string} dateTimeStr - Date and time string
- * @returns {string} Formatted time
- */
-function formatTime(dateTimeStr) {
-    const date = new Date(dateTimeStr);
-    const options = { hour: '2-digit', minute: '2-digit' };
-    return date.toLocaleTimeString('ar-EG', options);
-}
-
-/**
- * Load activity statistics for the user
- */
-async function loadActivityStatistics() {
-    const booksViewedElement = document.getElementById('books-viewed-count');
-    const articlesViewedElement = document.getElementById('articles-viewed-count');
-    const downloadsElement = document.getElementById('downloads-count');
-    const activeDaysElement = document.getElementById('active-days-count');
-    
+async function loadUserStatistics() {
     try {
         const response = await fetch('/api/user/statistics');
-        
-        if (!response.ok) {
-            throw new Error('Failed to load statistics');
-        }
-        
         const data = await response.json();
         
-        // Update statistics in the UI
-        if (booksViewedElement) booksViewedElement.textContent = data.books_viewed || 0;
-        if (articlesViewedElement) articlesViewedElement.textContent = data.articles_viewed || 0;
-        if (downloadsElement) downloadsElement.textContent = data.downloads || 0;
-        if (activeDaysElement) activeDaysElement.textContent = data.active_days || 0;
+        // Update statistics cards
+        document.getElementById('books-viewed-count').textContent = data.books_viewed || 0;
+        document.getElementById('articles-viewed-count').textContent = data.articles_viewed || 0;
+        document.getElementById('downloads-count').textContent = data.downloads || 0;
+        document.getElementById('active-days-count').textContent = data.active_days || 0;
     } catch (error) {
-        console.error('Error loading activity statistics:', error);
-        
-        // Set default values
-        if (booksViewedElement) booksViewedElement.textContent = '0';
-        if (articlesViewedElement) articlesViewedElement.textContent = '0';
-        if (downloadsElement) downloadsElement.textContent = '0';
-        if (activeDaysElement) activeDaysElement.textContent = '0';
+        console.error('Error loading user statistics:', error);
+        showError('تعذر تحميل إحصائيات المستخدم');
     }
 }
 
 /**
- * Load content recommendations for the user
+ * Load and display user activities timeline
+ */
+async function loadUserActivities() {
+    try {
+        const timelineContainer = document.getElementById('activities-timeline');
+        
+        // Show loading indicator
+        timelineContainer.innerHTML = `
+            <div class="timeline-loading">
+                <div class="loader-pulse"></div>
+                <p>جاري تحميل الأنشطة...</p>
+            </div>
+        `;
+        
+        // Fetch user activities
+        const response = await fetch('/api/user/activities');
+        const data = await response.json();
+        
+        // Clear loading indicator
+        timelineContainer.innerHTML = '';
+        
+        // Check if there are any activities
+        if (!data.activities || data.activities.length === 0) {
+            timelineContainer.innerHTML = `
+                <div class="no-activities">
+                    <p>لا توجد أنشطة مسجلة بعد. تصفح المحتوى لبدء رحلتك!</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Render activities timeline
+        data.activities.forEach(activity => {
+            const activityElement = createActivityElement(activity);
+            timelineContainer.appendChild(activityElement);
+        });
+    } catch (error) {
+        console.error('Error loading user activities:', error);
+        const timelineContainer = document.getElementById('activities-timeline');
+        timelineContainer.innerHTML = `
+            <div class="error-message">
+                <p>تعذر تحميل الأنشطة. يرجى المحاولة مرة أخرى.</p>
+            </div>
+        `;
+    }
+}
+
+/**
+ * Create an activity element for the timeline
+ * @param {Object} activity - Activity data object
+ * @returns {HTMLElement} The created activity element
+ */
+function createActivityElement(activity) {
+    const item = document.createElement('div');
+    item.className = 'timeline-item';
+    
+    // Choose icon based on activity type
+    let icon = 'fa-star';
+    if (activity.activity_type.includes('book')) {
+        icon = 'fa-book';
+    } else if (activity.activity_type.includes('article')) {
+        icon = 'fa-newspaper';
+    } else if (activity.activity_type.includes('gallery')) {
+        icon = 'fa-image';
+    } else if (activity.activity_type === 'login') {
+        icon = 'fa-sign-in-alt';
+    }
+    
+    // Format activity title
+    let title = 'نشاط جديد';
+    if (activity.activity_type === 'view_book') {
+        title = `اطلعت على كتاب: ${activity.content_title}`;
+    } else if (activity.activity_type === 'download_book') {
+        title = `قمت بتنزيل كتاب: ${activity.content_title}`;
+    } else if (activity.activity_type === 'view_article') {
+        title = `قرأت مقالة: ${activity.content_title}`;
+    } else if (activity.activity_type === 'view_gallery') {
+        title = 'زرت معرض الصور';
+    } else if (activity.activity_type === 'view_gallery_image') {
+        title = `شاهدت صورة: ${activity.content_title}`;
+    } else if (activity.activity_type === 'login') {
+        title = 'قمت بتسجيل الدخول';
+    }
+    
+    // Format date
+    const activityDate = new Date(activity.created_at);
+    const formattedDate = formatDate(activityDate);
+    
+    // Create HTML for activity item
+    item.innerHTML = `
+        <div class="timeline-icon">
+            <i class="fas ${icon}"></i>
+        </div>
+        <div class="timeline-content">
+            <h4>${title}</h4>
+            <p class="timeline-date">${formattedDate}</p>
+        </div>
+    `;
+    
+    return item;
+}
+
+/**
+ * Format date in Arabic-friendly format
+ * @param {Date} date - Date object to format
+ * @returns {string} Formatted date string
+ */
+function formatDate(date) {
+    // Check if the date is today
+    const today = new Date();
+    const isToday = date.toDateString() === today.toDateString();
+    
+    if (isToday) {
+        // Format time only for today
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `اليوم، الساعة ${hours}:${minutes}`;
+    } else {
+        // Format date and time for other days
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        
+        return `${day}/${month}/${year}، الساعة ${hours}:${minutes}`;
+    }
+}
+
+/**
+ * Load and display content recommendations
  */
 async function loadRecommendations() {
-    const recommendationsContainer = document.getElementById('recommendations-container');
-    if (!recommendationsContainer) return;
-    
     try {
-        const response = await fetch('/api/user/recommendations');
+        const recommendationsContainer = document.getElementById('recommendations-container');
         
-        if (!response.ok) {
-            throw new Error('Failed to load recommendations');
+        // Show loading indicator
+        recommendationsContainer.innerHTML = `
+            <div class="recommendations-loading">
+                <div class="loader-pulse"></div>
+                <p>جاري تحميل التوصيات...</p>
+            </div>
+        `;
+        
+        // Fetch recommendations
+        const response = await fetch('/api/user/recommendations');
+        const data = await response.json();
+        
+        // Clear loading indicator
+        recommendationsContainer.innerHTML = '';
+        
+        // Check if there are any recommendations
+        if (!data.recommendations || data.recommendations.length === 0) {
+            recommendationsContainer.innerHTML = `
+                <div class="no-recommendations">
+                    <p>لا توجد توصيات متاحة حالياً.</p>
+                </div>
+            `;
+            return;
         }
         
-        const data = await response.json();
-        renderRecommendations(data.recommendations);
+        // Render recommendations
+        data.recommendations.forEach(recommendation => {
+            const recommendationElement = createRecommendationElement(recommendation);
+            recommendationsContainer.appendChild(recommendationElement);
+        });
     } catch (error) {
         console.error('Error loading recommendations:', error);
+        const recommendationsContainer = document.getElementById('recommendations-container');
         recommendationsContainer.innerHTML = `
             <div class="error-message">
-                <i class="fas fa-exclamation-circle"></i>
-                <p>حدث خطأ أثناء تحميل التوصيات</p>
-                <button onclick="loadRecommendations()" class="btn btn-sm btn-primary">إعادة المحاولة</button>
+                <p>تعذر تحميل التوصيات. يرجى المحاولة مرة أخرى.</p>
             </div>
         `;
     }
 }
 
 /**
- * Render content recommendations
- * @param {Array} recommendations - Recommended content items
+ * Create a recommendation element
+ * @param {Object} recommendation - Recommendation data object
+ * @returns {HTMLElement} The created recommendation element
  */
-function renderRecommendations(recommendations) {
-    const recommendationsContainer = document.getElementById('recommendations-container');
-    if (!recommendationsContainer) return;
+function createRecommendationElement(recommendation) {
+    const item = document.createElement('div');
+    item.className = 'recommendation-card';
     
-    // Clear loading indicator
-    recommendationsContainer.innerHTML = '';
-    
-    if (!recommendations || recommendations.length === 0) {
-        recommendationsContainer.innerHTML = `
-            <div class="empty-recommendations">
-                <i class="fas fa-info-circle"></i>
-                <p>لم يتم إنشاء توصيات شخصية بعد</p>
-                <p class="sub-text">تصفح المزيد من المحتوى لتحسين التوصيات الشخصية</p>
-            </div>
-        `;
-        return;
+    // Format type label in Arabic
+    let typeLabel = 'محتوى';
+    if (recommendation.type === 'book') {
+        typeLabel = 'كتاب';
+    } else if (recommendation.type === 'article') {
+        typeLabel = 'مقالة';
     }
     
-    // Render each recommendation
-    recommendations.forEach(item => {
-        const itemElement = document.createElement('div');
-        itemElement.className = `recommendation-item ${item.type}`;
-        
-        // Generate HTML based on content type
-        if (item.type === 'book') {
-            itemElement.innerHTML = `
-                <div class="recommendation-cover">
-                    <img src="${item.cover}" alt="${item.title}" loading="lazy">
-                </div>
-                <div class="recommendation-details">
-                    <h4>${item.title}</h4>
-                    <p class="recommendation-type">كتاب</p>
-                    <a href="/books?id=${item.id}" class="btn btn-sm btn-primary">تصفح الكتاب</a>
-                </div>
-            `;
-        } else if (item.type === 'article') {
-            itemElement.innerHTML = `
-                <div class="recommendation-details">
-                    <h4>${item.title}</h4>
-                    <p>${item.summary.substring(0, 100)}${item.summary.length > 100 ? '...' : ''}</p>
-                    <p class="recommendation-type">مقال</p>
-                    <a href="/articles?id=${item.id}" class="btn btn-sm btn-primary">قراءة المقال</a>
-                </div>
-            `;
-        }
-        
-        recommendationsContainer.appendChild(itemElement);
-    });
+    // Generate proper link based on content type
+    let link = '#';
+    if (recommendation.type === 'book') {
+        link = `/#books?id=${recommendation.id}`;
+    } else if (recommendation.type === 'article') {
+        link = `/#articles?id=${recommendation.id}`;
+    }
+    
+    // Set default image if not provided
+    let imageUrl = recommendation.cover || '/static/img/default/default-cover.jpg';
+    if (recommendation.type === 'article') {
+        imageUrl = '/static/img/default/article-default.jpg';
+    }
+    
+    // Create HTML for recommendation item
+    item.innerHTML = `
+        <div class="recommendation-image">
+            <img src="${imageUrl}" alt="${recommendation.title}">
+            <span class="recommendation-type">${typeLabel}</span>
+        </div>
+        <div class="recommendation-content">
+            <h4>${recommendation.title}</h4>
+            <p>${recommendation.summary || recommendation.category || ''}</p>
+            <a href="${link}" class="btn btn-sm btn-primary mt-2">عرض المحتوى</a>
+        </div>
+    `;
+    
+    return item;
 }
 
 /**
  * Load user preferences
  */
 async function loadUserPreferences() {
-    const preferencesForm = document.getElementById('preferences-form');
-    if (!preferencesForm) return;
-    
     try {
         const response = await fetch('/api/user/preferences');
-        
-        if (!response.ok) {
-            throw new Error('Failed to load preferences');
-        }
-        
         const data = await response.json();
         
-        // Populate form fields with user preferences
-        if (data.preferences) {
-            const prefs = data.preferences;
-            
-            // Set preferred language
-            const langSelect = document.getElementById('pref-language');
-            if (langSelect && prefs.preferred_language) {
-                langSelect.value = prefs.preferred_language;
-            }
-            
-            // Set preferred categories
-            if (prefs.categories) {
-                const categoryCheckboxes = document.querySelectorAll('input[name="categories"]');
-                categoryCheckboxes.forEach(checkbox => {
-                    if (prefs.categories.includes(checkbox.value)) {
-                        checkbox.checked = true;
-                    }
-                });
-            }
-            
-            // Set notification preferences
-            if (prefs.notifications) {
-                const notificationCheckboxes = document.querySelectorAll('input[name="notifications"]');
-                notificationCheckboxes.forEach(checkbox => {
-                    if (prefs.notifications.includes(checkbox.value)) {
-                        checkbox.checked = true;
-                    }
-                });
-            }
+        // Fill form with user preferences
+        const preferences = data.preferences || {};
+        
+        // Set language preference
+        const langSelect = document.getElementById('pref-language');
+        if (langSelect && preferences.preferred_language) {
+            langSelect.value = preferences.preferred_language;
+        }
+        
+        // Set category checkboxes
+        if (preferences.categories && Array.isArray(preferences.categories)) {
+            const categoryCheckboxes = document.querySelectorAll('input[name="categories"]');
+            categoryCheckboxes.forEach(checkbox => {
+                if (preferences.categories.includes(checkbox.value)) {
+                    checkbox.checked = true;
+                }
+            });
+        }
+        
+        // Set notification preferences
+        if (preferences.notifications && Array.isArray(preferences.notifications)) {
+            const notificationCheckboxes = document.querySelectorAll('input[name="notifications"]');
+            notificationCheckboxes.forEach(checkbox => {
+                if (preferences.notifications.includes(checkbox.value)) {
+                    checkbox.checked = true;
+                }
+            });
         }
     } catch (error) {
         console.error('Error loading user preferences:', error);
@@ -458,128 +343,120 @@ async function loadUserPreferences() {
 }
 
 /**
- * Save user preferences
- * @param {Event} e - Form submit event
+ * Set up preferences form submission handler
  */
-async function saveUserPreferences(e) {
-    e.preventDefault();
+function setupPreferencesForm() {
+    const form = document.getElementById('preferences-form');
+    if (!form) return;
     
-    const preferencesForm = document.getElementById('preferences-form');
-    if (!preferencesForm) return;
-    
-    // Collect form data
-    const preferredLanguage = document.getElementById('pref-language').value;
-    
-    const categoryCheckboxes = document.querySelectorAll('input[name="categories"]:checked');
-    const categories = Array.from(categoryCheckboxes).map(cb => cb.value);
-    
-    const notificationCheckboxes = document.querySelectorAll('input[name="notifications"]:checked');
-    const notifications = Array.from(notificationCheckboxes).map(cb => cb.value);
-    
-    // Create preferences object
-    const preferences = {
-        preferred_language: preferredLanguage,
-        categories: categories,
-        notifications: notifications
-    };
-    
-    try {
-        const response = await fetch('/api/user/preferences', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ preferences })
-        });
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
         
-        if (!response.ok) {
-            throw new Error('Failed to save preferences');
+        try {
+            // Collect form data
+            const language = document.getElementById('pref-language').value;
+            
+            // Get selected categories
+            const categoryCheckboxes = document.querySelectorAll('input[name="categories"]:checked');
+            const categories = Array.from(categoryCheckboxes).map(cb => cb.value);
+            
+            // Get notification preferences
+            const notificationCheckboxes = document.querySelectorAll('input[name="notifications"]:checked');
+            const notifications = Array.from(notificationCheckboxes).map(cb => cb.value);
+            
+            // Prepare preferences object
+            const preferences = {
+                preferred_language: language,
+                categories: categories,
+                notifications: notifications
+            };
+            
+            // Submit preferences
+            const response = await fetch('/api/user/preferences', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ preferences })
+            });
+            
+            if (response.ok) {
+                showSuccess('تم حفظ التفضيلات بنجاح');
+                
+                // Reload recommendations based on new preferences
+                setTimeout(() => {
+                    loadRecommendations();
+                }, 1000);
+            } else {
+                showError('فشل حفظ التفضيلات');
+            }
+        } catch (error) {
+            console.error('Error saving preferences:', error);
+            showError('حدث خطأ أثناء حفظ التفضيلات');
         }
-        
-        // Show success message
-        showNotification('تم حفظ التفضيلات بنجاح', 'success');
-        
-        // Record the activity
-        recordActivity('update_preferences');
-    } catch (error) {
-        console.error('Error saving preferences:', error);
-        showNotification('حدث خطأ أثناء حفظ التفضيلات', 'error');
-    }
+    });
 }
 
 /**
- * Record user activity
- * @param {string} activityType - Type of activity
- * @param {Object} details - Additional activity details
+ * Show success message
+ * @param {string} message - Success message to display
  */
-async function recordActivity(activityType, details = {}) {
-    try {
-        await fetch('/api/user/record-activity', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                activity_type: activityType,
-                ...details
-            })
-        });
-    } catch (error) {
-        console.error('Error recording activity:', error);
-    }
-}
-
-/**
- * Show notification
- * @param {string} message - Notification message
- * @param {string} type - Notification type (success, error, info)
- */
-function showNotification(message, type = 'info') {
-    // Remove existing notification
-    const existingNotification = document.querySelector('.notification');
-    if (existingNotification) {
-        existingNotification.remove();
-    }
+function showSuccess(message) {
+    // Create a success message element
+    const successElement = document.createElement('div');
+    successElement.className = 'alert alert-success';
+    successElement.style.position = 'fixed';
+    successElement.style.bottom = '20px';
+    successElement.style.right = '20px';
+    successElement.style.padding = '10px 20px';
+    successElement.style.backgroundColor = '#4CAF50';
+    successElement.style.color = 'white';
+    successElement.style.borderRadius = '4px';
+    successElement.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+    successElement.style.zIndex = '9999';
+    successElement.textContent = message;
     
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
+    // Add to the DOM
+    document.body.appendChild(successElement);
     
-    // Style the notification
-    notification.style.position = 'fixed';
-    notification.style.top = '20px';
-    notification.style.left = '50%';
-    notification.style.transform = 'translateX(-50%)';
-    notification.style.padding = '12px 24px';
-    notification.style.borderRadius = '5px';
-    notification.style.zIndex = '9999';
-    notification.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
-    
-    // Set color based on type
-    if (type === 'success') {
-        notification.style.backgroundColor = '#d4edda';
-        notification.style.color = '#155724';
-        notification.style.border = '1px solid #c3e6cb';
-    } else if (type === 'error') {
-        notification.style.backgroundColor = '#f8d7da';
-        notification.style.color = '#721c24';
-        notification.style.border = '1px solid #f5c6cb';
-    } else {
-        notification.style.backgroundColor = '#e2e3e5';
-        notification.style.color = '#383d41';
-        notification.style.border = '1px solid #d6d8db';
-    }
-    
-    document.body.appendChild(notification);
-    
-    // Remove notification after 3 seconds
+    // Remove after a few seconds
     setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transition = 'opacity 0.5s ease';
-        
+        successElement.style.opacity = '0';
+        successElement.style.transition = 'opacity 0.5s';
         setTimeout(() => {
-            notification.remove();
+            document.body.removeChild(successElement);
         }, 500);
     }, 3000);
+}
+
+/**
+ * Show error message
+ * @param {string} message - Error message to display
+ */
+function showError(message) {
+    // Create an error message element
+    const errorElement = document.createElement('div');
+    errorElement.className = 'alert alert-danger';
+    errorElement.style.position = 'fixed';
+    errorElement.style.bottom = '20px';
+    errorElement.style.right = '20px';
+    errorElement.style.padding = '10px 20px';
+    errorElement.style.backgroundColor = '#f44336';
+    errorElement.style.color = 'white';
+    errorElement.style.borderRadius = '4px';
+    errorElement.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+    errorElement.style.zIndex = '9999';
+    errorElement.textContent = message;
+    
+    // Add to the DOM
+    document.body.appendChild(errorElement);
+    
+    // Remove after a few seconds
+    setTimeout(() => {
+        errorElement.style.opacity = '0';
+        errorElement.style.transition = 'opacity 0.5s';
+        setTimeout(() => {
+            document.body.removeChild(errorElement);
+        }, 500);
+    }, 4000);
 }
