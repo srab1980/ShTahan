@@ -88,12 +88,17 @@
     }
     
     /* Articles layout container */
-    .articles-grid {
-        display: grid;
-        grid-template-columns: repeat(1, 1fr);
-        gap: 30px;
-        max-width: 1200px;
-        margin: 0 auto;
+    #articles-container {
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+        width: 100%;
+    }
+    
+    #articles-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 30px !important;
+        width: 100% !important;
     }
     
     /* Article card styles */
@@ -105,6 +110,7 @@
         overflow: hidden;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        width: 100%;
     }
     
     .article-card:hover {
@@ -119,24 +125,17 @@
         flex-direction: column;
     }
     
-    /* Desktop layout - 3 columns */
-    @media (min-width: 1200px) {
-        .articles-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-    
     /* Tablet layout - 2 columns */
-    @media (min-width: 768px) and (max-width: 1199px) {
-        .articles-grid {
-            grid-template-columns: repeat(2, 1fr);
+    @media (max-width: 1199px) and (min-width: 768px) {
+        #articles-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
         }
     }
     
     /* Mobile layout - 1 column */
     @media (max-width: 767px) {
-        .articles-grid {
-            grid-template-columns: 1fr;
+        #articles-grid {
+            grid-template-columns: 1fr !important;
         }
     }
     
@@ -332,9 +331,9 @@
         <button class="sort-btn" data-sort="popular">الأكثر قراءة</button>
     </div>
     
-    <div id="articles-container">
+    <div id="articles-container" style="max-width: 1200px; margin: 0 auto;">
         <div id="articles-list">
-            <div class="articles-grid" id="articles-grid">
+            <div class="articles-grid" id="articles-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;">
                 <!-- Articles will be loaded dynamically here -->
                 <div class="loading-indicator">
                     <div class="spinner"></div>
@@ -374,6 +373,28 @@
         let articlesPerPage = 6;
         let currentSort = 'newest';
         let searchQuery = '';
+        
+        // Force the grid layout
+        function forceGridLayout() {
+            // Make sure the grid layout is applied even if styles are overridden
+            articlesGrid.style.display = 'grid';
+            articlesGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+            articlesGrid.style.gap = '30px';
+            articlesGrid.style.width = '100%';
+            
+            // Apply responsive styles based on current screen width
+            if (window.innerWidth < 768) {
+                articlesGrid.style.gridTemplateColumns = '1fr';
+            } else if (window.innerWidth < 1200) {
+                articlesGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+            }
+        }
+        
+        // Force grid layout on window resize
+        window.addEventListener('resize', forceGridLayout);
+        
+        // Apply grid layout immediately
+        forceGridLayout();
         
         // Fetch articles
         async function fetchArticles() {
@@ -482,6 +503,9 @@
             
             // Add event listeners to article actions
             addArticleEventListeners();
+            
+            // Make sure grid layout is enforced even after DOM updates
+            forceGridLayout();
         }
         
         // Render pagination controls
@@ -648,6 +672,9 @@
             const url = new URL(window.location);
             url.searchParams.delete('article');
             window.history.pushState({}, '', url);
+            
+            // Ensure grid layout is properly restored when returning to list view
+            setTimeout(forceGridLayout, 10);
         }
         
         // Record view activity for articles page
