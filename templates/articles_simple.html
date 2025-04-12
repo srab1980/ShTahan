@@ -1,0 +1,439 @@
+{% extends 'base.html' %}
+
+{% block title %}مقالات الشيخ مصطفى الطحان{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+    .page-header {
+        background-color: #d4af37;
+        color: white;
+        padding: 20px 0;
+        margin-bottom: 30px;
+        text-align: center;
+        margin-top: 6rem; /* Extra margin to prevent navbar overlap */
+    }
+    
+    .articles-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+        box-sizing: border-box;
+        direction: rtl;
+    }
+    
+    .articles-grid {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -15px;
+        justify-content: flex-start;
+    }
+    
+    .article-card {
+        width: calc(33.333% - 30px);
+        margin: 15px;
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .article-content {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .article-title {
+        font-size: 1.5rem;
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        color: #1a2a3a;
+    }
+    
+    .article-meta {
+        margin-bottom: 1rem;
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .article-date {
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .article-date i {
+        margin-left: 5px;
+    }
+    
+    .article-summary {
+        color: #444;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    
+    .article-action {
+        color: #d4af37;
+        text-decoration: none;
+        font-weight: bold;
+        align-self: flex-start;
+        margin-top: auto;
+        display: inline-block;
+        padding: 8px 0;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s;
+    }
+    
+    .article-action:hover {
+        border-bottom-color: #d4af37;
+    }
+    
+    .article-full {
+        background-color: white;
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .article-full-title {
+        color: #1a2a3a;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 2rem;
+    }
+    
+    .article-full-meta {
+        margin-bottom: 2rem;
+        color: #666;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 1rem;
+    }
+    
+    .article-full-content {
+        line-height: 1.8;
+        color: #333;
+    }
+    
+    .back-to-articles {
+        display: inline-block;
+        color: #d4af37;
+        text-decoration: none;
+        font-weight: bold;
+        margin-top: 1rem;
+    }
+    
+    .back-to-articles i {
+        margin-left: 5px;
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin: 30px 0;
+        clear: both;
+    }
+    
+    .pagination-btn {
+        background-color: #f5f5f5;
+        border: none;
+        color: #333;
+        padding: 8px 16px;
+        margin: 0 5px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.3s;
+    }
+    
+    .pagination-btn:hover:not(.disabled):not(.active) {
+        background-color: #e0e0e0;
+    }
+    
+    .pagination-btn.active {
+        background-color: #d4af37;
+        color: white;
+    }
+    
+    .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .search-and-sort {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    
+    #search-form {
+        display: flex;
+        align-items: center;
+    }
+    
+    #search-input {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px 0 0 4px;
+        font-size: 14px;
+    }
+    
+    #search-btn {
+        background-color: #1a2a3a;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        cursor: pointer;
+        border-radius: 0 4px 4px 0;
+    }
+    
+    .sort-options {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .sort-btn {
+        background-color: #f5f5f5;
+        border: none;
+        padding: 8px 15px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.3s;
+    }
+    
+    .sort-btn.active {
+        background-color: #1a2a3a;
+        color: white;
+    }
+    
+    .article-detail-view {
+        direction: rtl;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 1200px) {
+        .article-card {
+            width: calc(50% - 30px);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .article-card {
+            width: 100%;
+            margin: 15px 0;
+        }
+        
+        .search-and-sort {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        #search-form {
+            width: 100%;
+        }
+        
+        #search-input {
+            flex-grow: 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>مقالات الشيخ مصطفى الطحان</h1>
+        <p>مجموعة من المقالات المختارة التي كتبها الشيخ مصطفى الطحان عن مواضيع متنوعة</p>
+    </div>
+</div>
+
+<div class="articles-container">
+    <div id="article-detail-view" style="display: none;" class="article-detail-view"></div>
+    
+    <div id="articles-list-view">
+        <div class="search-and-sort">
+            <form id="search-form">
+                <input type="text" id="search-input" placeholder="ابحث عن مقال...">
+                <button type="submit" id="search-btn"><i class="fas fa-search"></i></button>
+            </form>
+            
+            <div class="sort-options">
+                <button class="sort-btn active" data-sort="newest">الأحدث</button>
+                <button class="sort-btn" data-sort="popular">الأكثر قراءة</button>
+            </div>
+        </div>
+        
+        <div class="articles-grid">
+            {% for article in articles %}
+            <div class="article-card" data-id="{{ article.id }}">
+                <div class="article-content">
+                    <h3 class="article-title">{{ article.title }}</h3>
+                    <div class="article-meta">
+                        <div class="article-date">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>{{ article.created_at.strftime('%Y-%m-%d') }}</span>
+                        </div>
+                    </div>
+                    <p class="article-summary">{{ article.summary }}</p>
+                    <a href="#" class="article-action" data-id="{{ article.id }}">قراءة المزيد</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elements
+        const articleCards = document.querySelectorAll('.article-card');
+        const articleLinks = document.querySelectorAll('.article-action');
+        const articlesListView = document.getElementById('articles-list-view');
+        const articleDetailView = document.getElementById('article-detail-view');
+        const searchForm = document.getElementById('search-form');
+        const searchInput = document.getElementById('search-input');
+        const sortButtons = document.querySelectorAll('.sort-btn');
+        
+        // Event listener for article links
+        articleLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const articleId = this.dataset.id;
+                
+                // Fetch article details
+                fetch(`/api/articles/${articleId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        showArticleDetail(data.article);
+                        
+                        // Record view if activity tracking script is loaded
+                        try {
+                            if (typeof recordActivity === 'function') {
+                                recordActivity('view_article', articleId, 'article', data.article.title);
+                            }
+                        } catch (error) {
+                            console.log('Activity tracking not available');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching article:', error);
+                    });
+            });
+        });
+        
+        // Make the entire card clickable
+        articleCards.forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Only trigger if not clicking on the action button
+                if (!e.target.classList.contains('article-action')) {
+                    const articleId = this.dataset.id;
+                    
+                    // Find the link and simulate a click
+                    const link = this.querySelector('.article-action');
+                    if (link) {
+                        link.click();
+                    }
+                }
+            });
+        });
+        
+        // Search form submission
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const searchQuery = searchInput.value.trim().toLowerCase();
+            
+            articleCards.forEach(card => {
+                const title = card.querySelector('.article-title').textContent.toLowerCase();
+                const summary = card.querySelector('.article-summary').textContent.toLowerCase();
+                
+                if (title.includes(searchQuery) || summary.includes(searchQuery)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+        
+        // Sort buttons
+        sortButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Update active state
+                sortButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // In a real implementation, you would sort the articles here
+                // For this simplified version, we just show a message
+                console.log(`Sorting by: ${this.dataset.sort}`);
+            });
+        });
+        
+        // Show article detail
+        function showArticleDetail(article) {
+            articlesListView.style.display = 'none';
+            articleDetailView.style.display = 'block';
+            
+            articleDetailView.innerHTML = `
+                <div class="article-full">
+                    <h1 class="article-full-title">${article.title}</h1>
+                    <div class="article-full-meta">
+                        <div class="article-date">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>${formatDate(article.created_at)}</span>
+                        </div>
+                    </div>
+                    <div class="article-full-content">
+                        ${article.content}
+                    </div>
+                </div>
+                <a href="#" class="back-to-articles" id="back-to-articles">
+                    <i class="fas fa-arrow-right"></i> العودة لقائمة المقالات
+                </a>
+            `;
+            
+            // Update page title with article title
+            document.title = `${article.title} - مقالات الشيخ مصطفى الطحان`;
+            
+            // Add back button event listener
+            document.getElementById('back-to-articles').addEventListener('click', function(e) {
+                e.preventDefault();
+                backToArticlesList();
+            });
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Go back to articles list
+        function backToArticlesList() {
+            articleDetailView.style.display = 'none';
+            articlesListView.style.display = 'block';
+            
+            // Reset page title
+            document.title = 'مقالات الشيخ مصطفى الطحان';
+        }
+        
+        // Helper function to format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('ar-EG', options);
+        }
+        
+        // Record page view if activity tracking is available
+        try {
+            if (typeof recordActivity === 'function') {
+                recordActivity('view_articles_page', null, 'page', 'صفحة المقالات البسيطة');
+            }
+        } catch (error) {
+            console.log('Activity tracking not available');
+        }
+    });
+</script>
+
+<!-- Load activity tracking script -->
+<script src="{{ url_for('static', filename='js/activity-tracking.js') }}"></script>
+{% endblock %}

@@ -164,7 +164,18 @@ def books_page():
 @app.route('/articles')
 def articles_page():
     """Render the articles page with all articles"""
-    return render_template('articles_page.html', now=datetime.now())
+    from models import Article
+    # Load articles directly from the database
+    articles = Article.query.order_by(Article.created_at.desc()).all()
+    return render_template('articles_page.html', articles=articles, now=datetime.now())
+    
+@app.route('/articles-simple')
+def articles_simple_page():
+    """Render a simplified static articles page with fixed layout"""
+    from models import Article
+    # Load articles directly from the database
+    articles = Article.query.order_by(Article.created_at.desc()).all()
+    return render_template('articles_simple.html', articles=articles, now=datetime.now())
     
 @app.route('/login-link')
 def login_link():
