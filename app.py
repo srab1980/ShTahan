@@ -778,7 +778,7 @@ def get_user_statistics():
 
 @app.route('/api/user/recommendations', methods=['GET'])
 def get_user_recommendations():
-    """Get content recommendations for the current user"""
+    """Get dynamic content recommendations for the current user based on browsing history"""
     if not current_user.is_authenticated:
         return jsonify({'error': 'يرجى تسجيل الدخول للوصول إلى هذه البيانات', 'authenticated': False}), 401
 
@@ -786,51 +786,264 @@ def get_user_recommendations():
     preferences = current_user.get_preferences()
     preferred_categories = preferences.get('categories', [])
     preferred_language = preferences.get('preferred_language', 'all')
-
-    # Base query for books
-    book_query = Book.query
-
+    
+    # Create recommendations list
+    recommendations = {
+        'based_on_history': [],
+        'based_on_preferences': [],
+        'trending': []
+    }
+    
+    # 1. Get recommendations based on user history
+    history_based_recommendations = get_recommendations_from_history(current_user.id)
+    recommendations['based_on_history'] = history_based_recommendations
+    
+    # 2. Get recommendations based on user preferences
+    pref_books_query = Book.query
+    
     # Apply category filter if preferences exist
     if preferred_categories:
-        book_query = book_query.filter(Book.category.in_(preferred_categories))
-
+        pref_books_query = pref_books_query.filter(Book.category.in_(preferred_categories))
+    
     # Apply language filter if set to something other than 'all'
     if preferred_language and preferred_language != 'all':
-        book_query = book_query.filter_by(language=preferred_language)
-
-    # Get recent books to recommend
-    books = book_query.order_by(Book.created_at.desc()).limit(3).all()
-
-    # Get recent articles to recommend
-    articles = Article.query.order_by(Article.created_at.desc()).limit(3).all()
-
-    # Create recommendations list
-    recommendations = []
-
-    # Add books to recommendations
-    for book in books:
-        recommendations.append({
-            'id': book.id,
-            'title': book.title,
-            'type': 'book',
-            'cover': book.cover,
-            'language': book.language,
-            'category': book.category
-        })
-
-    # Add articles to recommendations
-    for article in articles:
-        recommendations.append({
+        pref_books_query = pref_books_query.filter_by(language=preferred_language)
+    
+    # Get books based on preferences
+    pref_books = pref_books_query.order_by(Book.created_at.desc()).limit(3).all()
+    
+    # Add preference-based books to recommendations
+    for book in pref_books:
+        if not any(r.get('id') == book.id and r.get('type') == 'book' for r in recommendations['based_on_history']):
+            recommendations['based_on_preferences'].append({
+                'id': book.id,
+                'title': book.title,
+                'type': 'book',
+                'cover': book.cover,
+                'language': book.language,
+                'category': book.category,
+                'reason': 'based_on_preferences'
+            })
+    
+    # 3. Get trending content (most viewed/downloaded books and most viewed articles)
+    trending_books = get_trending_books(limit=3)
+    
+    # Add trending books to recommendations
+    for book in trending_books:
+        if (not any(r.get('id') == book.id and r.get('type') == 'book' for r in recommendations['based_on_history']) and
+            not any(r.get('id') == book.id and r.get('type') == 'book' for r in recommendations['based_on_preferences'])):
+            recommendations['trending'].append({
+                'id': book.id,
+                'title': book.title,
+                'type': 'book',
+                'cover': book.cover,
+                'language': book.language,
+                'category': book.category,
+                'reason': 'trending'
+            })
+    
+    # Get trending articles
+    trending_articles = get_trending_articles(limit=2)
+    
+    # Add trending articles to recommendations
+    for article in trending_articles:
+        recommendations['trending'].append({
             'id': article.id,
             'title': article.title,
             'type': 'article',
-            'summary': article.summary
+            'summary': article.summary,
+            'reason': 'trending'
         })
-
+    
+    # Ensure we have at least some recommendations
+    if (len(recommendations['based_on_history']) == 0 and 
+        len(recommendations['based_on_preferences']) == 0 and 
+        len(recommendations['trending']) == 0):
+        
+        # Fallback to newest books
+        newest_books = Book.query.order_by(Book.created_at.desc()).limit(3).all()
+        for book in newest_books:
+            recommendations['trending'].append({
+                'id': book.id,
+                'title': book.title,
+                'type': 'book',
+                'cover': book.cover,
+                'language': book.language,
+                'category': book.category,
+                'reason': 'newest'
+            })
+    
+    # Flatten recommendations for simpler response
+    flat_recommendations = []
+    flat_recommendations.extend(recommendations['based_on_history'])
+    flat_recommendations.extend(recommendations['based_on_preferences'])
+    flat_recommendations.extend(recommendations['trending'])
+    
+    # Limit to a reasonable number of recommendations
+    flat_recommendations = flat_recommendations[:8]
+    
     return jsonify({
-        'recommendations': recommendations,
+        'recommendations': flat_recommendations,
+        'recommendation_groups': recommendations,
         'authenticated': True
     })
+
+def get_recommendations_from_history(user_id, limit=5):
+    """
+    Generate recommendations based on user browsing history
+    Analyzes what books the user has viewed or downloaded recently
+    and recommends similar books
+    """
+    # Get user's recent activity related to books
+    recent_activities = UserActivity.query.filter_by(
+        user_id=user_id,
+        content_type='book'
+    ).order_by(UserActivity.created_at.desc()).limit(10).all()
+    
+    recommendations = []
+    
+    # Collect categories and languages the user has shown interest in
+    categories_of_interest = {}
+    languages_of_interest = {}
+    viewed_book_ids = set()
+    
+    for activity in recent_activities:
+        if activity.content_id:
+            viewed_book_ids.add(activity.content_id)
+            
+            # Get the book details
+            book = Book.query.get(activity.content_id)
+            if book:
+                # Increment category interest
+                if book.category in categories_of_interest:
+                    categories_of_interest[book.category] += 1
+                else:
+                    categories_of_interest[book.category] = 1
+                
+                # Increment language interest
+                if book.language in languages_of_interest:
+                    languages_of_interest[book.language] += 1
+                else:
+                    languages_of_interest[book.language] = 1
+    
+    # Find the most interested categories and languages
+    top_categories = sorted(categories_of_interest.items(), key=lambda x: x[1], reverse=True)
+    top_languages = sorted(languages_of_interest.items(), key=lambda x: x[1], reverse=True)
+    
+    # If we have interests, recommend books from those categories/languages
+    if top_categories:
+        # Get top 2 categories if available
+        top_cats = [cat[0] for cat in top_categories[:2]]
+        
+        # Get top language if available
+        top_lang = top_languages[0][0] if top_languages else None
+        
+        # Build query for similar books
+        query = Book.query.filter(Book.id.notin_(viewed_book_ids))
+        
+        if top_cats:
+            query = query.filter(Book.category.in_(top_cats))
+        
+        if top_lang:
+            query = query.filter_by(language=top_lang)
+        
+        # Get similar books
+        similar_books = query.order_by(Book.created_at.desc()).limit(limit).all()
+        
+        # Add similar books to recommendations
+        for book in similar_books:
+            # Create recommendation with reason
+            reason = f"لأنك اهتممت بكتب {book.category}"
+            recommendations.append({
+                'id': book.id,
+                'title': book.title,
+                'type': 'book',
+                'cover': book.cover,
+                'language': book.language,
+                'category': book.category,
+                'reason': 'based_on_history',
+                'explanation': reason
+            })
+    
+    return recommendations
+
+def get_trending_books(limit=3):
+    """
+    Get trending books based on view and download counts
+    """
+    # Get last 30 days of activity
+    thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+    
+    # Get book IDs and their activity counts
+    book_activities = db.session.query(
+        UserActivity.content_id, 
+        func.count(UserActivity.id).label('activity_count')
+    ).filter(
+        UserActivity.content_type == 'book',
+        UserActivity.created_at >= thirty_days_ago
+    ).group_by(
+        UserActivity.content_id
+    ).order_by(
+        desc('activity_count')
+    ).limit(limit).all()
+    
+    trending_books = []
+    
+    # Get full book details for each trending book
+    for book_id, _ in book_activities:
+        book = Book.query.get(book_id)
+        if book:
+            trending_books.append(book)
+    
+    # If we don't have enough trending books, supplement with newest books
+    if len(trending_books) < limit:
+        existing_ids = [book.id for book in trending_books]
+        additional_books = Book.query.filter(
+            Book.id.notin_(existing_ids)
+        ).order_by(Book.created_at.desc()).limit(limit - len(trending_books)).all()
+        
+        trending_books.extend(additional_books)
+    
+    return trending_books
+
+def get_trending_articles(limit=2):
+    """
+    Get trending articles based on view counts
+    """
+    # Get last 30 days of activity
+    thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+    
+    # Get article IDs and their view counts
+    article_activities = db.session.query(
+        UserActivity.content_id, 
+        func.count(UserActivity.id).label('view_count')
+    ).filter(
+        UserActivity.content_type == 'article',
+        UserActivity.created_at >= thirty_days_ago
+    ).group_by(
+        UserActivity.content_id
+    ).order_by(
+        desc('view_count')
+    ).limit(limit).all()
+    
+    trending_articles = []
+    
+    # Get full article details for each trending article
+    for article_id, _ in article_activities:
+        article = Article.query.get(article_id)
+        if article:
+            trending_articles.append(article)
+    
+    # If we don't have enough trending articles, supplement with newest
+    if len(trending_articles) < limit:
+        existing_ids = [article.id for article in trending_articles]
+        additional_articles = Article.query.filter(
+            Article.id.notin_(existing_ids)
+        ).order_by(Article.created_at.desc()).limit(limit - len(trending_articles)).all()
+        
+        trending_articles.extend(additional_articles)
+    
+    return trending_articles
 
 @app.route('/api/user/preferences', methods=['GET'])
 def get_user_preferences():
