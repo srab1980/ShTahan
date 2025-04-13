@@ -88,14 +88,13 @@
         width: 100%;
         max-width: 1200px;
         margin: 0 auto;
-        overflow: hidden;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        direction: rtl;
     }
     
     .book-card {
-        width: 32%;
-        margin-right: 2%;
-        margin-bottom: 20px;
-        float: right;
         border-radius: 8px;
         overflow: hidden;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -104,10 +103,6 @@
         display: flex;
         flex-direction: column;
         height: 500px; /* Fixed height for consistency */
-    }
-    
-    .book-card:nth-child(3n) {
-        margin-right: 0;
     }
     
     .book-card:hover {
@@ -266,26 +261,20 @@
         cursor: not-allowed;
     }
     
-    /* Clearfix for the grid */
-    .books-grid:after {
-        content: "";
-        display: table;
-        clear: both;
+    /* Error message styling */
+    .error-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        text-align: center;
     }
     
     /* Tablet layout */
     @media (max-width: 900px) {
-        .book-card {
-            width: 48%;
-            margin-right: 4%;
-        }
-        
-        .book-card:nth-child(3n) {
-            margin-right: 4%;
-        }
-        
-        .book-card:nth-child(2n) {
-            margin-right: 0;
+        .books-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
         
         .books-filters {
@@ -300,9 +289,11 @@
     
     /* Mobile layout */
     @media (max-width: 600px) {
+        .books-grid {
+            grid-template-columns: 1fr;
+        }
+        
         .book-card {
-            width: 100%;
-            margin-right: 0;
             height: auto;
             min-height: 450px;
         }
@@ -853,6 +844,25 @@
             }
         }
         
+        // Error handling
+        function showErrorMessage(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            
+            const booksContainer = document.querySelector('.books-container');
+            if (booksContainer) {
+                booksContainer.insertBefore(errorDiv, booksGrid);
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (errorDiv.parentNode) {
+                        errorDiv.parentNode.removeChild(errorDiv);
+                    }
+                }, 5000);
+            }
+        }
+        
         // Helper functions
         function truncateText(text, maxLength) {
             if (text.length <= maxLength) return text;
@@ -864,13 +874,7 @@
             return new Date(dateString).toLocaleDateString('ar-EG', options);
         }
         
-        function showErrorMessage(message) {
-            booksGrid.innerHTML = `
-                <div class="no-books">
-                    <p>${message}</p>
-                </div>
-            `;
-        }
+        // Function moved above to combine error handling approaches
         
         // Event listeners for filters and sorting
         languageFilter.addEventListener('change', function() {
