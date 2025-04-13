@@ -11,23 +11,23 @@
     <title>{% block title %}الموقع الرسمي للشيخ مصطفى الطحان (أبو أيمن){% endblock %}</title>
     <meta name="description" content="الموقع الرسمي للشيخ مصطفى الطحان - كاتب ومربٍ فاضل ومسيرة من العطاء والفكر والدعوة">
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
-    
+
     <!-- تحسين الأداء عبر التحميل المسبق للموارد الهامة -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    
+
     <!-- تحميل الخطوط المهمة فقط للعرض الأولي -->
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-    
+
     <!-- تحميل آيقونات Font Awesome بطريقة أكثر كفاءة -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-    
+
     <!-- CSS المهم للعرض الأولي -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/loading.css') }}" media="print" onload="this.media='all'">
-    
+
     {% block styles %}{% endblock %}
 </head>
 <body>
@@ -51,7 +51,6 @@
                         <li><a href="/#articles">المقالات</a></li>
                         <li><a href="/#gallery">معرض الصور</a></li>
                         <li><a href="/#contact">تواصل معنا</a></li>
-                        <li><a href="/user-journey">رحلتي التعليمية</a></li>
                         <li class="auth-item" id="login-button-container">
                             <!-- سيتم تحميل زر تسجيل الدخول هنا بشكل مستقل -->
                         </li>
@@ -60,7 +59,7 @@
             </div>
         </div>
     </header>
-    
+
     <style>
     /* تصميم جديد للقائمة وزر تسجيل الخروج */
     .navigation {
@@ -68,20 +67,20 @@
         align-items: center;
         justify-content: space-between;
     }
-    
+
     .nav-menu {
         flex-grow: 1;
         padding-left: 20px;
         display: flex;
         flex-wrap: wrap;
     }
-    
+
     /* Style for the login/auth button in navigation */
     .auth-item {
         margin-right: 0;
         margin-left: auto;
     }
-    
+
     .auth-link {
         color: #1a3c6b;
         font-weight: bold;
@@ -91,21 +90,21 @@
         border-radius: 4px;
         transition: all 0.3s ease;
     }
-    
+
     .auth-link i {
         margin-left: 8px;
     }
-    
+
     .auth-link:hover {
         background-color: rgba(26, 60, 107, 0.1);
     }
-    
+
     /* تصميم القائمة المنسدلة للمستخدم */
     .user-menu {
         position: relative;
         display: inline-block;
     }
-    
+
     .user-menu-toggle {
         display: flex;
         align-items: center;
@@ -116,16 +115,16 @@
         transition: all 0.3s ease;
         text-decoration: none;
     }
-    
+
     .user-menu-toggle:hover {
         background-color: rgba(26, 60, 107, 0.1);
     }
-    
+
     .user-menu-toggle i {
         margin-left: 8px;
         font-size: 1.2rem;
     }
-    
+
     .user-menu-dropdown {
         position: absolute;
         top: 100%;
@@ -138,11 +137,11 @@
         display: none;
         border: 1px solid #eee;
     }
-    
+
     .user-menu:hover .user-menu-dropdown {
         display: block;
     }
-    
+
     .user-menu-item {
         display: block;
         padding: 10px 15px;
@@ -150,59 +149,59 @@
         text-decoration: none;
         transition: background-color 0.3s ease;
     }
-    
+
     .user-menu-item:hover {
         background-color: #f8f9fa;
     }
-    
+
     .user-menu-item i {
         margin-left: 8px;
         color: #1a3c6b;
     }
-    
+
     .logout-link {
         border-top: 1px solid #eee;
         color: #dc3545;
     }
-    
+
     .logout-link i {
         color: #dc3545;
     }
-    
+
     /* تصميم متوافق مع الهواتف */
     @media (max-width: 991px) {
         .navigation {
             flex-direction: column;
             align-items: flex-start;
         }
-        
+
         .nav-menu {
             display: block;
             width: 100%;
         }
-        
+
         .auth-item {
             margin: 15px 0;
             width: 100%;
         }
-        
+
         .auth-link {
             display: block;
             width: 100%;
             text-align: right;
         }
-        
+
         .user-menu {
             display: block;
             width: 100%;
         }
-        
+
         .user-menu-toggle {
             display: block;
             width: 100%;
             text-align: right;
         }
-        
+
         .user-menu-dropdown {
             position: static;
             width: 100%;
@@ -263,21 +262,21 @@
     <!-- Core JavaScript -->
     <script src="{{ url_for('static', filename='js/jquery-3.7.0.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    
+
     <!-- Dynamic Login Button -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const loginButtonContainer = document.getElementById('login-button-container');
-            
+
             // التحقق من حالة تسجيل الدخول
             checkAuthStatus();
-            
+
             // دالة التحقق من حالة تسجيل الدخول
             async function checkAuthStatus() {
                 try {
                     const response = await fetch('/api/auth-status');
                     const data = await response.json();
-                    
+
                     // تحديث عنصر تسجيل الدخول بناءً على حالة المستخدم
                     if (data.authenticated) {
                         // المستخدم مسجل دخول
@@ -310,10 +309,10 @@
             }
         });
     </script>
-    
+
     <!-- Additional Scripts -->
     {% block scripts %}{% endblock %}
-    
+
     <!-- Service Worker Registration for Progressive Web App -->
     <script src="{{ url_for('static', filename='js/sw-register.js') }}"></script>
 </body>
