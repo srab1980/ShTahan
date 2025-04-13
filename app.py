@@ -224,12 +224,19 @@ def logout():
 
 @app.route('/api/auth-status')
 def auth_status():
+    # Add cache control headers to prevent caching
+    response = make_response()
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    
     if current_user.is_authenticated:
         return jsonify({
             'authenticated': True,
             'username': current_user.username,
             'role': current_user.role,
             'id': current_user.id,
+            'show_journey_in_dropdown': False,  # Flag to control journey link in dropdown
             'last_login': current_user.last_login.strftime('%Y-%m-%d %H:%M:%S') if current_user.last_login else None
         })
     else:
