@@ -100,32 +100,31 @@
     /* Grid-based 3-column layout */
     .articles-fixed-grid {
         width: 100%;
-        max-width: 1400px;
+        max-width: 1800px;
         margin: 0 auto;
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 2rem;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
         direction: rtl;
         padding: 2rem;
         box-sizing: border-box;
     }
 
     .article-card {
-        width: 100%;
-        margin: 0;
-    }
-
-    .article-card {
         background-color: white;
-        border-radius: 12px;
+        border-radius: 10px;
         overflow: hidden;
-        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
         height: 100%;
         display: flex;
         flex-direction: column;
         border: 1px solid rgba(0,0,0,0.05);
-        position: relative;
+    }
+
+    .article-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
     }
 
     .article-card:hover {
@@ -134,11 +133,11 @@
     }
 
     .article-content {
-        padding: 2rem;
+        padding: 30px;
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 1.2rem;
+        gap: 20px;
     }
 
     .article-title {
