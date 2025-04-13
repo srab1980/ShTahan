@@ -1,3 +1,4 @@
+
 {% if not current_user.is_authenticated %}
 <a href="/login-form?check_auth=false" class="nav-link auth-link">
     <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
@@ -9,9 +10,6 @@
         <span>{{ current_user.username }}</span>
     </a>
     <div class="user-menu-dropdown">
-        <a href="/user-journey" class="user-menu-item">
-            <i class="fas fa-route"></i> رحلتي التعليمية
-        </a>
         <a href="/logout" class="user-menu-item logout-link">
             <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
         </a>
