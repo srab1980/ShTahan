@@ -15,27 +15,27 @@
         width: 100%;
         box-sizing: border-box;
     }
-    
+
     .page-header .container {
         max-width: 1800px;
         width: 100%;
         margin: 0 auto;
         padding: 0 2%;
     }
-    
+
     .page-header h1 {
         font-size: 2.5rem;
         margin-bottom: 0.5rem;
         color: #1a2a3a;
     }
-    
+
     .page-header p {
         font-size: 1.2rem;
         margin-top: 0;
         color: #1a2a3a;
         opacity: 0.9;
     }
-    
+
     .articles-container {
         width: 100%;
         max-width: 1800px; /* Increased max-width for fullscreen */
@@ -44,7 +44,7 @@
         box-sizing: border-box;
         direction: rtl;
     }
-    
+
     .search-and-sort {
         display: flex;
         justify-content: space-between;
@@ -53,13 +53,13 @@
         width: 100%;
         gap: 15px;
     }
-    
+
     #search-form {
         display: flex;
         align-items: center;
         width: 300px; /* Fixed width for search form */
     }
-    
+
     #search-input {
         padding: 8px 12px;
         border: 1px solid #ddd;
@@ -67,7 +67,7 @@
         font-size: 14px;
         width: 240px; /* Fixed width for search input */
     }
-    
+
     #search-btn {
         background-color: #1a2a3a;
         color: white;
@@ -77,12 +77,12 @@
         border-radius: 0 4px 4px 0;
         width: 60px; /* Fixed width for button */
     }
-    
+
     .sort-options {
         display: flex;
         gap: 10px;
     }
-    
+
     .sort-btn {
         background-color: #f5f5f5;
         border: none;
@@ -91,7 +91,7 @@
         border-radius: 4px;
         transition: all 0.3s;
     }
-    
+
     .sort-btn.active {
         background-color: #1a2a3a;
         color: white;
@@ -146,7 +146,7 @@
         margin-bottom: 20px;
         line-height: 1.6;
     }
-    
+
     .article-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 16px rgba(0,0,0,0.15);
@@ -155,35 +155,35 @@
     .article-content {
         padding: 1.5rem;
     }
-    
+
     .article-title {
         font-size: 1.5rem;
         margin-top: 0;
         margin-bottom: 0.5rem;
         color: #1a2a3a;
     }
-    
+
     .article-meta {
         margin-bottom: 1rem;
         color: #666;
         font-size: 0.9rem;
     }
-    
+
     .article-date {
         display: inline-flex;
         align-items: center;
     }
-    
+
     .article-date i {
         margin-left: 5px;
     }
-    
+
     .article-summary {
         color: #444;
         line-height: 1.6;
         margin-bottom: 1.5rem;
     }
-    
+
     .article-action {
         color: #d4af37;
         text-decoration: none;
@@ -193,7 +193,7 @@
         border-bottom: 2px solid transparent;
         transition: all 0.3s;
     }
-    
+
     .article-action:hover {
         border-bottom-color: #d4af37;
     }
@@ -202,7 +202,7 @@
     .article-detail-view {
         direction: rtl;
     }
-    
+
     .article-full {
         background-color: white;
         border-radius: 8px;
@@ -210,26 +210,26 @@
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         margin-bottom: 2rem;
     }
-    
+
     .article-full-title {
         color: #1a2a3a;
         margin-top: 0;
         margin-bottom: 1rem;
         font-size: 2rem;
     }
-    
+
     .article-full-meta {
         margin-bottom: 2rem;
         color: #666;
         border-bottom: 1px solid #eee;
         padding-bottom: 1rem;
     }
-    
+
     .article-full-content {
         line-height: 1.8;
         color: #333;
     }
-    
+
     .back-to-articles {
         display: inline-block;
         color: #d4af37;
@@ -237,11 +237,11 @@
         font-weight: bold;
         margin-top: 1rem;
     }
-    
+
     .back-to-articles i {
         margin-left: 5px;
     }
-    
+
     /* Pagination styles */
     .pagination {
         display: flex;
@@ -249,7 +249,7 @@
         margin: 30px 0;
         clear: both;
     }
-    
+
     .pagination-btn {
         background-color: #f5f5f5;
         border: none;
@@ -260,27 +260,27 @@
         border-radius: 4px;
         transition: all 0.3s;
     }
-    
+
     .pagination-btn:hover:not(.disabled):not(.active) {
         background-color: #e0e0e0;
     }
-    
+
     .pagination-btn.active {
         background-color: #d4af37;
         color: white;
     }
-    
+
     .pagination-btn.disabled {
         opacity: 0.5;
         cursor: not-allowed;
     }
-    
+
     /* Loading indicator */
     .loading-indicator {
         text-align: center;
         padding: 2rem;
     }
-    
+
     .spinner {
         width: 40px;
         height: 40px;
@@ -290,11 +290,11 @@
         animation: spin 1s linear infinite;
         margin: 0 auto 1rem;
     }
-    
+
     @keyframes spin {
         to { transform: rotate(360deg); }
     }
-    
+
     .no-articles {
         text-align: center;
         padding: 2rem;
@@ -302,45 +302,19 @@
         border-radius: 8px;
         color: #6c757d;
     }
-    
+
     /* Responsive design */
-    @media (max-width: 900px) {
-        /* For tablet - 2 columns */
+    @media (max-width: 1200px) {
         .articles-fixed-grid {
             grid-template-columns: repeat(2, 1fr);
-        }
-        
-        .articles-container {
-            padding: 0 15px;
+            gap: 1rem;
         }
     }
-    
-    @media (max-width: 600px) {
-        /* For mobile - 1 column */
+
+    @media (max-width: 768px) {
         .articles-fixed-grid {
             grid-template-columns: 1fr;
-        }
-        
-        .search-and-sort {
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        #search-form {
-            width: 100%;
-        }
-        
-        #search-input {
-            flex-grow: 1;
-            width: auto;
-        }
-        
-        #search-btn {
-            width: 50px;
-        }
-        
-        .articles-container {
-            padding: 0 10px;
+            padding: 1rem;
         }
     }
 
@@ -363,20 +337,20 @@
 
 <div class="articles-container">
     <div id="article-detail-view" style="display: none;" class="article-detail-view"></div>
-    
+
     <div id="articles-list-view">
         <div class="search-and-sort">
             <form id="search-form">
                 <input type="text" id="search-input" placeholder="ابحث عن مقال...">
                 <button type="submit" id="search-btn"><i class="fas fa-search"></i></button>
             </form>
-            
+
             <div class="sort-options">
                 <button class="sort-btn active" data-sort="newest">الأحدث</button>
                 <button class="sort-btn" data-sort="popular">الأكثر قراءة</button>
             </div>
         </div>
-        
+
         <div id="articles-grid" class="articles-fixed-grid clearfix">
             <!-- Articles will be loaded dynamically here -->
             <div class="loading-indicator">
@@ -384,7 +358,7 @@
                 <p>جاري تحميل المقالات...</p>
             </div>
         </div>
-        
+
         <div id="pagination" class="pagination">
             <!-- Pagination will be generated dynamically -->
         </div>
@@ -404,7 +378,7 @@
         const searchInput = document.getElementById('search-input');
         const sortButtons = document.querySelectorAll('.sort-btn');
         const pagination = document.getElementById('pagination');
-        
+
         // State
         let articles = [];
         let filteredArticles = [];
@@ -412,13 +386,13 @@
         let articlesPerPage = 6;
         let currentSort = 'newest';
         let searchQuery = '';
-        
+
         // Fetch articles
         async function fetchArticles() {
             try {
                 const cachedArticles = localStorage.getItem('articlesData');
                 const cachedTimestamp = localStorage.getItem('articlesTimestamp');
-                
+
                 // Use cached data if it's less than 5 minutes old
                 if (cachedArticles && cachedTimestamp) {
                     const now = new Date().getTime();
@@ -428,10 +402,10 @@
                         return;
                     }
                 }
-                
+
                 const response = await fetch('/api/articles');
                 const data = await response.json();
-                
+
                 if (data.articles) {
                     articles = data.articles;
                     // Cache the articles data
@@ -444,13 +418,13 @@
                 showErrorMessage('حدث خطأ أثناء تحميل المقالات. يرجى المحاولة مرة أخرى لاحقاً.');
             }
         }
-        
+
         // Process articles (filter, sort, paginate)
         function processArticles() {
             // Apply search filter
             filteredArticles = articles.filter(article => {
                 if (!searchQuery) return true;
-                
+
                 const query = searchQuery.toLowerCase();
                 return (
                     article.title.toLowerCase().includes(query) ||
@@ -458,7 +432,7 @@
                     article.content.toLowerCase().includes(query)
                 );
             });
-            
+
             // Apply sorting
             if (currentSort === 'newest') {
                 filteredArticles.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -467,26 +441,26 @@
                 // In a real app, you would use actual view counts or a popularity metric
                 filteredArticles.sort(() => Math.random() - 0.5);
             }
-            
+
             // Reset to first page when filters change
             currentPage = 1;
-            
+
             // Render articles and pagination
             renderArticles();
             renderPagination();
-            
+
             // Record activity
             recordViewActivity();
         }
-        
+
         // Render articles for current page
         function renderArticles() {
             const startIndex = (currentPage - 1) * articlesPerPage;
             const endIndex = startIndex + articlesPerPage;
             const articlesToDisplay = filteredArticles.slice(startIndex, endIndex);
-            
+
             articlesGrid.innerHTML = '';
-            
+
             if (articlesToDisplay.length === 0) {
                 articlesGrid.innerHTML = `
                     <div class="no-articles">
@@ -495,12 +469,12 @@
                 `;
                 return;
             }
-            
+
             articlesToDisplay.forEach(article => {
                 const articleCard = document.createElement('div');
                 articleCard.className = 'article-card';
                 articleCard.dataset.id = article.id;
-                
+
                 articleCard.innerHTML = `
                     <div class="article-content">
                         <h3 class="article-title">${article.title}</h3>
@@ -514,14 +488,14 @@
                         <a href="#" class="article-action" data-id="${article.id}">قراءة المزيد</a>
                     </div>
                 `;
-                
+
                 articlesGrid.appendChild(articleCard);
             });
-            
+
             // Add event listeners to article cards
             addArticleEventListeners();
         }
-        
+
         // Add event listeners to article cards
         function addArticleEventListeners() {
             document.querySelectorAll('.article-action').forEach(link => {
@@ -531,7 +505,7 @@
                     showArticleDetail(articleId);
                 });
             });
-            
+
             document.querySelectorAll('.article-card').forEach(card => {
                 card.addEventListener('click', function(e) {
                     // Only trigger if not clicking on the action button
@@ -542,33 +516,33 @@
                 });
             });
         }
-        
+
         // Search form submission
         searchForm.addEventListener('submit', function(e) {
             e.preventDefault();
             searchQuery = searchInput.value.trim().toLowerCase();
             processArticles();
         });
-        
+
         // Sort buttons
         sortButtons.forEach(btn => {
             btn.addEventListener('click', function() {
                 // Update active state
                 sortButtons.forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-                
+
                 // Update sort and reprocess
                 currentSort = this.dataset.sort;
                 processArticles();
             });
         });
-        
+
         // Show article detail
         async function showArticleDetail(articleId) {
             try {
                 // Find article in cached data first
                 let article = articles.find(a => a.id == articleId);
-                
+
                 // If not found, fetch from API
                 if (!article) {
                     const response = await fetch(`/api/articles/${articleId}`);
@@ -579,10 +553,10 @@
                         throw new Error('Article not found');
                     }
                 }
-                
+
                 articlesListView.style.display = 'none';
                 articleDetailView.style.display = 'block';
-                
+
                 articleDetailView.innerHTML = `
                     <div class="article-full">
                         <h1 class="article-full-title">${article.title}</h1>
@@ -600,16 +574,16 @@
                         <i class="fas fa-arrow-right"></i> العودة لقائمة المقالات
                     </a>
                 `;
-                
+
                 // Update page title with article title
                 document.title = `${article.title} - مقالات الشيخ مصطفى الطحان`;
-                
+
                 // Add back button event listener
                 document.getElementById('back-to-articles').addEventListener('click', function(e) {
                     e.preventDefault();
                     backToArticlesList();
                 });
-                
+
                 // Record view activity
                 try {
                     if (typeof recordActivity === 'function') {
@@ -618,33 +592,33 @@
                 } catch (error) {
                     console.log('Activity tracking not available');
                 }
-                
+
                 // Scroll to top
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (error) {
                 console.error('Error showing article detail:', error);
             }
         }
-        
+
         // Go back to articles list
         function backToArticlesList() {
             articleDetailView.style.display = 'none';
             articlesListView.style.display = 'block';
-            
+
             // Reset page title
             document.title = 'مقالات الشيخ مصطفى الطحان';
         }
-        
+
         // Render pagination controls
         function renderPagination() {
             const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
-            
+
             pagination.innerHTML = '';
-            
+
             if (totalPages <= 1) {
                 return;
             }
-            
+
             // Previous button
             const prevBtn = document.createElement('button');
             prevBtn.className = `pagination-btn ${currentPage === 1 ? 'disabled' : ''}`;
@@ -659,17 +633,17 @@
                 }
             });
             pagination.appendChild(prevBtn);
-            
+
             // Page numbers
             const totalPagesToShow = 5;
             let startPage = Math.max(1, currentPage - Math.floor(totalPagesToShow / 2));
             let endPage = Math.min(totalPages, startPage + totalPagesToShow - 1);
-            
+
             // Adjust if we're near the end
             if (endPage - startPage < totalPagesToShow - 1) {
                 startPage = Math.max(1, endPage - totalPagesToShow + 1);
             }
-            
+
             for (let i = startPage; i <= endPage; i++) {
                 const pageBtn = document.createElement('button');
                 pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
@@ -684,7 +658,7 @@
                 });
                 pagination.appendChild(pageBtn);
             }
-            
+
             // Next button
             const nextBtn = document.createElement('button');
             nextBtn.className = `pagination-btn ${currentPage === totalPages ? 'disabled' : ''}`;
@@ -700,7 +674,7 @@
             });
             pagination.appendChild(nextBtn);
         }
-        
+
         // Record page view activity
         function recordViewActivity() {
             try {
@@ -711,18 +685,18 @@
                 console.log('Activity tracking not available');
             }
         }
-        
+
         // Helper functions
         function truncateText(text, maxLength) {
             if (text.length <= maxLength) return text;
             return text.slice(0, maxLength) + '...';
         }
-        
+
         function formatDate(dateString) {
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             return new Date(dateString).toLocaleDateString('ar-EG', options);
         }
-        
+
         function showErrorMessage(message) {
             articlesGrid.innerHTML = `
                 <div class="no-articles">
@@ -730,7 +704,7 @@
                 </div>
             `;
         }
-        
+
         // Initialize
         fetchArticles();
     });
