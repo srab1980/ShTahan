@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Sort books by date (newest first)
         const sortedBooks = [...books].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-        // Limit to 8 books on the homepage
+        // Only limit books on homepage
         const isHomepage = window.location.pathname === '/';
         const booksToDisplay = isHomepage ? sortedBooks.slice(0, 8) : sortedBooks;
 
