@@ -475,11 +475,9 @@
                         </div>
                         <p class="book-description">${truncateText(book.description, 100)}</p>
                         <div class="book-actions">
-                            ${book.download && book.download !== '#' ? 
-                                `<a href="${book.download}" class="book-action-btn download-btn" target="_blank" data-id="${book.id}" style="width: 100%;">
-                                    <i class="fas fa-download"></i> تحميل الكتاب
-                                </a>` : 
-                                ''}
+                            <a href="${book.download}" class="book-action-btn download-btn" target="_blank" data-id="${book.id}" style="width: 100%; background-color: #1a3c6b; color: white; font-weight: bold;">
+                                <i class="fas fa-download"></i> تحميل الكتاب
+                            </a>
                         </div>
                     </div>
                 `;
