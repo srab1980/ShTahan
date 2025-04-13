@@ -4,7 +4,7 @@ import uuid
 import json
 from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
-from flask import Flask, render_template, request, jsonify, url_for, send_from_directory, redirect, flash, session
+from flask import Flask, render_template, request, jsonify, url_for, send_from_directory, redirect, flash, session, make_response
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
@@ -224,23 +224,25 @@ def logout():
 
 @app.route('/api/auth-status')
 def auth_status():
-    # Add cache control headers to prevent caching
-    response = make_response()
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
-    
     if current_user.is_authenticated:
-        return jsonify({
+        data = {
             'authenticated': True,
             'username': current_user.username,
             'role': current_user.role,
             'id': current_user.id,
             'show_journey_in_dropdown': False,  # Flag to control journey link in dropdown
             'last_login': current_user.last_login.strftime('%Y-%m-%d %H:%M:%S') if current_user.last_login else None
-        })
+        }
     else:
-        return jsonify({'authenticated': False})
+        data = {'authenticated': False}
+    
+    # Create response with cache control headers
+    response = make_response(jsonify(data))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    
+    return response
 
 # Books API Endpoints
 @app.route('/api/books', methods=['GET'])

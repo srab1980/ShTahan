@@ -539,6 +539,24 @@
                     
                     if (data.authenticated) {
                         // المستخدم مسجل دخول
+                        let userMenuDropdownItems = '';
+                        
+                        // إضافة رابط رحلتي التعليمية فقط إذا كانت القيمة صحيحة
+                        if (data.show_journey_in_dropdown) {
+                            userMenuDropdownItems += `
+                                <a href="/user-journey" class="user-menu-item">
+                                    <i class="fas fa-route"></i> رحلتي التعليمية
+                                </a>
+                            `;
+                        }
+                        
+                        // إضافة رابط تسجيل الخروج دائماً
+                        userMenuDropdownItems += `
+                            <a href="/logout" class="user-menu-item logout-link">
+                                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                            </a>
+                        `;
+                        
                         loginContainer.innerHTML = `
                             <div class="user-menu">
                                 <a href="#" class="user-menu-toggle">
@@ -546,9 +564,7 @@
                                     <span>${data.username}</span>
                                 </a>
                                 <div class="user-menu-dropdown">
-                                    <a href="/logout" class="user-menu-item logout-link">
-                                        <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
-                                    </a>
+                                    ${userMenuDropdownItems}
                                 </div>
                             </div>
                         `;

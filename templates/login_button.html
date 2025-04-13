@@ -10,6 +10,7 @@
         <span>{{ current_user.username }}</span>
     </a>
     <div class="user-menu-dropdown">
+        {# We're removing the user journey link from dropdown as it is already in the main nav #}
         <a href="/logout" class="user-menu-item logout-link">
             <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
         </a>
