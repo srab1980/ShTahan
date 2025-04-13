@@ -1,0 +1,371 @@
+<!-- Book Recommendations Component -->
+<div class="recommendations-container" id="book-recommendations" style="display: none;">
+    <div class="recommendations-header">
+        <h2>كتب ننصحك بالاطلاع عليها</h2>
+        <div class="separator"></div>
+    </div>
+    
+    <div class="recommendations-wrapper">
+        <div class="recommendations-loading" id="recommendations-loading">
+            <div class="spinner"></div>
+            <p>جاري تحميل التوصيات...</p>
+        </div>
+        
+        <div class="no-recommendations" id="no-recommendations" style="display: none;">
+            <p>لا توجد توصيات متاحة حالياً.<br>استمر في تصفح الموقع لتحصل على توصيات مخصصة.</p>
+        </div>
+        
+        <div class="recommendations-grid" id="recommendations-grid">
+            <!-- Recommendations will be loaded here dynamically -->
+        </div>
+    </div>
+</div>
+
+<!-- Book Recommendations Styles -->
+<style>
+    .recommendations-container {
+        margin: 4rem 0;
+        padding: 2rem;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+    }
+    
+    .recommendations-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .recommendations-header h2 {
+        color: var(--main-color);
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .recommendations-header .separator {
+        width: 80px;
+        height: 3px;
+        background-color: var(--gold-color);
+        margin: 0 auto;
+    }
+    
+    .recommendations-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 2rem;
+        direction: rtl;
+    }
+    
+    .recommendation-card {
+        background-color: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+    }
+    
+    .recommendation-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    }
+    
+    .recommendation-cover {
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .recommendation-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .recommendation-card:hover .recommendation-cover img {
+        transform: scale(1.05);
+    }
+    
+    .recommendation-type {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 0.25rem 0.75rem;
+        background-color: var(--main-color);
+        color: white;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+    
+    .recommendation-details {
+        padding: 1.25rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .recommendation-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: var(--main-color);
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+    }
+    
+    .recommendation-meta {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .recommendation-meta span {
+        background-color: #f8f9fa;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        color: #6c757d;
+    }
+    
+    .recommendation-reason {
+        font-size: 0.9rem;
+        margin-top: auto;
+        padding-top: 0.75rem;
+        color: var(--gold-color);
+        border-top: 1px solid #f1f1f1;
+        font-style: italic;
+    }
+    
+    .recommendation-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .recommendation-action-btn {
+        flex: 1;
+        text-align: center;
+        padding: 0.6rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .view-btn {
+        background-color: var(--main-color);
+        color: white;
+    }
+    
+    .download-btn {
+        background-color: var(--gold-color);
+        color: white;
+    }
+    
+    .recommendations-loading {
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .no-recommendations {
+        text-align: center;
+        padding: 2rem;
+        color: #6c757d;
+    }
+    
+    @media (max-width: 768px) {
+        .recommendations-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .recommendations-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<!-- Book Recommendations Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Only show recommendations for logged-in users
+        checkAuthStatus();
+        
+        function checkAuthStatus() {
+            fetch('/api/auth-status')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.authenticated) {
+                        document.getElementById('book-recommendations').style.display = 'block';
+                        loadRecommendations();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking auth status:', error);
+                });
+        }
+        
+        function loadRecommendations() {
+            const recommendationsGrid = document.getElementById('recommendations-grid');
+            const loadingElement = document.getElementById('recommendations-loading');
+            const noRecommendationsElement = document.getElementById('no-recommendations');
+            
+            // Show loading indicator
+            loadingElement.style.display = 'block';
+            recommendationsGrid.innerHTML = '';
+            noRecommendationsElement.style.display = 'none';
+            
+            fetch('/api/user/recommendations')
+                .then(response => response.json())
+                .then(data => {
+                    // Hide loading indicator
+                    loadingElement.style.display = 'none';
+                    
+                    // Check if we have recommendations
+                    if (data.recommendations && data.recommendations.length > 0) {
+                        // Group recommendations by reason for better UI organization
+                        const historyBased = data.recommendation_groups.based_on_history || [];
+                        const prefBased = data.recommendation_groups.based_on_preferences || [];
+                        const trending = data.recommendation_groups.trending || [];
+                        
+                        // Create a fragment to append all recommendations to
+                        const fragment = document.createDocumentFragment();
+                        
+                        // Add history-based recommendations first
+                        historyBased.forEach(rec => {
+                            const card = createRecommendationCard(rec, 'بناءً على اهتماماتك');
+                            fragment.appendChild(card);
+                        });
+                        
+                        // Add preference-based recommendations next
+                        prefBased.forEach(rec => {
+                            const card = createRecommendationCard(rec, 'من تفضيلاتك');
+                            fragment.appendChild(card);
+                        });
+                        
+                        // Add trending recommendations last
+                        trending.forEach(rec => {
+                            const card = createRecommendationCard(rec, 'الأكثر مشاهدة');
+                            fragment.appendChild(card);
+                        });
+                        
+                        // Add all recommendations to the grid
+                        recommendationsGrid.appendChild(fragment);
+                    } else {
+                        // Show no recommendations message
+                        noRecommendationsElement.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading recommendations:', error);
+                    loadingElement.style.display = 'none';
+                    noRecommendationsElement.style.display = 'block';
+                });
+        }
+        
+        function createRecommendationCard(recommendation, reasonLabel) {
+            const card = document.createElement('div');
+            card.className = 'recommendation-card';
+            card.dataset.id = recommendation.id;
+            card.dataset.type = recommendation.type;
+            
+            // Set custom reason label if provided
+            const reasonText = recommendation.explanation || reasonLabel;
+            
+            // Create cover and other elements based on content type
+            if (recommendation.type === 'book') {
+                card.innerHTML = `
+                    <div class="recommendation-cover">
+                        <img src="${recommendation.cover}" alt="${recommendation.title}" loading="lazy">
+                        <div class="recommendation-type">كتاب</div>
+                    </div>
+                    <div class="recommendation-details">
+                        <h3 class="recommendation-title">${recommendation.title}</h3>
+                        <div class="recommendation-meta">
+                            <span>${recommendation.language}</span>
+                            <span>${recommendation.category}</span>
+                        </div>
+                        <div class="recommendation-reason">${reasonText}</div>
+                        <div class="recommendation-actions">
+                            <a href="#" class="recommendation-action-btn view-btn view-recommendation-btn" data-id="${recommendation.id}" data-type="book">عرض التفاصيل</a>
+                            ${recommendation.download && recommendation.download !== '#' ? 
+                                `<a href="${recommendation.download}" class="recommendation-action-btn download-btn" target="_blank" data-id="${recommendation.id}" data-type="book">تحميل</a>` : 
+                                ''}
+                        </div>
+                    </div>
+                `;
+            } else if (recommendation.type === 'article') {
+                card.innerHTML = `
+                    <div class="recommendation-cover" style="background-color: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-newspaper" style="font-size: 3rem; color: var(--main-color);"></i>
+                        <div class="recommendation-type">مقال</div>
+                    </div>
+                    <div class="recommendation-details">
+                        <h3 class="recommendation-title">${recommendation.title}</h3>
+                        <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 1rem;">${recommendation.summary}</p>
+                        <div class="recommendation-reason">${reasonText}</div>
+                        <div class="recommendation-actions">
+                            <a href="#" class="recommendation-action-btn view-btn view-recommendation-btn" data-id="${recommendation.id}" data-type="article">قراءة المقال</a>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            return card;
+        }
+        
+        // Add event listeners to the recommendations grid for view/download actions
+        document.getElementById('recommendations-grid').addEventListener('click', function(e) {
+            const viewBtn = e.target.closest('.view-recommendation-btn');
+            const downloadBtn = e.target.closest('.download-btn');
+            
+            if (viewBtn) {
+                e.preventDefault();
+                const id = viewBtn.dataset.id;
+                const type = viewBtn.dataset.type;
+                
+                if (type === 'book') {
+                    // Find the book in the global books array and show details
+                    // This assumes the book details modal functionality is already defined
+                    const book = window.books.find(b => b.id == id);
+                    if (book && typeof showBookDetails === 'function') {
+                        showBookDetails(book);
+                        
+                        // Record view activity
+                        if (typeof recordActivity === 'function') {
+                            recordActivity('view_book', id, 'book', book.title);
+                        }
+                    } else {
+                        // Redirect to book details page if modal function is not available
+                        window.location.href = `/books?id=${id}`;
+                    }
+                } else if (type === 'article') {
+                    // For articles, we'll open in a new tab or navigate to the article page
+                    window.open(`/articles?id=${id}`, '_blank');
+                    
+                    // Record article view
+                    if (typeof recordActivity === 'function') {
+                        recordActivity('view_article', id, 'article', viewBtn.closest('.recommendation-card').querySelector('.recommendation-title').textContent);
+                    }
+                }
+            }
+            
+            if (downloadBtn) {
+                // Record download activity
+                const id = downloadBtn.dataset.id;
+                const type = downloadBtn.dataset.type;
+                
+                if (type === 'book' && typeof recordActivity === 'function') {
+                    recordActivity('download_book', id, 'book', downloadBtn.closest('.recommendation-card').querySelector('.recommendation-title').textContent);
+                }
+            }
+        });
+    });
+</script>

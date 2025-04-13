@@ -1,12 +1,14 @@
 import os
 import logging
 import uuid
-from datetime import datetime
+import json
+from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 from flask import Flask, render_template, request, jsonify, url_for, send_from_directory, redirect, flash, session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import func, desc
 from functools import wraps
 
 # Configure logging

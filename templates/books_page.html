@@ -448,6 +448,9 @@
     <div id="pagination" class="pagination">
         <!-- Pagination will be generated dynamically -->
     </div>
+    
+    <!-- Include the personalized book recommendations component -->
+    {% include 'components/book_recommendations.html' %}
 </div>
 {% endblock %}
 
@@ -474,6 +477,9 @@
         let currentCategory = 'all';
         let searchQuery = '';
         
+        // Make books available globally for recommendation component
+        window.books = [];
+        
         // Fetch books
         async function fetchBooks() {
             try {
@@ -485,6 +491,8 @@
                     const now = new Date().getTime();
                     if (now - parseInt(cachedTimestamp) < 5 * 60 * 1000) {
                         books = JSON.parse(cachedBooks);
+                        // Make books available globally for recommendation component
+                        window.books = books;
                         processBooks();
                         return;
                     }
@@ -495,6 +503,8 @@
                 
                 if (data.books) {
                     books = data.books;
+                    // Make books available globally for recommendation component
+                    window.books = books;
                     // Cache the books data
                     localStorage.setItem('booksData', JSON.stringify(books));
                     localStorage.setItem('booksTimestamp', new Date().getTime().toString());
