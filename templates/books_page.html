@@ -8,25 +8,25 @@
         margin-top: 6rem;
         padding-top: 2rem;
     }
-    
+
     .books-header {
         margin-bottom: 2rem;
         text-align: center;
     }
-    
+
     .books-header h1 {
         color: var(--main-color);
         font-size: 2.5rem;
         margin-bottom: 0.5rem;
     }
-    
+
     .books-header .separator {
         width: 80px;
         height: 3px;
         background-color: var(--gold-color);
         margin: 0 auto;
     }
-    
+
     .books-filters {
         display: flex;
         flex-wrap: wrap;
@@ -38,32 +38,32 @@
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
-    
+
     .filter-group {
         display: flex;
         flex-direction: column;
         min-width: 200px;
     }
-    
+
     .filter-group label {
         font-weight: bold;
         margin-bottom: 0.5rem;
         color: var(--main-color);
     }
-    
+
     .filter-group select {
         padding: 0.5rem;
         border: 1px solid #ddd;
         border-radius: 4px;
     }
-    
+
     .sorting-options {
         display: flex;
         justify-content: center;
         gap: 1rem;
         margin-bottom: 1.5rem;
     }
-    
+
     .sort-btn {
         background-color: transparent;
         border: 1px solid var(--main-color);
@@ -73,17 +73,17 @@
         cursor: pointer;
         transition: all 0.3s ease;
     }
-    
+
     .sort-btn.active {
         background-color: var(--main-color);
         color: white;
     }
-    
+
     .sort-btn:hover {
         background-color: var(--main-color);
         color: white;
     }
-    
+
     .books-grid {
         width: 100%;
         max-width: 1200px;
@@ -94,7 +94,7 @@
         direction: rtl;
         padding: 20px;
     }
-    
+
     .book-card {
         border-radius: 12px;
         overflow: hidden;
@@ -106,28 +106,28 @@
         min-height: 450px;
         position: relative;
     }
-    
+
     .book-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 15px rgba(0,0,0,0.1);
     }
-    
+
     .book-cover {
         height: 300px;
         overflow: hidden;
     }
-    
+
     .book-cover img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.5s ease;
     }
-    
+
     .book-card:hover .book-cover img {
         transform: scale(1.05);
     }
-    
+
     .book-details {
         padding: 1.5rem;
         flex-grow: 1;
@@ -135,14 +135,14 @@
         flex-direction: column;
         height: calc(100% - 300px); /* Adjust based on book-cover height */
     }
-    
+
     .book-title {
         font-size: 1.2rem;
         font-weight: bold;
         color: var(--main-color);
         margin-bottom: 0.5rem;
     }
-    
+
     .book-meta {
         display: flex;
         flex-wrap: wrap;
@@ -151,13 +151,13 @@
         font-size: 0.9rem;
         color: #6c757d;
     }
-    
+
     .book-meta span {
         background-color: #f8f9fa;
         padding: 0.25rem 0.5rem;
         border-radius: 4px;
     }
-    
+
     .book-description {
         color: #495057;
         margin-bottom: 1.5rem;
@@ -170,13 +170,13 @@
         max-height: 4.5em;
         line-height: 1.5em;
     }
-    
+
     .book-actions {
         display: flex;
         gap: 1rem;
         margin-top: auto;
     }
-    
+
     .book-action-btn {
         flex: 1;
         text-align: center;
@@ -186,22 +186,22 @@
         transition: all 0.3s ease;
         text-decoration: none;
     }
-    
+
     .view-btn {
         background-color: var(--main-color);
         color: white;
     }
-    
+
     .download-btn {
         background-color: var(--gold-color);
         color: white;
     }
-    
+
     .book-action-btn:hover {
         opacity: 0.9;
         transform: translateY(-2px);
     }
-    
+
     .no-books {
         text-align: center;
         padding: 2rem;
@@ -209,12 +209,12 @@
         border-radius: 8px;
         color: #6c757d;
     }
-    
+
     .loading-indicator {
         text-align: center;
         padding: 2rem;
     }
-    
+
     .spinner {
         width: 40px;
         height: 40px;
@@ -224,18 +224,18 @@
         animation: spin 1s linear infinite;
         margin: 0 auto 1rem;
     }
-    
+
     @keyframes spin {
         to { transform: rotate(360deg); }
     }
-    
+
     .pagination {
         display: flex;
         justify-content: center;
         margin-top: 2rem;
         gap: 0.5rem;
     }
-    
+
     .pagination-btn {
         width: 40px;
         height: 40px;
@@ -247,22 +247,22 @@
         cursor: pointer;
         transition: all 0.3s ease;
     }
-    
+
     .pagination-btn.active {
         background-color: var(--main-color);
         color: white;
         border-color: var(--main-color);
     }
-    
+
     .pagination-btn:hover:not(.active) {
         background-color: #f8f9fa;
     }
-    
+
     .pagination-btn.disabled {
         opacity: 0.5;
         cursor: not-allowed;
     }
-    
+
     /* Error message styling */
     .error-message {
         background-color: #f8d7da;
@@ -272,38 +272,38 @@
         margin-bottom: 1rem;
         text-align: center;
     }
-    
+
     /* Tablet layout */
     @media (max-width: 900px) {
         .books-grid {
             grid-template-columns: repeat(2, 1fr);
         }
-        
+
         .books-filters {
             flex-direction: column;
             align-items: center;
         }
-        
+
         .filter-group {
             width: 100%;
         }
     }
-    
+
     /* Mobile layout */
     @media (max-width: 600px) {
         .books-grid {
             grid-template-columns: 1fr;
         }
-        
+
         .book-card {
             height: auto;
             min-height: 450px;
         }
-        
+
         .book-cover {
             height: 250px;
         }
-        
+
         .book-details {
             height: auto;
         }
@@ -317,7 +317,7 @@
         <h1>كتب ومؤلفات الشيخ مصطفى الطحان</h1>
         <div class="separator"></div>
     </div>
-    
+
     <div class="books-filters">
         <div class="filter-group">
             <label for="language-filter">اللغة</label>
@@ -328,7 +328,7 @@
                 <option value="التركية">التركية</option>
             </select>
         </div>
-        
+
         <div class="filter-group">
             <label for="category-filter">التصنيف</label>
             <select id="category-filter">
@@ -341,12 +341,12 @@
             </select>
         </div>
     </div>
-    
+
     <div class="sorting-options">
         <button class="sort-btn active" data-sort="newest">الأحدث</button>
         <button class="sort-btn" data-sort="popular">الأكثر مشاهدة</button>
     </div>
-    
+
     <div id="books-grid" class="books-grid">
         <!-- Books will be loaded dynamically here -->
         <div class="loading-indicator">
@@ -354,7 +354,7 @@
             <p>جاري تحميل الكتب...</p>
         </div>
     </div>
-    
+
     <div id="pagination" class="pagination">
         <!-- Pagination will be generated dynamically -->
     </div>
@@ -370,7 +370,7 @@
         const categoryFilter = document.getElementById('category-filter');
         const sortButtons = document.querySelectorAll('.sort-btn');
         const pagination = document.getElementById('pagination');
-        
+
         // State
         let books = [];
         let filteredBooks = [];
@@ -379,13 +379,13 @@
         let currentSort = 'newest';
         let currentLanguage = 'all';
         let currentCategory = 'all';
-        
+
         // Fetch books
         async function fetchBooks() {
             try {
                 const cachedBooks = localStorage.getItem('booksData');
                 const cachedTimestamp = localStorage.getItem('booksTimestamp');
-                
+
                 // Use cached data if it's less than 5 minutes old
                 if (cachedBooks && cachedTimestamp) {
                     const now = new Date().getTime();
@@ -395,10 +395,10 @@
                         return;
                     }
                 }
-                
+
                 const response = await fetch('/api/books');
                 const data = await response.json();
-                
+
                 if (data.books) {
                     books = data.books;
                     // Cache the books data
@@ -411,7 +411,7 @@
                 showErrorMessage('حدث خطأ أثناء تحميل الكتب. يرجى المحاولة مرة أخرى لاحقاً.');
             }
         }
-        
+
         // Process books (filter, sort, paginate)
         function processBooks() {
             // Apply filters
@@ -420,7 +420,7 @@
                 const categoryMatch = currentCategory === 'all' || book.category === currentCategory;
                 return languageMatch && categoryMatch;
             });
-            
+
             // Apply sorting
             if (currentSort === 'newest') {
                 filteredBooks.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -429,26 +429,26 @@
                 // For now, just randomize for demonstration
                 filteredBooks.sort(() => Math.random() - 0.5);
             }
-            
+
             // Reset to first page when filters change
             currentPage = 1;
-            
+
             // Render books and pagination
             renderBooks();
             renderPagination();
-            
+
             // Record activity
             recordViewActivity();
         }
-        
+
         // Render books for current page
         function renderBooks() {
             const startIndex = (currentPage - 1) * booksPerPage;
             const endIndex = startIndex + booksPerPage;
             const booksToDisplay = filteredBooks.slice(startIndex, endIndex);
-            
+
             booksGrid.innerHTML = '';
-            
+
             if (booksToDisplay.length === 0) {
                 booksGrid.innerHTML = `
                     <div class="no-books">
@@ -457,12 +457,12 @@
                 `;
                 return;
             }
-            
+
             booksToDisplay.forEach(book => {
                 const bookCard = document.createElement('div');
                 bookCard.className = 'book-card';
                 bookCard.dataset.id = book.id;
-                
+
                 bookCard.innerHTML = `
                     <div class="book-cover">
                         <img src="${book.cover}" alt="${book.title}" loading="lazy">
@@ -475,31 +475,32 @@
                         </div>
                         <p class="book-description">${truncateText(book.description, 100)}</p>
                         <div class="book-actions">
-                            <a href="#" class="book-action-btn view-btn view-book-btn" data-id="${book.id}">عرض التفاصيل</a>
                             ${book.download && book.download !== '#' ? 
-                                `<a href="${book.download}" class="book-action-btn download-btn" target="_blank" data-id="${book.id}">تحميل الكتاب</a>` : 
+                                `<a href="${book.download}" class="book-action-btn download-btn" target="_blank" data-id="${book.id}" style="width: 100%;">
+                                    <i class="fas fa-download"></i> تحميل الكتاب
+                                </a>` : 
                                 ''}
                         </div>
                     </div>
                 `;
-                
+
                 booksGrid.appendChild(bookCard);
             });
-            
+
             // Add event listeners to book cards
             addBookEventListeners();
         }
-        
+
         // Render pagination controls
         function renderPagination() {
             const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
-            
+
             pagination.innerHTML = '';
-            
+
             if (totalPages <= 1) {
                 return;
             }
-            
+
             // Previous button
             const prevBtn = document.createElement('button');
             prevBtn.className = `pagination-btn ${currentPage === 1 ? 'disabled' : ''}`;
@@ -514,17 +515,17 @@
                 }
             });
             pagination.appendChild(prevBtn);
-            
+
             // Page numbers
             const totalPagesToShow = 5;
             let startPage = Math.max(1, currentPage - Math.floor(totalPagesToShow / 2));
             let endPage = Math.min(totalPages, startPage + totalPagesToShow - 1);
-            
+
             // Adjust if we're near the end
             if (endPage - startPage < totalPagesToShow - 1) {
                 startPage = Math.max(1, endPage - totalPagesToShow + 1);
             }
-            
+
             for (let i = startPage; i <= endPage; i++) {
                 const pageBtn = document.createElement('button');
                 pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
@@ -539,7 +540,7 @@
                 });
                 pagination.appendChild(pageBtn);
             }
-            
+
             // Next button
             const nextBtn = document.createElement('button');
             nextBtn.className = `pagination-btn ${currentPage === totalPages ? 'disabled' : ''}`;
@@ -555,36 +556,15 @@
             });
             pagination.appendChild(nextBtn);
         }
-        
+
         // Add event listeners to book cards
         function addBookEventListeners() {
-            // View book details
-            document.querySelectorAll('.view-book-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const bookId = this.dataset.id;
-                    const book = books.find(b => b.id == bookId);
-                    
-                    if (book) {
-                        showBookDetails(book);
-                        // Record view activity
-                        try {
-                            if (typeof recordActivity === 'function') {
-                                recordActivity('view_book', book.id, 'book', book.title);
-                            }
-                        } catch (error) {
-                            console.error('Error recording activity:', error);
-                        }
-                    }
-                });
-            });
-            
             // Book download links
             document.querySelectorAll('.download-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const bookId = this.dataset.id;
                     const book = books.find(b => b.id == bookId);
-                    
+
                     if (book) {
                         // Record download activity
                         try {
@@ -598,7 +578,8 @@
                 });
             });
         }
-        
+
+
         // Show book details in a modal
         function showBookDetails(book) {
             // Create modal if it doesn't exist
@@ -608,7 +589,7 @@
                 modal.id = 'book-modal';
                 modal.className = 'modal';
                 document.body.appendChild(modal);
-                
+
                 // Add modal styles if not already in document
                 if (!document.getElementById('modal-styles')) {
                     const style = document.createElement('style');
@@ -626,13 +607,13 @@
                             overflow-y: auto;
                             padding: 20px;
                         }
-                        
+
                         .modal.active {
                             display: flex;
                             align-items: center;
                             justify-content: center;
                         }
-                        
+
                         .modal-content {
                             background-color: white;
                             border-radius: 8px;
@@ -644,12 +625,12 @@
                             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
                             animation: modal-open 0.3s ease;
                         }
-                        
+
                         @keyframes modal-open {
                             from { opacity: 0; transform: translateY(-30px); }
                             to { opacity: 1; transform: translateY(0); }
                         }
-                        
+
                         .modal-header {
                             padding: 1.5rem;
                             border-bottom: 1px solid #eee;
@@ -657,13 +638,13 @@
                             justify-content: space-between;
                             align-items: center;
                         }
-                        
+
                         .modal-title {
                             font-size: 1.5rem;
                             color: var(--main-color);
                             margin: 0;
                         }
-                        
+
                         .modal-close {
                             background: none;
                             border: none;
@@ -672,39 +653,39 @@
                             color: #777;
                             transition: color 0.3s ease;
                         }
-                        
+
                         .modal-close:hover {
                             color: #333;
                         }
-                        
+
                         .modal-body {
                             padding: 1.5rem;
                         }
-                        
+
                         .book-detail-grid {
                             display: grid;
                             grid-template-columns: 1fr 2fr;
                             gap: 2rem;
                         }
-                        
+
                         .book-detail-cover {
                             width: 100%;
                             border-radius: 8px;
                             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
                         }
-                        
+
                         .book-detail-info h3 {
                             margin-top: 0;
                             color: var(--main-color);
                         }
-                        
+
                         .book-detail-meta {
                             display: flex;
                             flex-wrap: wrap;
                             gap: 1rem;
                             margin: 1rem 0;
                         }
-                        
+
                         .book-detail-meta-item {
                             display: flex;
                             align-items: center;
@@ -714,18 +695,18 @@
                             border-radius: 4px;
                             font-size: 0.9rem;
                         }
-                        
+
                         .book-detail-description {
                             margin: 1.5rem 0;
                             line-height: 1.7;
                         }
-                        
+
                         .book-detail-actions {
                             display: flex;
                             gap: 1rem;
                             margin-top: 1.5rem;
                         }
-                        
+
                         .book-detail-btn {
                             padding: 0.75rem 1.5rem;
                             border-radius: 4px;
@@ -734,22 +715,22 @@
                             text-align: center;
                             transition: all 0.3s ease;
                         }
-                        
+
                         .book-detail-download {
                             background-color: var(--gold-color);
                             color: white;
                             flex: 1;
                         }
-                        
+
                         .book-detail-download:hover {
                             opacity: 0.9;
                         }
-                        
+
                         @media (max-width: 768px) {
                             .book-detail-grid {
                                 grid-template-columns: 1fr;
                             }
-                            
+
                             .book-detail-cover {
                                 max-width: 300px;
                                 margin: 0 auto;
@@ -759,7 +740,7 @@
                     document.head.appendChild(style);
                 }
             }
-            
+
             // Populate modal with book details
             modal.innerHTML = `
                 <div class="modal-content">
@@ -803,23 +784,23 @@
                     </div>
                 </div>
             `;
-            
+
             // Show modal
             modal.classList.add('active');
-            
+
             // Add close event
             const closeBtn = modal.querySelector('.modal-close');
             closeBtn.addEventListener('click', () => {
                 modal.classList.remove('active');
             });
-            
+
             // Close when clicking outside modal content
             modal.addEventListener('click', function(e) {
                 if (e.target === modal) {
                     modal.classList.remove('active');
                 }
             });
-            
+
             // Add download activity tracking
             const downloadBtn = modal.querySelector('.book-detail-download');
             if (downloadBtn) {
@@ -834,7 +815,7 @@
                 });
             }
         }
-        
+
         // Record view activity for books page
         function recordViewActivity() {
             try {
@@ -845,17 +826,17 @@
                 console.error('Error recording activity:', error);
             }
         }
-        
+
         // Error handling
         function showErrorMessage(message) {
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-message';
             errorDiv.textContent = message;
-            
+
             const booksContainer = document.querySelector('.books-container');
             if (booksContainer) {
                 booksContainer.insertBefore(errorDiv, booksGrid);
-                
+
                 // Auto-remove after 5 seconds
                 setTimeout(() => {
                     if (errorDiv.parentNode) {
@@ -864,31 +845,30 @@
                 }, 5000);
             }
         }
-        
+
         // Helper functions
         function truncateText(text, maxLength) {
             if (text.length <= maxLength) return text;
             return text.substr(0, maxLength) + '...';
         }
-        
+
         function formatDate(dateString) {
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             return new Date(dateString).toLocaleDateString('ar-EG', options);
         }
-        
-        // Function moved above to combine error handling approaches
-        
+
+
         // Event listeners for filters and sorting
         languageFilter.addEventListener('change', function() {
             currentLanguage = this.value;
             processBooks();
         });
-        
+
         categoryFilter.addEventListener('change', function() {
             currentCategory = this.value;
             processBooks();
         });
-        
+
         sortButtons.forEach(btn => {
             btn.addEventListener('click', function() {
                 const sortValue = this.dataset.sort;
@@ -901,10 +881,10 @@
                 }
             });
         });
-        
+
         // Initialize
         fetchBooks();
-        
+
         // Refresh books data in background periodically
         setInterval(function() {
             fetchBooks();
