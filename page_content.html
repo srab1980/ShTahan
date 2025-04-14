@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a3c6b">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="الشيخ مصطفى الطحان">
+    <title>جميع مقالات الشيخ مصطفى الطحان</title>
+    <meta name="description" content="الموقع الرسمي للشيخ مصطفى الطحان - كاتب ومربٍ فاضل ومسيرة من العطاء والفكر والدعوة">
+    <link rel="manifest" href="/static/manifest.json">
+
+    <!-- تحسين الأداء عبر التحميل المسبق للموارد الهامة -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <!-- تحميل الخطوط المهمة فقط للعرض الأولي -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- تحميل آيقونات Font Awesome بطريقة أكثر كفاءة -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+
+    <!-- CSS المهم للعرض الأولي -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/animations.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="/static/css/loading.css" media="print" onload="this.media='all'">
+
+    
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <div class="header-wrapper">
+                <div class="logo">
+                    <a href="/">الشيخ مصطفى الطحان</a>
+                </div>
+                <button type="button" class="menu-toggle" aria-label="القائمة">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <nav class="navigation" id="main-navigation">
+                    <ul class="nav-menu">
+                        <li><a href="/#hero">الرئيسية</a></li>
+                        <li><a href="/#biography">السيرة الذاتية</a></li>
+                        <li><a href="/#testimonials">أقوال الشخصيات</a></li>
+                        <li><a href="/#achievements">الإنجازات</a></li>
+                        <li><a href="/#books">الكتب والمؤلفات</a></li>
+                        <li><a href="/#articles">المقالات</a></li>
+                        <li><a href="/#gallery">معرض الصور</a></li>
+                        <li><a href="/#contact">تواصل معنا</a></li>
+                        <li class="auth-item" id="login-button-container">
+                            <!-- سيتم تحميل زر تسجيل الدخول هنا بشكل مستقل -->
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <style>
+    /* تصميم جديد للقائمة وزر تسجيل الخروج */
+    .navigation {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .nav-menu {
+        flex-grow: 1;
+        padding-left: 20px;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    /* Style for the login/auth button in navigation */
+    .auth-item {
+        margin-right: 0;
+        margin-left: auto;
+    }
+
+    .auth-link {
+        color: #1a3c6b;
+        font-weight: bold;
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    .auth-link i {
+        margin-left: 8px;
+    }
+
+    .auth-link:hover {
+        background-color: rgba(26, 60, 107, 0.1);
+    }
+
+    /* تصميم القائمة المنسدلة للمستخدم */
+    .user-menu {
+        position: relative;
+        display: inline-block;
+    }
+
+    .user-menu-toggle {
+        display: flex;
+        align-items: center;
+        color: #1a3c6b;
+        font-weight: bold;
+        padding: 8px 12px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .user-menu-toggle:hover {
+        background-color: rgba(26, 60, 107, 0.1);
+    }
+
+    .user-menu-toggle i {
+        margin-left: 8px;
+        font-size: 1.2rem;
+    }
+
+    .user-menu-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        min-width: 200px;
+        background-color: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+        display: none;
+        border: 1px solid #eee;
+    }
+
+    .user-menu:hover .user-menu-dropdown {
+        display: block;
+    }
+
+    .user-menu-item {
+        display: block;
+        padding: 10px 15px;
+        color: #333;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .user-menu-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .user-menu-item i {
+        margin-left: 8px;
+        color: #1a3c6b;
+    }
+
+    .logout-link {
+        border-top: 1px solid #eee;
+        color: #dc3545;
+    }
+
+    .logout-link i {
+        color: #dc3545;
+    }
+
+    /* تصميم متوافق مع الهواتف */
+    @media (max-width: 991px) {
+        .navigation {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .nav-menu {
+            display: block;
+            width: 100%;
+        }
+
+        .auth-item {
+            margin: 15px 0;
+            width: 100%;
+        }
+
+        .auth-link {
+            display: block;
+            width: 100%;
+            text-align: right;
+        }
+
+        .user-menu {
+            display: block;
+            width: 100%;
+        }
+
+        .user-menu-toggle {
+            display: block;
+            width: 100%;
+            text-align: right;
+        }
+
+        .user-menu-dropdown {
+            position: static;
+            width: 100%;
+            box-shadow: none;
+            border: none;
+            background-color: #f8f9fa;
+            margin-top: 5px;
+        }
+    }
+    </style>
+
+    <!-- Main Content -->
+    <main>
+        
+<div class="page-header">
+    <div class="container">
+        <h1>جميع مقالات الشيخ مصطفى الطحان</h1>
+        <p>مكتبة شاملة تضم جميع مقالات الشيخ مصطفى الطحان في مختلف المجالات</p>
+    </div>
+</div>
+
+<div class="articles-container">
+    <div class="articles-grid" id="articles-grid">
+        <!-- Articles will be loaded dynamically -->
+        <div class="loading-spinner" style="grid-column: 1 / -1;">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>جاري تحميل المقالات...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Article content modal -->
+<div id="article-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2 id="modal-title"></h2>
+        <div id="modal-content"></div>
+    </div>
+</div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>الشيخ مصطفى الطحان</h2>
+                    <p>كاتب ومربٍ ومفكر إسلامي</p>
+                </div>
+                <div class="footer-links">
+                    <h3>روابط سريعة</h3>
+                    <ul>
+                        <li><a href="/#hero">الرئيسية</a></li>
+                        <li><a href="/#biography">السيرة الذاتية</a></li>
+                        <li><a href="/#books">الكتب والمؤلفات</a></li>
+                        <li><a href="/#articles">المقالات</a></li>
+                        <li><a href="/#gallery">معرض الصور</a></li>
+                        <li><a href="/user-journey">رحلتي التعليمية</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>تواصل معنا</h3>
+                    <p><i class="fas fa-envelope"></i> info@tahhan-foundation.org</p>
+                    <div class="social-icons">
+                        <a href="#" aria-label="فيسبوك"><i class="fab fa-facebook-square"></i></a>
+                        <a href="#" aria-label="تويتر"><i class="fab fa-twitter-square"></i></a>
+                        <a href="#" aria-label="يوتيوب"><i class="fab fa-youtube-square"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 جميع الحقوق محفوظة - مؤسسة الشيخ مصطفى الطحان</p>
+                <p>تم التطوير بواسطة فريق تقنية المعلومات</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- زر العودة للأعلى -->
+    <div style="position: fixed; bottom: 30px; right: 30px; background-color: #1a2a3a; color: white; padding: 10px 15px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 9999; cursor: pointer;" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <i class="fas fa-arrow-up"></i> العودة للأعلى
+    </div>
+
+    <!-- Core JavaScript -->
+    <script src="/static/js/jquery-3.7.0.min.js"></script>
+    <script src="/static/js/main.js"></script>
+
+    <!-- Dynamic Login Button -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginButtonContainer = document.getElementById('login-button-container');
+
+            // التحقق من حالة تسجيل الدخول
+            checkAuthStatus();
+
+            // دالة التحقق من حالة تسجيل الدخول
+            async function checkAuthStatus() {
+                try {
+                    const response = await fetch('/api/auth-status');
+                    const data = await response.json();
+
+                    // تحديث عنصر تسجيل الدخول بناءً على حالة المستخدم
+                    if (data.authenticated) {
+                        // المستخدم مسجل دخول
+                        let userMenuDropdownItems = '';
+                        
+                        // لا نضيف رابط رحلتي التعليمية هنا أبداً - فهو موجود في القائمة الرئيسية
+                        
+                        // إضافة رابط تسجيل الخروج دائماً
+                        userMenuDropdownItems += `
+                            <a href="/logout" class="user-menu-item logout-link">
+                                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                            </a>
+                        `;
+                        
+                        loginButtonContainer.innerHTML = `
+                            <div class="user-menu nav-link">
+                                <a href="#" class="user-menu-toggle">
+                                    <i class="fas fa-user-circle"></i> 
+                                    <span>${data.username}</span>
+                                </a>
+                                <div class="user-menu-dropdown">
+                                    ${userMenuDropdownItems}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // المستخدم غير مسجل دخول
+                        loginButtonContainer.innerHTML = `
+                            <a href="/login-form?check_auth=false" class="nav-link auth-link">
+                                <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                            </a>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('خطأ في التحقق من حالة تسجيل الدخول:', error);
+                    // في حالة وجود خطأ، عرض زر تسجيل الدخول الافتراضي
+                    loginButtonContainer.innerHTML = '<a href="/login-form" class="nav-link auth-link"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</a>';
+                }
+            }
+        });
+    </script>
+
+    <!-- Additional Scripts -->
+    
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fetch articles from API
+        fetchArticles();
+        
+        // Set up modal close functionality
+        setupModalClose();
+    });
+    
+    // Fetch articles from API
+    async function fetchArticles() {
+        try {
+            // Try to fetch from API
+            const response = await fetch('/api/articles');
+            if (!response.ok) {
+                throw new Error('Failed to fetch articles');
+            }
+            
+            const data = await response.json();
+            if (data.articles && data.articles.length > 0) {
+                renderArticles(data.articles);
+            } else {
+                showNoArticlesMessage();
+            }
+        } catch (error) {
+            console.error('Error fetching articles:', error);
+            showFetchErrorMessage();
+        }
+    }
+    
+    // Render articles in grid
+    function renderArticles(articles) {
+        const articlesGrid = document.getElementById('articles-grid');
+        
+        // Clear loading spinner
+        articlesGrid.innerHTML = '';
+        
+        // Sort articles by creation date (newest first)
+        articles.sort((a, b) => {
+            return new Date(b.created_at) - new Date(a.created_at);
+        });
+        
+        // Add each article to the grid
+        articles.forEach(article => {
+            const articleCard = document.createElement('div');
+            articleCard.className = 'article-card';
+            articleCard.setAttribute('data-id', article.id);
+            
+            // Format date
+            const createdAt = new Date(article.created_at);
+            const formattedDate = createdAt.toISOString().split('T')[0];
+            
+            articleCard.innerHTML = `
+                <div class="article-content">
+                    <h3 class="article-title">${article.title}</h3>
+                    <div class="article-meta">
+                        <div class="article-date">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>${formattedDate}</span>
+                        </div>
+                    </div>
+                    <p class="article-summary">
+                        ${article.summary}
+                    </p>
+                    <a href="#" class="article-action" data-id="${article.id}">قراءة المزيد</a>
+                </div>
+            `;
+            
+            articlesGrid.appendChild(articleCard);
+        });
+        
+        // Add click event for article cards
+        addArticleClickEvents();
+        
+        console.log('Articles rendered successfully');
+    }
+    
+    // Show message when no articles are found
+    function showNoArticlesMessage() {
+        const articlesGrid = document.getElementById('articles-grid');
+        articlesGrid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px 0;">
+                <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #d4af37; margin-bottom: 20px;"></i>
+                <h3>لا توجد مقالات حالياً</h3>
+                <p>سيتم إضافة مقالات جديدة قريباً.</p>
+            </div>
+        `;
+    }
+    
+    // Show error message when fetch fails
+    function showFetchErrorMessage() {
+        const articlesGrid = document.getElementById('articles-grid');
+        articlesGrid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px 0;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #d00; margin-bottom: 20px;"></i>
+                <h3>حدث خطأ أثناء تحميل المقالات</h3>
+                <p>يرجى إعادة تحميل الصفحة لاحقاً.</p>
+                <button onclick="location.reload()" style="background-color: #1a3c6b; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-top: 15px;">إعادة المحاولة</button>
+            </div>
+        `;
+    }
+    
+    // Add click events to article cards and read more buttons
+    function addArticleClickEvents() {
+        // Read more button click
+        const readMoreButtons = document.querySelectorAll('.article-action');
+        readMoreButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const articleId = this.getAttribute('data-id');
+                const articleCard = this.closest('.article-card');
+                const articleTitle = articleCard.querySelector('.article-title').textContent;
+                showArticleContent(articleId, articleTitle);
+            });
+        });
+        
+        // Title click
+        const articleTitles = document.querySelectorAll('.article-title');
+        articleTitles.forEach(title => {
+            title.addEventListener('click', function() {
+                const articleCard = this.closest('.article-card');
+                const articleId = articleCard.getAttribute('data-id');
+                const articleTitle = this.textContent;
+                showArticleContent(articleId, articleTitle);
+            });
+            title.style.cursor = 'pointer';
+        });
+    }
+    
+    // Set up modal close functionality
+    function setupModalClose() {
+        const modal = document.getElementById('article-modal');
+        const closeModal = document.querySelector('.close-modal');
+        
+        // Close modal when clicking X button
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+        
+        // Close modal when clicking outside the modal content
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+    }
+    
+    // Show article content in modal
+    async function showArticleContent(articleId, articleTitle) {
+        const modal = document.getElementById('article-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContent = document.getElementById('modal-content');
+        
+        try {
+            // Record activity if available
+            try {
+                if (typeof recordActivity === 'function') {
+                    recordActivity('view_article', articleId, 'article', articleTitle);
+                }
+            } catch (error) {
+                console.log('Activity tracking not available');
+            }
+            
+            // Show loading in modal
+            modalTitle.textContent = 'جاري التحميل...';
+            modalContent.innerHTML = '<div style="text-align: center;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #d4af37;"></i></div>';
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            
+            // Try to fetch from API
+            const response = await fetch(`/api/articles/${articleId}`);
+            const data = await response.json();
+            
+            if (data.article) {
+                modalTitle.textContent = data.article.title;
+                modalContent.innerHTML = data.article.content;
+            } else {
+                modalTitle.textContent = 'خطأ';
+                modalContent.innerHTML = '<p>تعذر العثور على محتوى المقال</p>';
+            }
+        } catch (error) {
+            console.error('Error fetching article:', error);
+            modalTitle.textContent = 'خطأ';
+            modalContent.innerHTML = '<p>تعذر تحميل محتوى المقال</p>';
+        }
+    }
+</script>
+
+
+    <!-- Service Worker Registration for Progressive Web App -->
+    <script src="/static/js/sw-register.js"></script>
+</body>
+</html>
