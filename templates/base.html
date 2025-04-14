@@ -282,16 +282,16 @@
                     if (data.authenticated) {
                         // المستخدم مسجل دخول
                         let userMenuDropdownItems = '';
-                        
+
                         // لا نضيف رابط رحلتي التعليمية هنا أبداً - فهو موجود في القائمة الرئيسية
-                        
+
                         // إضافة رابط تسجيل الخروج دائماً
                         userMenuDropdownItems += `
                             <a href="/logout" class="user-menu-item logout-link">
                                 <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
                             </a>
                         `;
-                        
+
                         loginButtonContainer.innerHTML = `
                             <div class="user-menu nav-link">
                                 <a href="#" class="user-menu-toggle">
