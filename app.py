@@ -182,8 +182,9 @@ def articles_all_page():
             article.formatted_date = "تاريخ غير محدد"
     
     response = make_response(render_template('articles-all.html', articles=articles, now=datetime.now()))
-    # Cache for 5 minutes
-    response.headers['Cache-Control'] = 'public, max-age=300'
+    # Better caching headers
+    response.headers['Cache-Control'] = 'public, max-age=3600, immutable'
+    response.headers['Content-Security-Policy'] = "frame-ancestors 'self'"
     return response
 
 

@@ -88,11 +88,11 @@
     .has-animation {
         transition-duration: 0.1s;
     }
-    
+
     .animate-hidden {
         transform: translateY(5px);
     }
-    
+
     .book-card.animate-hidden,
     .article-card.animate-hidden,
     .gallery-item.animate-hidden,
@@ -104,7 +104,7 @@
     .gallery-item:nth-child(even).animate-hidden {
         transform: translateY(5px);
     }
-    
+
     .contact-form.animate-hidden {
         transform: scale(0.98);
     }
