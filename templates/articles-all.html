@@ -233,11 +233,32 @@
 
 <div class="articles-container">
     <div class="articles-grid" id="articles-grid">
-        <!-- Articles will be loaded dynamically -->
-        <div class="loading-spinner" style="grid-column: 1 / -1;">
-            <i class="fas fa-spinner fa-spin"></i>
-            <p>جاري تحميل المقالات...</p>
+        <!-- Articles will be loaded here -->
+        {% for article in articles %}
+        <div class="article-card" data-id="{{ article.id }}">
+            <div class="article-content">
+                <h3 class="article-title">{{ article.title }}</h3>
+                <div class="article-meta">
+                    <div class="article-date">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>{{ article.created_at }}</span>
+                    </div>
+                </div>
+                <p class="article-summary">
+                    {{ article.summary }}
+                </p>
+                <a href="#" class="article-action" data-id="{{ article.id }}">قراءة المزيد</a>
+            </div>
         </div>
+        {% endfor %}
+        
+        {% if not articles %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px 0;">
+            <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #d4af37; margin-bottom: 20px;"></i>
+            <h3>لا توجد مقالات حالياً</h3>
+            <p>سيتم إضافة مقالات جديدة قريباً.</p>
+        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -254,105 +275,15 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Fetch articles from API
-        fetchArticles();
+        // Articles are rendered server-side, no need to fetch them
+        // We just need to add the event listeners
+        addArticleClickEvents();
         
         // Set up modal close functionality
         setupModalClose();
-    });
-    
-    // Fetch articles from API
-    async function fetchArticles() {
-        try {
-            // Try to fetch from API
-            const response = await fetch('/api/articles');
-            if (!response.ok) {
-                throw new Error('Failed to fetch articles');
-            }
-            
-            const data = await response.json();
-            if (data.articles && data.articles.length > 0) {
-                renderArticles(data.articles);
-            } else {
-                showNoArticlesMessage();
-            }
-        } catch (error) {
-            console.error('Error fetching articles:', error);
-            showFetchErrorMessage();
-        }
-    }
-    
-    // Render articles in grid
-    function renderArticles(articles) {
-        const articlesGrid = document.getElementById('articles-grid');
-        
-        // Clear loading spinner
-        articlesGrid.innerHTML = '';
-        
-        // Sort articles by creation date (newest first)
-        articles.sort((a, b) => {
-            return new Date(b.created_at) - new Date(a.created_at);
-        });
-        
-        // Add each article to the grid
-        articles.forEach(article => {
-            const articleCard = document.createElement('div');
-            articleCard.className = 'article-card';
-            articleCard.setAttribute('data-id', article.id);
-            
-            // Format date
-            const createdAt = new Date(article.created_at);
-            const formattedDate = createdAt.toISOString().split('T')[0];
-            
-            articleCard.innerHTML = `
-                <div class="article-content">
-                    <h3 class="article-title">${article.title}</h3>
-                    <div class="article-meta">
-                        <div class="article-date">
-                            <i class="far fa-calendar-alt"></i>
-                            <span>${formattedDate}</span>
-                        </div>
-                    </div>
-                    <p class="article-summary">
-                        ${article.summary}
-                    </p>
-                    <a href="#" class="article-action" data-id="${article.id}">قراءة المزيد</a>
-                </div>
-            `;
-            
-            articlesGrid.appendChild(articleCard);
-        });
-        
-        // Add click event for article cards
-        addArticleClickEvents();
         
         console.log('Articles rendered successfully');
-    }
-    
-    // Show message when no articles are found
-    function showNoArticlesMessage() {
-        const articlesGrid = document.getElementById('articles-grid');
-        articlesGrid.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 40px 0;">
-                <i class="fas fa-exclamation-circle" style="font-size: 48px; color: #d4af37; margin-bottom: 20px;"></i>
-                <h3>لا توجد مقالات حالياً</h3>
-                <p>سيتم إضافة مقالات جديدة قريباً.</p>
-            </div>
-        `;
-    }
-    
-    // Show error message when fetch fails
-    function showFetchErrorMessage() {
-        const articlesGrid = document.getElementById('articles-grid');
-        articlesGrid.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 40px 0;">
-                <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #d00; margin-bottom: 20px;"></i>
-                <h3>حدث خطأ أثناء تحميل المقالات</h3>
-                <p>يرجى إعادة تحميل الصفحة لاحقاً.</p>
-                <button onclick="location.reload()" style="background-color: #1a3c6b; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-top: 15px;">إعادة المحاولة</button>
-            </div>
-        `;
-    }
+    });
     
     // Add click events to article cards and read more buttons
     function addArticleClickEvents() {

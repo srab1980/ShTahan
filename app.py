@@ -170,7 +170,9 @@ def books_page():
 @app.route('/articles-all')
 def articles_all_page():
     """Render the all articles page with grid layout"""
-    return render_template('articles-all.html', now=datetime.now())
+    # Fetch articles directly from the database
+    articles = Article.query.order_by(Article.created_at.desc()).all()
+    return render_template('articles-all.html', articles=articles, now=datetime.now())
 
 
 @app.route('/articles')
