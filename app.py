@@ -25,6 +25,14 @@ db = SQLAlchemy(model_class=Base)
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "default_secret_key")
 
+# Configure proper response headers
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+    return response
+
 # تحسين أمان التطبيق
 app.config['SESSION_COOKIE_SECURE'] = True  # للتأكد من استخدام HTTPS فقط للجلسات
 app.config['SESSION_COOKIE_HTTPONLY'] = True  # منع الوصول إلى ملفات تعريف الارتباط من JavaScript
