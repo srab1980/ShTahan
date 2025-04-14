@@ -47,10 +47,11 @@
     /* Grid layout using CSS Grid */
     .articles-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-gap: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
         margin-top: 30px;
         direction: rtl;
+        width: 100%;
     }
     
     /* Article card styles */
@@ -64,6 +65,8 @@
         display: flex;
         flex-direction: column;
         border: 1px solid rgba(0,0,0,0.05);
+        min-height: 250px;
+        width: 100%;
     }
     
     .article-card:hover {
