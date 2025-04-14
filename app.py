@@ -172,6 +172,15 @@ def articles_all_page():
     """Render the all articles page with grid layout"""
     # Fetch articles directly from the database
     articles = Article.query.order_by(Article.created_at.desc()).all()
+    
+    # Format the dates for better display
+    for article in articles:
+        if hasattr(article, 'created_at') and article.created_at:
+            # Format date as YYYY-MM-DD
+            article.formatted_date = article.created_at.strftime('%Y-%m-%d')
+        else:
+            article.formatted_date = "تاريخ غير محدد"
+            
     return render_template('articles-all.html', articles=articles, now=datetime.now())
 
 
