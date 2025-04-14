@@ -180,8 +180,11 @@ def articles_all_page():
             article.formatted_date = article.created_at.strftime('%Y-%m-%d')
         else:
             article.formatted_date = "تاريخ غير محدد"
-            
-    return render_template('articles-all.html', articles=articles, now=datetime.now())
+    
+    response = make_response(render_template('articles-all.html', articles=articles, now=datetime.now()))
+    # Cache for 5 minutes
+    response.headers['Cache-Control'] = 'public, max-age=300'
+    return response
 
 
 @app.route('/articles')
