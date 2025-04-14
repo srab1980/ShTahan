@@ -167,6 +167,18 @@ def books_page():
     return render_template('books_page.html', now=datetime.now())
 
 
+@app.route('/articles-all')
+def articles_all_page():
+    """Render the all articles page with grid layout"""
+    return render_template('articles-all.html', now=datetime.now())
+
+
+@app.route('/articles')
+def articles_page():
+    """Render the articles page"""
+    return render_template('articles_page.html', now=datetime.now())
+
+
 @app.route('/login-link')
 def login_link():
     return render_template('login-link.html')
