@@ -183,8 +183,16 @@ def articles_all_page():
 
 @app.route('/articles')
 def articles_page():
-    """Return an empty page for articles"""
-    return render_template('articles_page.html', now=datetime.now())
+    """Render the articles page with books data displayed as articles"""
+    # Get a list of all distinct categories for the filter buttons
+    categories = db.session.query(Book.category).distinct().all()
+    categories = [cat[0] for cat in categories if cat[0]] # Remove None values
+    
+    # Add default category if none exist
+    if not categories:
+        categories = ['فكر إسلامي', 'تربية', 'مجتمع', 'سياسة', 'تاريخ']
+    
+    return render_template('articles_page.html', categories=categories, now=datetime.now())
 
 
 @app.route('/login-link')
