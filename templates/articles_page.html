@@ -1,66 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}مقالات الشيخ مصطفى الطحان{% endblock %}
+{% block title %}{% endblock %}
 
 {% block head %}
 {{ super() }}
-<style>
-    /* Articles page container */
-    .articles-page {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 5rem 2% 4rem;
-        direction: rtl;
-        background-color: #fff;
-        width: 100%;
-        box-sizing: border-box;
-        min-height: 60vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    /* Page title */
-    .articles-title {
-        text-align: center;
-        margin-bottom: 0.5rem;
-        font-size: 2rem;
-        color: #000;
-    }
-    
-    /* Empty state message */
-    .empty-message {
-        text-align: center;
-        padding: 3rem;
-        color: #666;
-        font-size: 1.2rem;
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-        .articles-page {
-            padding-top: 6rem;
-        }
-        
-        .articles-title {
-            font-size: 1.8rem;
-        }
-    }
-</style>
 {% endblock %}
 
 {% block content %}
-<div class="articles-page">
-    <h1 class="articles-title">صفحة المقالات</h1>
-    <div class="empty-message">
-        <p>هذه الصفحة فارغة حاليًا.</p>
-    </div>
-</div>
 {% endblock %}
 
 {% block scripts %}
-<script>
-    // الصفحة فارغة، لا يتم تحميل أي محتوى
-</script>
 {% endblock %}
