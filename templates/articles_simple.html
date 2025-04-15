@@ -434,15 +434,15 @@
 
 {% block content %}
 <div class="articles-container">
-    <!-- تنسيق العنوان للتوسيط -->
-    <div class="articles-header" style="text-align: center; margin-bottom: 2rem;">
-        <h1>مقالات الشيخ</h1>
-        <h2>مصطفى الطحان</h2>
-        <div class="separator" style="margin: 0 auto;"></div>
+    <!-- تنسيق العنوان للتوسيط وبدون عمود جانبي -->
+    <div class="articles-header" style="text-align: center; margin: 0 auto 3rem auto; width: 100%; max-width: 100%;">
+        <h1 style="font-size: 3rem; margin-bottom: 0.2rem;">مقالات الشيخ</h1>
+        <h2 style="font-size: 2.2rem; color: #666; margin-bottom: 1rem;">مصطفى الطحان</h2>
+        <div class="separator" style="margin: 0 auto; width: 120px;"></div>
     </div>
 
     <!-- حاوية البحث والفلاتر مع توسيط -->
-    <div class="search-filter-container" style="max-width: 900px; margin: 0 auto 2rem auto;">
+    <div class="search-filter-container" style="max-width: 1000px; margin: 0 auto 2.5rem auto;">
         <!-- Search Bar -->
         <div class="search-container" style="margin-bottom: 1.5rem;">
             <input type="text" id="search-input" class="search-input" placeholder="ابحث عن مقال بالعنوان أو المحتوى...">
