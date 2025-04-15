@@ -412,11 +412,11 @@
 
             </div>
             
-            <div class="articles-container">
-                <!-- سيتم تحميل المقالات ديناميكياً هنا عبر JavaScript -->
-                <div class="loading-spinner" style="text-align: center; width: 100%; padding: 30px;">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #d4af37;"></i>
-                    <p>جاري تحميل المقالات...</p>
+            <div class="articles-container" style="text-align: center; width: 100%; padding: 40px;">
+                <div style="margin-bottom: 20px; color: #666;">
+                    <i class="fas fa-newspaper" style="font-size: 40px; color: #d4af37; margin-bottom: 15px; display: block;"></i>
+                    <h3 style="font-size: 1.4rem; margin-bottom: 10px;">المقالات غير متاحة حاليًا</h3>
+                    <p style="font-size: 1.1rem; color: #777;">الصفحة قيد التطوير</p>
                 </div>
             </div>
         </div>
@@ -526,7 +526,7 @@
     <!-- Non-Critical JavaScript - يتم تحميلها بشكل متأخر -->
     <script src="{{ url_for('static', filename='js/scroll-animations.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/books.js') }}" defer></script>
-    <script src="{{ url_for('static', filename='js/articles.js') }}" defer></script>
+    <!-- Removed articles.js script -->
     <script src="{{ url_for('static', filename='js/gallery.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/contact.js') }}" defer></script>
     <script src="{{ url_for('static', filename='js/activity-tracking.js') }}" defer></script>
