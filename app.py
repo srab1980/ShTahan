@@ -192,7 +192,7 @@ def articles_page():
     if not categories:
         categories = ['فكر إسلامي', 'تربية', 'مجتمع', 'سياسة', 'تاريخ']
     
-    return render_template('articles_page.html', categories=categories, now=datetime.now())
+    return render_template('articles_simple.html', categories=categories, now=datetime.now())
 
 
 @app.route('/login-link')

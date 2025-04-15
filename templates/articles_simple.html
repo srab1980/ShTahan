@@ -1,0 +1,445 @@
+{% extends 'base.html' %}
+
+{% block title %}مقالات الشيخ مصطفى الطحان - مبسطة{% endblock %}
+
+{% block styles %}
+<style>
+    .articles-container {
+        margin-top: 6rem;
+        padding-top: 2rem;
+    }
+
+    .articles-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .articles-header h1 {
+        color: #1a2a3a;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .articles-header .separator {
+        width: 80px;
+        height: 3px;
+        background-color: #d4af37;
+        margin: 0 auto;
+    }
+
+    .articles-grid {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+        direction: rtl;
+        padding: 20px;
+    }
+
+    .article-card {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        min-height: 450px;
+        position: relative;
+    }
+
+    .article-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    }
+
+    .article-image {
+        height: 200px;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .article-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .article-card:hover .article-image img {
+        transform: scale(1.05);
+    }
+
+    .article-details {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .article-title {
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+        font-weight: bold;
+        line-height: 1.4;
+        color: #1a2a3a;
+    }
+
+    .article-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .article-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .article-summary {
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #444;
+        flex-grow: 1;
+    }
+
+    .article-actions {
+        margin-top: auto;
+    }
+
+    .article-action-btn {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        text-align: center;
+    }
+
+    .view-btn {
+        background-color: #1a2a3a;
+        color: white;
+        width: 100%;
+    }
+
+    .view-btn:hover {
+        background-color: #143352;
+    }
+
+    .loading-indicator {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #1a2a3a;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .no-articles {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 3rem;
+    }
+
+    /* Modal for article viewing */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.7);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .modal-content {
+        background-color: white;
+        margin: 5vh auto;
+        padding: 2rem;
+        border-radius: 8px;
+        width: 80%;
+        max-width: 800px;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        transform: translateY(-20px);
+        transition: transform 0.3s ease;
+    }
+    
+    .modal-close {
+        position: absolute;
+        top: 1rem;
+        left: 1.5rem;
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    
+    .modal-close:hover {
+        color: #333;
+    }
+    
+    body.modal-open {
+        overflow: hidden;
+    }
+    
+    @media (max-width: 768px) {
+        .modal-content {
+            width: 95%;
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="articles-container">
+    <div class="articles-header">
+        <h1>مقالات الشيخ</h1>
+        <h2>مصطفى الطحان</h2>
+        <div class="separator"></div>
+    </div>
+
+    <div id="articles-grid" class="articles-grid">
+        <!-- Articles will be populated here -->
+        <div class="loading-indicator">
+            <div class="spinner"></div>
+            <p>جاري تحميل المقالات...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('تم تحميل صفحة المقالات المبسطة');
+        
+        // Get elements
+        const articlesGrid = document.getElementById('articles-grid');
+        console.log('وجد العنصر articlesGrid:', articlesGrid);
+        
+        // Function to fetch books and display them as articles
+        async function fetchBooksAsArticles() {
+            console.log('بدء تنفيذ fetchBooksAsArticles');
+            
+            try {
+                // Add timestamp to prevent caching
+                const response = await fetch('/api/books?t=' + new Date().getTime());
+                console.log('استجابة API:', response.status, response.ok);
+                
+                if (!response.ok) {
+                    throw new Error('حدث خطأ في الاستجابة: ' + response.status);
+                }
+                
+                const data = await response.json();
+                console.log('تم استلام البيانات:', data);
+                
+                if (data.books && data.books.length > 0) {
+                    console.log('عدد الكتب المستلمة:', data.books.length);
+                    displayBooks(data.books);
+                } else {
+                    console.log('لا توجد كتب مستلمة');
+                    showNoArticlesMessage();
+                }
+            } catch (error) {
+                console.error('خطأ في جلب البيانات:', error);
+                showErrorMessage(error.message);
+            }
+        }
+        
+        // Function to display books as articles
+        function displayBooks(books) {
+            console.log('عرض الكتب كمقالات');
+            
+            // Clear loading indicator
+            articlesGrid.innerHTML = '';
+            
+            // Loop through books and create article cards
+            books.forEach(book => {
+                console.log('إنشاء بطاقة للكتاب:', book.title);
+                
+                const card = document.createElement('div');
+                card.className = 'article-card';
+                
+                // Create a date for display (use book ID for ordering)
+                const displayDate = new Date();
+                displayDate.setDate(displayDate.getDate() - book.id); // Just for display
+                
+                const formattedDate = new Intl.DateTimeFormat('ar-SA', {
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric'
+                }).format(displayDate);
+                
+                // Create summary from description
+                const summary = book.description.length > 150 
+                    ? book.description.substring(0, 150) + '...' 
+                    : book.description;
+                
+                card.innerHTML = `
+                    <div class="article-image">
+                        <img src="${book.cover}" alt="${book.title}" loading="lazy">
+                    </div>
+                    <div class="article-details">
+                        <h3 class="article-title">${book.title}</h3>
+                        <div class="article-meta">
+                            <span><i class="fas fa-calendar-alt"></i> ${formattedDate}</span>
+                            <span><i class="fas fa-tag"></i> ${book.category}</span>
+                        </div>
+                        <div class="article-summary">${summary}</div>
+                        <div class="article-actions">
+                            <a href="javascript:void(0);" class="article-action-btn view-btn" onclick="openBookModal(${book.id})">
+                                عرض المقال <i class="fas fa-newspaper"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+                
+                articlesGrid.appendChild(card);
+            });
+            
+            // Define the openBookModal function in the global scope
+            window.openBookModal = function(bookId) {
+                console.log('فتح نافذة الكتاب:', bookId);
+                
+                const book = books.find(b => b.id === bookId);
+                if (!book) return;
+                
+                // Create modal element
+                const modalElement = document.createElement('div');
+                modalElement.className = 'modal';
+                modalElement.id = 'book-modal';
+                
+                // Format date for display
+                const displayDate = new Date();
+                displayDate.setDate(displayDate.getDate() - book.id); // Just for display
+                
+                const formattedDate = new Intl.DateTimeFormat('ar-SA', {
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric'
+                }).format(displayDate);
+                
+                modalElement.innerHTML = `
+                    <div class="modal-content">
+                        <span class="modal-close">&times;</span>
+                        <h2>${book.title}</h2>
+                        <div class="article-meta">
+                            <span><i class="fas fa-calendar-alt"></i> ${formattedDate}</span>
+                            <span><i class="fas fa-tag"></i> ${book.category}</span>
+                            <span><i class="fas fa-language"></i> ${book.language}</span>
+                        </div>
+                        <div class="article-image-container">
+                            <img src="${book.cover}" alt="${book.title}" style="max-width: 100%; height: auto; margin: 1rem 0; border-radius: 8px;">
+                        </div>
+                        <div class="article-content">
+                            ${book.description}
+                        </div>
+                    </div>
+                `;
+                
+                // Add to DOM
+                document.body.appendChild(modalElement);
+                
+                // Show modal with transition
+                setTimeout(() => {
+                    modalElement.style.display = 'block';
+                    document.body.classList.add('modal-open');
+                    
+                    // Force reflow before adding opacity
+                    modalElement.offsetHeight;
+                    
+                    modalElement.style.opacity = '1';
+                    modalElement.querySelector('.modal-content').style.transform = 'translateY(0)';
+                }, 10);
+                
+                // Close modal function
+                const closeModal = () => {
+                    modalElement.style.opacity = '0';
+                    modalElement.querySelector('.modal-content').style.transform = 'translateY(-20px)';
+                    
+                    setTimeout(() => {
+                        modalElement.style.display = 'none';
+                        document.body.classList.remove('modal-open');
+                        modalElement.remove();
+                    }, 300);
+                };
+                
+                // Close on X click
+                modalElement.querySelector('.modal-close').addEventListener('click', closeModal);
+                
+                // Close on outside click
+                modalElement.addEventListener('click', (e) => {
+                    if (e.target === modalElement) {
+                        closeModal();
+                    }
+                });
+                
+                // Close on Escape key
+                document.addEventListener('keydown', function escapeListener(e) {
+                    if (e.key === 'Escape') {
+                        closeModal();
+                        document.removeEventListener('keydown', escapeListener);
+                    }
+                });
+            };
+        }
+        
+        // Show error message
+        function showErrorMessage(message) {
+            articlesGrid.innerHTML = `
+                <div class="error-message" style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <h3>حدث خطأ أثناء تحميل المقالات</h3>
+                    <p>${message}</p>
+                    <button onclick="window.location.reload()" class="article-action-btn view-btn" style="display: inline-block; margin-top: 1rem; max-width: 200px;">
+                        إعادة المحاولة
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Show no articles message
+        function showNoArticlesMessage() {
+            articlesGrid.innerHTML = `
+                <div class="no-articles">
+                    <i class="fas fa-newspaper" style="font-size: 2rem; color: #6c757d; margin-bottom: 1rem;"></i>
+                    <h3>لا توجد مقالات متاحة حالياً</h3>
+                    <p>سيتم إضافة مقالات جديدة قريباً</p>
+                </div>
+            `;
+        }
+        
+        // Start fetching and displaying articles
+        fetchBooksAsArticles();
+    });
+</script>
+{% endblock %}
