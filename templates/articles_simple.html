@@ -113,31 +113,32 @@
     }
     
     /* Advanced filters */
-    .books-filters {
+    .articles-filters {
         display: flex;
         flex-wrap: wrap;
-        justify-content: space-between;
         gap: 1rem;
+        align-items: center;
     }
     
     .filter-group {
         display: flex;
         flex-direction: column;
-        min-width: 200px;
+        gap: 0.3rem;
         flex: 1;
+        min-width: 150px;
     }
     
     .filter-group label {
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-        color: var(--main-color);
+        font-size: 0.9rem;
+        color: #495057;
     }
     
     .filter-group select {
-        padding: 0.5rem;
+        padding: 0.6rem;
         border: 1px solid #ddd;
-        border-radius: 4px;
-        transition: all 0.3s ease;
+        border-radius: 6px;
+        background-color: white;
+        direction: rtl;
     }
     
     /* Refresh button */
@@ -211,14 +212,14 @@
     }
 
     .articles-grid {
-        width: 100%;
-        max-width: 1200px;
-        margin: 0 auto;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 30px;
+        grid-template-columns: repeat(3, minmax(280px, 1fr));
+        gap: 25px;
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
         direction: rtl;
-        padding: 20px;
+        padding: 20px 40px;
     }
     
     @media (max-width: 1024px) {
@@ -432,67 +433,18 @@
 {% endblock %}
 
 {% block content %}
-<div class="container articles-container">
-    <div class="articles-header">
-        <h1>مقالات الشيخ مصطفى الطحان</h1>
-        <div class="separator"></div>
-        <button id="refresh-articles-btn" class="refresh-btn" title="تحديث قائمة المقالات">
-            <i class="fas fa-sync-alt"></i> تحديث
-        </button>
+<div class="articles-container">
+    <!-- تنسيق العنوان للتوسيط وبدون عمود جانبي -->
+    <div class="articles-header" style="text-align: center; margin: 0 auto 3rem auto; width: 100%; max-width: 100%;">
+        <h1 style="font-size: 3rem; margin-bottom: 0.2rem;">مقالات الشيخ</h1>
+        <h2 style="font-size: 2.2rem; color: #666; margin-bottom: 1rem;">مصطفى الطحان</h2>
+        <div class="separator" style="margin: 0 auto; width: 120px;"></div>
     </div>
-    
-    <style>
-        .articles-header {
-            position: relative;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .refresh-btn {
-            position: absolute;
-            top: 10px;
-            left: 0;
-            background-color: var(--main-color);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: background-color 0.3s ease;
-        }
-        
-        .refresh-btn:hover {
-            background-color: #143352;
-        }
-        
-        .refresh-btn i {
-            font-size: 0.85rem;
-        }
-        
-        .refresh-btn.loading i {
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        @media (max-width: 768px) {
-            .refresh-btn {
-                position: static;
-                margin: 1rem auto 0;
-            }
-        }
-    </style>
 
-    <div class="search-filter-container">
+    <!-- حاوية البحث والفلاتر مع توسيط -->
+    <div class="search-filter-container" style="max-width: 1000px; margin: 0 auto 2.5rem auto;">
         <!-- Search Bar -->
-        <div class="search-container">
+        <div class="search-container" style="margin-bottom: 1.5rem;">
             <input type="text" id="search-input" class="search-input" placeholder="ابحث عن مقال بالعنوان أو المحتوى...">
             <i class="fas fa-search search-icon"></i>
             <button class="search-clear" id="search-clear">&times;</button>
@@ -502,7 +454,7 @@
         <div class="filter-tags" id="filter-tags"></div>
         
         <!-- Advanced Filters -->
-        <div class="books-filters">
+        <div class="articles-filters" style="justify-content: center; gap: 15px;">
             <div class="filter-group">
                 <label for="category-filter">التصنيف</label>
                 <select id="category-filter">
@@ -522,6 +474,10 @@
                     <option value="popular">الأكثر مشاهدة</option>
                 </select>
             </div>
+            
+            <button id="refresh-articles-btn" class="refresh-btn" title="تحديث المقالات">
+                <i class="fas fa-sync-alt"></i> تحديث
+            </button>
         </div>
     </div>
 
