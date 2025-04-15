@@ -201,22 +201,29 @@
         animation: spin 1s linear infinite;
     }
 
-    .articles-grid-flex {
-        width: 100%;
+    .articles-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
         max-width: 1200px;
         margin: 0 auto;
-        display: flex !important;
-        flex-wrap: wrap !important;
-        gap: 30px;
         direction: rtl;
         padding: 20px;
     }
     
-    .articles-grid-flex .article-card-flex {
-        width: 30% !important;
-        margin-right: 1.5%;
-        margin-left: 1.5%;
-        margin-bottom: 30px;
+    @media (max-width: 1024px) {
+        .articles-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .articles-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .article-card {
         border-radius: 12px;
         overflow: hidden;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -226,23 +233,6 @@
         flex-direction: column;
         min-height: 450px;
         position: relative;
-    }
-    
-    /* Responsive adjustments */
-    @media (max-width: 1024px) {
-        .articles-grid-flex .article-card-flex {
-            width: 47% !important;
-            margin-right: 1.5%;
-            margin-left: 1.5%;
-        }
-    }
-    
-    @media (max-width: 768px) {
-        .articles-grid-flex .article-card-flex {
-            width: 97% !important;
-            margin-right: 1.5%;
-            margin-left: 1.5%;
-        }
     }
     
     /* Responsive adjustments */
@@ -474,7 +464,7 @@
         </div>
     </div>
 
-    <div id="articles-grid" class="articles-grid-flex">
+    <div id="articles-grid" class="articles-grid">
         <!-- Articles will be populated here -->
         <div class="loading-indicator">
             <div class="spinner"></div>
@@ -800,7 +790,7 @@
                 console.log('إنشاء بطاقة للكتاب:', book.title);
                 
                 const card = document.createElement('div');
-                card.className = 'article-card-flex';
+                card.className = 'article-card';
                 
                 // Create a date for display (use book ID for ordering)
                 const displayDate = new Date();
