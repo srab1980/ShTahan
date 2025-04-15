@@ -576,15 +576,20 @@
         
         // Transform books data to articles format for demonstration
         function transformBooksToArticles(books) {
+            console.log('تحويل بيانات الكتب إلى مقالات:', books);
             return books.map(book => {
+                // إذا لم يكن هناك حقل created_at في بيانات الكتاب، نستخدم التاريخ الحالي
+                const articleCreatedAt = book.created_at || new Date().toISOString();
+                console.log(`تحويل الكتاب ${book.id} - ${book.title} إلى مقالة`);
+                
                 return {
                     id: book.id,
                     title: book.title,
-                    summary: book.description.substring(0, 200) + '...',
-                    content: book.description,
-                    category: book.category,
-                    image: book.cover,
-                    created_at: book.created_at
+                    summary: book.description ? book.description.substring(0, 200) + '...' : 'بدون وصف',
+                    content: book.description || 'بدون محتوى',
+                    category: book.category || 'عام',
+                    image: book.cover || '/static/img/default-book.jpg',
+                    created_at: articleCreatedAt
                 };
             });
         }
@@ -696,8 +701,18 @@
                     summary = highlightText(summary, query);
                 }
                 
-                // Format created date
-                const createdDate = new Date(article.created_at);
+                // Format created date - handle invalid dates by using current date as fallback
+                let createdDate;
+                try {
+                    createdDate = new Date(article.created_at);
+                    // Check if date is invalid
+                    if (isNaN(createdDate.getTime())) {
+                        createdDate = new Date();
+                    }
+                } catch (e) {
+                    createdDate = new Date();
+                }
+                
                 const formattedDate = new Intl.DateTimeFormat('ar-SA', {
                     year: 'numeric', 
                     month: 'long', 
