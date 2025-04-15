@@ -1,12 +1,59 @@
 {% extends 'base.html' %}
 
-{% block title %}{% endblock %}
+{% block title %}المقالات - الشيخ مصطفى الطحان{% endblock %}
 
 {% block head %}
 {{ super() }}
+<style>
+  .articles-unavailable {
+    text-align: center;
+    padding: 80px 20px;
+    margin: 40px auto;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    max-width: 800px;
+  }
+  
+  .articles-unavailable i {
+    font-size: 60px;
+    color: #d4af37;
+    margin-bottom: 20px;
+    display: block;
+  }
+  
+  .articles-unavailable h2 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+  }
+  
+  .articles-unavailable p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 30px;
+  }
+  
+  .articles-unavailable .btn {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+  }
+</style>
 {% endblock %}
 
 {% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1>المقالات</h1>
+  </div>
+</div>
+
+<div class="container">
+  <div class="articles-unavailable">
+    <i class="fas fa-newspaper"></i>
+    <h2>المقالات غير متاحة حاليًا</h2>
+    <p>نعمل حاليًا على تطوير هذه الصفحة، وستكون متاحة قريبًا.</p>
+    <a href="/" class="btn btn-primary">العودة إلى الصفحة الرئيسية</a>
+  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}

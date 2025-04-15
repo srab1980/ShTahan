@@ -184,7 +184,7 @@ def articles_all_page():
 @app.route('/articles')
 def articles_page():
     """Return an empty page for articles"""
-    return render_template('articles_page.html')
+    return render_template('articles_page.html', now=datetime.now())
 
 
 @app.route('/login-link')
