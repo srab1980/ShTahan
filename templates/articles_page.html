@@ -1,0 +1,597 @@
+{% extends 'base.html' %}
+
+{% block title %}مقالات الشيخ مصطفى الطحان{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+    /* Articles page container */
+    .articles-page {
+        max-width: 1800px;
+        margin: 0 auto;
+        padding: 7rem 2% 4rem;
+        direction: rtl;
+    }
+    
+    /* Page title */
+    .articles-title {
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+        font-size: 2.5rem;
+        color: #1a2a3a;
+    }
+    
+    .articles-title:after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 4px;
+        background-color: #d4af37;
+        margin: 0.5rem auto 0;
+    }
+    
+    /* Search and filters section */
+    .articles-controls {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 2rem;
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .search-bar {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+    
+    .search-bar input {
+        width: 100%;
+        padding: 0.8rem 1rem 0.8rem 3rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: all 0.3s;
+        direction: rtl;
+    }
+    
+    .search-bar input:focus {
+        border-color: #d4af37;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+    }
+    
+    .search-bar .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #777;
+        pointer-events: none;
+    }
+    
+    .categories-filter {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    
+    .category-btn {
+        padding: 0.5rem 1rem;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+    }
+    
+    .category-btn:hover {
+        background-color: #f0f0f0;
+    }
+    
+    .category-btn.active {
+        background-color: #d4af37;
+        border-color: #d4af37;
+        color: white;
+    }
+    
+    /* Articles grid */
+    .articles-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+    
+    .article-card {
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .article-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+    
+    .article-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-bottom: 1px solid #eee;
+        background-color: #f5f5f5;
+    }
+    
+    .article-image.placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #aaa;
+        font-size: 2rem;
+    }
+    
+    .article-content {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+    
+    .article-category {
+        color: #d4af37;
+        font-size: 0.9rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .article-title {
+        font-size: 1.25rem;
+        margin: 0 0 1rem;
+        color: #1a2a3a;
+        line-height: 1.4;
+    }
+    
+    .article-excerpt {
+        color: #444;
+        line-height: 1.6;
+        margin-bottom: 1.25rem;
+        flex-grow: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .article-meta {
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: auto;
+    }
+    
+    .article-date {
+        display: flex;
+        align-items: center;
+    }
+    
+    .article-date i {
+        margin-left: 0.5rem;
+    }
+    
+    .article-action {
+        background-color: #1a2a3a;
+        color: white;
+        padding: 0.75rem 1rem;
+        border-radius: 4px;
+        text-decoration: none;
+        text-align: center;
+        font-weight: bold;
+        margin-top: 1.25rem;
+        display: inline-block;
+        transition: background-color 0.3s;
+    }
+    
+    .article-action:hover {
+        background-color: #0f1a22;
+    }
+    
+    /* No results */
+    .no-results {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 3rem;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        color: #666;
+    }
+    
+    .no-results-icon {
+        font-size: 3rem;
+        color: #ddd;
+        margin-bottom: 1rem;
+    }
+    
+    /* Article modal */
+    .article-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.7);
+    }
+    
+    .modal-content {
+        background-color: white;
+        margin: 5% auto;
+        padding: 2.5rem;
+        border-radius: 8px;
+        width: 80%;
+        max-width: 900px;
+        position: relative;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+    
+    .close-modal {
+        position: absolute;
+        top: 1.25rem;
+        right: 1.25rem;
+        font-size: 1.75rem;
+        cursor: pointer;
+        color: #999;
+        transition: color 0.3s;
+    }
+    
+    .close-modal:hover {
+        color: #333;
+    }
+    
+    .modal-title {
+        color: #1a2a3a;
+        margin-bottom: 1.5rem;
+        font-size: 1.75rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .modal-body {
+        line-height: 1.7;
+        color: #333;
+    }
+    
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .articles-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .articles-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .articles-page {
+            padding-top: 6rem;
+        }
+        
+        .categories-filter {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .modal-content {
+            width: 90%;
+            padding: 1.5rem;
+        }
+        
+        .articles-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="articles-page">
+    <h1 class="articles-title">المقالات</h1>
+    
+    <!-- Search and filters -->
+    <div class="articles-controls">
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="ابحث في المقالات..." />
+            <i class="fas fa-search search-icon"></i>
+        </div>
+        
+        <div class="categories-filter" id="categories-filter">
+            <!-- Categories will be generated dynamically -->
+            <button class="category-btn active" data-category="all">جميع المقالات</button>
+            <button class="category-btn" data-category="فكر إسلامي">فكر إسلامي</button>
+            <button class="category-btn" data-category="تربية">تربية</button>
+            <button class="category-btn" data-category="مجتمع">مجتمع</button>
+            <button class="category-btn" data-category="سياسة">سياسة</button>
+            <button class="category-btn" data-category="تاريخ">تاريخ</button>
+        </div>
+    </div>
+    
+    <!-- Articles grid -->
+    <div class="articles-grid" id="articles-grid">
+        <!-- Articles will be loaded here -->
+    </div>
+</div>
+
+<!-- Article modal -->
+<div id="article-modal" class="article-modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2 id="modal-title" class="modal-title"></h2>
+        <div id="modal-body" class="modal-body"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initial data
+        let articles = [];
+        let filteredArticles = [];
+        let activeCategory = 'all';
+        let searchQuery = '';
+        
+        // Get DOM elements
+        const articlesGrid = document.getElementById('articles-grid');
+        const searchInput = document.getElementById('search-input');
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const modal = document.getElementById('article-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const closeModal = document.querySelector('.close-modal');
+        
+        // Fetch articles from the API
+        async function fetchArticles() {
+            try {
+                const response = await fetch('/api/articles');
+                const data = await response.json();
+                
+                if (data.articles && Array.isArray(data.articles)) {
+                    // Map server data to our format with added category property
+                    articles = data.articles.map(article => {
+                        // Assign random categories for demo purposes
+                        // In a real app, this would come from the database
+                        const categories = ['فكر إسلامي', 'تربية', 'مجتمع', 'سياسة', 'تاريخ'];
+                        const randomIndex = Math.floor(Math.random() * categories.length);
+                        
+                        return {
+                            ...article,
+                            category: categories[randomIndex],
+                            // Format date as YYYY-MM-DD
+                            formattedDate: new Date(article.created_at).toISOString().split('T')[0]
+                        };
+                    });
+                    
+                    // Initial display
+                    filteredArticles = [...articles];
+                    renderArticles();
+                }
+            } catch (error) {
+                console.error('Error fetching articles:', error);
+                showErrorMessage();
+            }
+        }
+        
+        // Render articles to the grid
+        function renderArticles() {
+            // Clear the grid
+            articlesGrid.innerHTML = '';
+            
+            if (filteredArticles.length === 0) {
+                // Show no results message
+                articlesGrid.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon"><i class="fas fa-search"></i></div>
+                        <h3>لم يتم العثور على نتائج</h3>
+                        <p>لم نتمكن من العثور على مقالات تطابق معايير البحث. يرجى تجربة بحث آخر أو تصفية أخرى.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Create article cards
+            filteredArticles.forEach(article => {
+                const articleCard = document.createElement('div');
+                articleCard.className = 'article-card';
+                articleCard.setAttribute('data-id', article.id);
+                
+                // Create placeholder image or use real image if available
+                let imageHtml = '';
+                if (article.image) {
+                    imageHtml = `<img src="${article.image}" alt="${article.title}" class="article-image">`;
+                } else {
+                    imageHtml = `
+                        <div class="article-image placeholder">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                    `;
+                }
+                
+                // Create card HTML
+                articleCard.innerHTML = `
+                    ${imageHtml}
+                    <div class="article-content">
+                        <div class="article-category">${article.category}</div>
+                        <h3 class="article-title">${article.title}</h3>
+                        <p class="article-excerpt">${article.summary}</p>
+                        <div class="article-meta">
+                            <div class="article-date">
+                                <i class="far fa-calendar-alt"></i>
+                                <span>${article.formattedDate}</span>
+                            </div>
+                        </div>
+                        <a href="#" class="article-action" data-id="${article.id}">اقرأ المزيد</a>
+                    </div>
+                `;
+                
+                articlesGrid.appendChild(articleCard);
+            });
+            
+            // Add click events to article cards
+            addArticleClickEvents();
+        }
+        
+        // Filter articles by category and search query
+        function filterArticles() {
+            filteredArticles = articles.filter(article => {
+                // Filter by category (if not 'all')
+                const categoryMatch = activeCategory === 'all' || article.category === activeCategory;
+                
+                // Filter by search query
+                const titleMatch = article.title.toLowerCase().includes(searchQuery.toLowerCase());
+                const summaryMatch = article.summary.toLowerCase().includes(searchQuery.toLowerCase());
+                const contentMatch = article.content ? article.content.toLowerCase().includes(searchQuery.toLowerCase()) : false;
+                
+                return categoryMatch && (titleMatch || summaryMatch || contentMatch);
+            });
+            
+            renderArticles();
+        }
+        
+        // Add click events to article cards and read more buttons
+        function addArticleClickEvents() {
+            // Read more button click
+            const readMoreButtons = document.querySelectorAll('.article-action');
+            readMoreButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const articleId = this.getAttribute('data-id');
+                    showArticleContent(articleId);
+                });
+            });
+            
+            // Title click
+            const articleTitles = document.querySelectorAll('.article-title');
+            articleTitles.forEach(title => {
+                title.addEventListener('click', function() {
+                    const articleCard = this.closest('.article-card');
+                    const articleId = articleCard.getAttribute('data-id');
+                    showArticleContent(articleId);
+                });
+                title.style.cursor = 'pointer';
+            });
+        }
+        
+        // Show article content in modal
+        async function showArticleContent(articleId) {
+            try {
+                // Show loading
+                modalTitle.textContent = 'جاري التحميل...';
+                modalBody.innerHTML = '<div style="text-align: center;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #d4af37;"></i></div>';
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                
+                // Record activity if possible
+                try {
+                    if (typeof recordActivity === 'function') {
+                        const article = articles.find(a => a.id == articleId);
+                        if (article) {
+                            recordActivity('view_article', articleId, 'article', article.title);
+                        }
+                    }
+                } catch (error) {
+                    console.log('Activity tracking not available');
+                }
+                
+                // Fetch article content
+                const response = await fetch(`/api/articles/${articleId}`);
+                const data = await response.json();
+                
+                if (data.article) {
+                    modalTitle.textContent = data.article.title;
+                    modalBody.innerHTML = data.article.content;
+                } else {
+                    modalTitle.textContent = 'خطأ';
+                    modalBody.innerHTML = '<p>تعذر العثور على محتوى المقال</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching article:', error);
+                modalTitle.textContent = 'خطأ';
+                modalBody.innerHTML = '<p>تعذر تحميل محتوى المقال</p>';
+            }
+        }
+        
+        // Show error message in grid
+        function showErrorMessage() {
+            articlesGrid.innerHTML = `
+                <div class="no-results">
+                    <div class="no-results-icon"><i class="fas fa-exclamation-circle"></i></div>
+                    <h3>خطأ في تحميل المقالات</h3>
+                    <p>حدث خطأ أثناء محاولة تحميل المقالات. يرجى المحاولة مرة أخرى لاحقاً.</p>
+                </div>
+            `;
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Search input
+            searchInput.addEventListener('input', function() {
+                searchQuery = this.value.trim();
+                filterArticles();
+            });
+            
+            // Category buttons
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Update active category
+                    activeCategory = this.getAttribute('data-category');
+                    
+                    // Filter articles
+                    filterArticles();
+                });
+            });
+            
+            // Modal close
+            closeModal.addEventListener('click', function() {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        }
+        
+        // Initialize the page
+        function init() {
+            setupEventListeners();
+            fetchArticles();
+        }
+        
+        // Start the app
+        init();
+    });
+</script>
+{% endblock %}

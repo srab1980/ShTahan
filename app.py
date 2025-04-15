@@ -398,7 +398,9 @@ def add_article():
     new_article = Article(
         title=data['title'],
         summary=data['summary'],
-        content=data['content']
+        content=data['content'],
+        category=data.get('category', 'عام'),
+        image=data.get('image')
     )
 
     db.session.add(new_article)
@@ -419,6 +421,10 @@ def update_article(article_id):
         article.summary = data['summary']
     if 'content' in data:
         article.content = data['content']
+    if 'category' in data:
+        article.category = data['category']
+    if 'image' in data:
+        article.image = data['image']
 
     db.session.commit()
 

@@ -36,6 +36,8 @@ class Article(db.Model):
     title = db.Column(db.String(255), nullable=False)
     summary = db.Column(db.Text, nullable=False)
     content = db.Column(db.Text, nullable=False)
+    category = db.Column(db.String(50), nullable=True)
+    image = db.Column(db.String(500), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def to_dict(self):
@@ -45,6 +47,8 @@ class Article(db.Model):
             'title': self.title,
             'summary': self.summary,
             'content': self.content,
+            'category': self.category if self.category else 'عام',
+            'image': self.image,
             'created_at': self.created_at.strftime('%Y-%m-%d')
         }
 
