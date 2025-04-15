@@ -205,27 +205,16 @@
         width: 100%;
         max-width: 1200px;
         margin: 0 auto;
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        display: flex;
+        flex-wrap: wrap;
         gap: 30px;
         direction: rtl;
         padding: 20px;
     }
     
-    /* Responsive adjustments */
-    @media (max-width: 1024px) {
-        .articles-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-    
-    @media (max-width: 768px) {
-        .articles-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
     .article-card {
+        flex: 0 0 calc(33.333% - 20px);
+        margin-bottom: 20px;
         border-radius: 12px;
         overflow: hidden;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -235,6 +224,19 @@
         flex-direction: column;
         min-height: 450px;
         position: relative;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+        .article-card {
+            flex: 0 0 calc(50% - 15px);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .article-card {
+            flex: 0 0 100%;
+        }
     }
 
     .article-card:hover {
@@ -599,7 +601,15 @@
                 return;
             }
             
+            // Clear loading indicator
+            articlesGrid.innerHTML = '';
+            
+            // Manually create and inject a div to contain all the books
+            // This ensures full control over CSS Flexbox behavior
             displayBooks(currentPageBooks);
+            
+            // Add console log to debug
+            console.log(`عرض ${currentPageBooks.length} مقالات على الصفحة ${currentPage}`);
         }
         
         // Create pagination controls
@@ -765,9 +775,6 @@
         // Function to display books as articles
         function displayBooks(books) {
             console.log('عرض الكتب كمقالات');
-            
-            // Clear loading indicator
-            articlesGrid.innerHTML = '';
             
             // Loop through books and create article cards
             books.forEach(book => {
