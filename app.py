@@ -183,9 +183,9 @@ def articles_all_page():
 
 @app.route('/articles')
 def articles_page():
-    """Render the articles page with books data displayed as articles"""
+    """Render the articles page with actual article data from database"""
     # Get a list of all distinct categories for the filter buttons
-    categories = db.session.query(Book.category).distinct().all()
+    categories = db.session.query(Article.category).distinct().all()
     categories = [cat[0] for cat in categories if cat[0]] # Remove None values
     
     # Add default category if none exist

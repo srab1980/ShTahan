@@ -529,7 +529,7 @@
         let currentCategory = 'all';
         let searchQuery = '';
         
-        // Function to fetch books and display them as articles
+        // Function to fetch articles from the database
         async function fetchBooksAsArticles() {
             console.log('بدء تنفيذ fetchBooksAsArticles');
             
@@ -547,7 +547,7 @@
             
             try {
                 // Add timestamp to prevent caching
-                const response = await fetch('/api/books?t=' + new Date().getTime());
+                const response = await fetch('/api/articles?t=' + new Date().getTime());
                 console.log('استجابة API:', response.status, response.ok);
                 
                 if (!response.ok) {
@@ -557,14 +557,14 @@
                 const data = await response.json();
                 console.log('تم استلام البيانات:', data);
                 
-                if (data.books && data.books.length > 0) {
-                    console.log('عدد الكتب المستلمة:', data.books.length);
-                    allBooks = data.books;
+                if (data.articles && data.articles.length > 0) {
+                    console.log('عدد المقالات المستلمة:', data.articles.length);
+                    allBooks = data.articles;
                     
                     // Apply filters and sorting
                     applyFiltersAndSort();
                 } else {
-                    console.log('لا توجد كتب مستلمة');
+                    console.log('لا توجد مقالات مستلمة');
                     showNoArticlesMessage();
                 }
             } catch (error) {
@@ -591,9 +591,9 @@
                 filteredBooks = filteredBooks.filter(book => {
                     return (
                         book.title.toLowerCase().includes(query) ||
-                        book.description.toLowerCase().includes(query) ||
-                        book.category.toLowerCase().includes(query) ||
-                        book.language.toLowerCase().includes(query)
+                        book.summary.toLowerCase().includes(query) ||
+                        book.content.toLowerCase().includes(query) ||
+                        (book.category && book.category.toLowerCase().includes(query))
                     );
                 });
             }
