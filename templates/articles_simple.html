@@ -18,13 +18,21 @@
         color: #1a2a3a;
         font-size: 2.5rem;
         margin-bottom: 0.5rem;
+        text-align: center;
+    }
+    
+    .articles-header h2 {
+        color: #666;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        text-align: center;
     }
 
     .articles-header .separator {
         width: 80px;
         height: 3px;
         background-color: #d4af37;
-        margin: 0 auto;
+        margin: 0 auto 1.5rem auto;
     }
     
     /* Search and filter container */
@@ -423,15 +431,17 @@
 
 {% block content %}
 <div class="articles-container">
-    <div class="articles-header">
+    <!-- تنسيق العنوان للتوسيط -->
+    <div class="articles-header" style="text-align: center; margin-bottom: 2rem;">
         <h1>مقالات الشيخ</h1>
         <h2>مصطفى الطحان</h2>
-        <div class="separator"></div>
+        <div class="separator" style="margin: 0 auto;"></div>
     </div>
 
-    <div class="search-filter-container">
+    <!-- حاوية البحث والفلاتر مع توسيط -->
+    <div class="search-filter-container" style="max-width: 900px; margin: 0 auto 2rem auto;">
         <!-- Search Bar -->
-        <div class="search-container">
+        <div class="search-container" style="margin-bottom: 1.5rem;">
             <input type="text" id="search-input" class="search-input" placeholder="ابحث عن مقال بالعنوان أو المحتوى...">
             <i class="fas fa-search search-icon"></i>
             <button class="search-clear" id="search-clear">&times;</button>
@@ -441,7 +451,7 @@
         <div class="filter-tags" id="filter-tags"></div>
         
         <!-- Advanced Filters -->
-        <div class="articles-filters">
+        <div class="articles-filters" style="justify-content: center; gap: 15px;">
             <div class="filter-group">
                 <label for="category-filter">التصنيف</label>
                 <select id="category-filter">
