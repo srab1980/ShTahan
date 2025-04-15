@@ -11,9 +11,17 @@
         margin: 0 auto;
         padding: 7rem 2% 4rem;
         direction: rtl;
-        background-color: #f8f8f8;
+        background-color: #fff;
         width: 100%;
         box-sizing: border-box;
+    }
+    
+    /* Page subtitle */
+    .articles-subtitle {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #555;
+        margin-bottom: 2rem;
     }
     
     /* Page title */
@@ -34,36 +42,34 @@
         margin: 0.5rem auto 0;
     }
     
-    /* Search and filters section */
+    /* Search section */
     .articles-controls {
         display: flex;
         flex-direction: column;
-        margin-bottom: 2.5rem;
+        margin-bottom: 1.5rem;
         background-color: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        padding: 0;
     }
     
     .search-bar {
         margin-bottom: 1.5rem;
         position: relative;
+        width: 100%;
     }
     
     .search-bar input {
         width: 100%;
-        padding: 0.8rem 1rem 0.8rem 3rem;
+        padding: 0.8rem 1rem;
         border: 1px solid #ddd;
-        border-radius: 4px;
+        border-radius: 0;
         font-size: 1rem;
         transition: all 0.3s;
         direction: rtl;
     }
     
     .search-bar input:focus {
-        border-color: #d4af37;
+        border-color: #1a2a3a;
         outline: none;
-        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
     }
     
     .search-bar .search-icon {
@@ -75,17 +81,20 @@
         pointer-events: none;
     }
     
+    /* Categories filter */
     .categories-filter {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.75rem;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
     }
     
     .category-btn {
-        padding: 0.5rem 1rem;
+        padding: 0.4rem 1rem;
         background-color: white;
-        border: 1px solid #ddd;
-        border-radius: 4px;
+        border: 1px solid #333;
+        border-radius: 0;
         cursor: pointer;
         transition: all 0.2s;
         font-size: 0.9rem;
@@ -96,8 +105,8 @@
     }
     
     .category-btn.active {
-        background-color: #d4af37;
-        border-color: #d4af37;
+        background-color: #333;
+        border-color: #333;
         color: white;
     }
     
@@ -111,59 +120,40 @@
     
     .article-card {
         background-color: white;
-        border-radius: 8px;
+        border-radius: 30px;
         overflow: hidden;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         display: flex;
         flex-direction: column;
         height: 100%;
         width: 100%;
         max-width: 100%;
         min-width: 0;
-        border: 1px solid rgba(0,0,0,0.05);
+        border: 1px solid #ddd;
+        text-align: center;
+        padding: 20px;
     }
     
     .article-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     
-    .article-image {
-        width: 100%;
-        height: 170px;
-        object-fit: cover;
-        background-color: #f5f5f5;
-    }
-    
-    .article-image.placeholder {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #aaa;
-        font-size: 2rem;
-    }
+    /* No images in the new design */
     
     .article-content {
-        padding: 20px 22px;
         display: flex;
         flex-direction: column;
         flex-grow: 1;
-    }
-    
-    .article-category {
-        color: #d4af37;
-        font-size: 0.85rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
+        text-align: center;
     }
     
     .article-title {
-        font-size: 1.25rem;
+        font-size: 1.35rem;
         margin: 0 0 0.8rem;
-        color: #1a2a3a;
+        color: #000;
         line-height: 1.4;
         font-weight: bold;
+        text-align: center;
     }
     
     .article-excerpt {
@@ -175,43 +165,31 @@
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
+        text-align: center;
     }
     
     .article-meta {
-        display: flex;
-        align-items: center;
-        font-size: 0.85rem;
-        color: #777;
-        margin-top: auto;
-        margin-bottom: 0.8rem;
-    }
-    
-    .article-date {
-        display: flex;
-        align-items: center;
-    }
-    
-    .article-date i {
-        margin-left: 0.5rem;
-        color: #d4af37;
+        display: none;
     }
     
     .article-action {
-        background-color: #1a2a3a;
-        color: white;
-        padding: 0.6rem 1rem;
-        border-radius: 4px;
+        border: 1px solid #333;
+        color: #333;
+        background: white;
+        padding: 0.4rem 1.5rem;
+        border-radius: 0;
         text-decoration: none;
         text-align: center;
-        font-weight: bold;
+        font-weight: normal;
         display: inline-block;
-        transition: background-color 0.3s;
+        transition: all 0.3s;
         font-size: 0.9rem;
+        margin: 0 auto;
     }
     
     .article-action:hover {
-        background-color: #0f1a22;
+        background-color: #333;
         color: white;
         text-decoration: none;
     }
@@ -321,22 +299,27 @@
 
 {% block content %}
 <div class="articles-page">
-    <h1 class="articles-title">المقالات</h1>
+    <h1 class="articles-title">مقالات الشيخ مصطفى الطحان</h1>
+    <p class="articles-subtitle">مجموعة متنوعة من المقالات الفكرية والتربوية والدعوية والإصلاحية</p>
     
-    <!-- Search and filters -->
+    <!-- Search -->
     <div class="articles-controls">
         <div class="search-bar">
             <input type="text" id="search-input" placeholder="ابحث في المقالات..." />
             <i class="fas fa-search search-icon"></i>
         </div>
-        
-        <div class="categories-filter" id="categories-filter">
-            <!-- Categories from the server -->
-            <button class="category-btn active" data-category="all">جميع المقالات</button>
-            {% for category in categories %}
-            <button class="category-btn" data-category="{{ category }}">{{ category }}</button>
-            {% endfor %}
-        </div>
+    </div>
+    
+    <!-- Categories filter -->
+    <div class="categories-filter" id="categories-filter">
+        <button class="category-btn active" data-category="all">جميع المقالات</button>
+        <button class="category-btn" data-category="فكر">فكر</button>
+        <button class="category-btn" data-category="تربية">تربية</button>
+        <button class="category-btn" data-category="تاريخ">تاريخ</button>
+        <button class="category-btn" data-category="مجتمع">مجتمع</button>
+        <button class="category-btn" data-category="سياسة">سياسة</button>
+        <button class="category-btn" data-category="الأكثر مشاهدة">الأكثر مشاهدة</button>
+        <button class="category-btn" data-category="الأحدث">الأحدث</button>
     </div>
     
     <!-- Articles grid -->
@@ -423,33 +406,13 @@
                 articleCard.className = 'article-card';
                 articleCard.setAttribute('data-id', article.id);
                 
-                // Create placeholder image or use real image if available
-                let imageHtml = '';
-                if (article.image) {
-                    imageHtml = `<img src="${article.image}" alt="${article.title}" class="article-image">`;
-                } else {
-                    imageHtml = `
-                        <div class="article-image placeholder">
-                            <i class="fas fa-newspaper"></i>
-                        </div>
-                    `;
-                }
+                // No image handling needed in the new design
                 
                 // Create card HTML
                 articleCard.innerHTML = `
-                    ${imageHtml}
-                    <div class="article-content">
-                        <div class="article-category">${article.category}</div>
-                        <h3 class="article-title">${article.title}</h3>
-                        <p class="article-excerpt">${article.summary}</p>
-                        <div class="article-meta">
-                            <div class="article-date">
-                                <i class="far fa-calendar-alt"></i>
-                                <span>${article.formattedDate}</span>
-                            </div>
-                        </div>
-                        <a href="#" class="article-action" data-id="${article.id}">اقرأ المزيد</a>
-                    </div>
+                    <h3 class="article-title">${article.title}</h3>
+                    <p class="article-excerpt">${article.summary}</p>
+                    <a href="#" class="article-action" data-id="${article.id}">اقرأ المزيد</a>
                 `;
                 
                 articlesGrid.appendChild(articleCard);
