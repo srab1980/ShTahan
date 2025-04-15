@@ -527,11 +527,15 @@
         async function fetchArticles() {
             showLoading();
             try {
+                console.log('بداية تنفيذ fetchArticles - جلب بيانات الكتب');
                 // Always fetch fresh data directly from the server first
                 const response = await fetch('/api/books?t=' + new Date().getTime());
+                console.log('استجابة API:', response.status, response.ok);
                 const data = await response.json();
+                console.log('بيانات الكتب المستلمة:', data);
                 
                 if (data.books) {
+                    console.log('عدد الكتب المستلمة:', data.books.length);
                     // Use book data as article data for demonstration
                     articles = transformBooksToArticles(data.books);
                     
