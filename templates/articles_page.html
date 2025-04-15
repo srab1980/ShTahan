@@ -504,8 +504,10 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('تم تحميل الصفحة - بدء تهيئة صفحة المقالات');
         // Elements
         const articlesGrid = document.getElementById('articles-grid');
+        console.log('عنصر شبكة المقالات:', articlesGrid);
         const searchInput = document.getElementById('search-input');
         const searchClear = document.getElementById('search-clear');
         const filterTags = document.getElementById('filter-tags');
@@ -1087,7 +1089,12 @@
         });
         
         // Initialize
-        fetchArticles();
+        console.log('بدء تنفيذ fetchArticles من التهيئة الأولية');
+        fetchArticles().then(() => {
+            console.log('اكتمل تنفيذ fetchArticles');
+        }).catch(error => {
+            console.error('خطأ أثناء تنفيذ fetchArticles:', error);
+        });
     });
 </script>
 {% endblock %}
