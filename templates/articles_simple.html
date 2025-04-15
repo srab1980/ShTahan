@@ -26,6 +26,180 @@
         background-color: #d4af37;
         margin: 0 auto;
     }
+    
+    /* Search and filter container */
+    .search-filter-container {
+        margin-bottom: 2rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        padding: 1.5rem;
+    }
+    
+    /* Search bar */
+    .search-container {
+        display: flex;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+    
+    .search-input {
+        flex-grow: 1;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+        direction: rtl;
+        text-align: right;
+    }
+    
+    .search-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+    
+    .search-clear {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #6c757d;
+        cursor: pointer;
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        display: none;
+    }
+    
+    .search-input:not(:placeholder-shown) + .search-icon + .search-clear {
+        display: block;
+    }
+    
+    /* Filter tags */
+    .filter-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .filter-tag {
+        background-color: #e9ecef;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .filter-tag-remove {
+        cursor: pointer;
+        font-size: 1.2rem;
+        line-height: 1;
+    }
+    
+    /* Advanced filters */
+    .articles-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        flex: 1;
+        min-width: 150px;
+    }
+    
+    .filter-group label {
+        font-size: 0.9rem;
+        color: #495057;
+    }
+    
+    .filter-group select {
+        padding: 0.6rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background-color: white;
+        direction: rtl;
+    }
+    
+    /* Refresh button */
+    .refresh-btn {
+        background-color: #1a2a3a;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: background-color 0.3s ease;
+    }
+    
+    .refresh-btn:hover {
+        background-color: #143352;
+    }
+    
+    /* Pagination */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 2rem 0;
+    }
+    
+    .pagination-btn {
+        min-width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    
+    .pagination-btn.active {
+        background-color: #1a2a3a;
+        color: white;
+        border-color: #1a2a3a;
+    }
+    
+    .pagination-btn:hover:not(.active):not(.disabled) {
+        background-color: #f1f1f1;
+    }
+    
+    .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: default;
+    }
+    
+    .pagination-ellipsis {
+        padding: 0 0.5rem;
+    }
+    
+    /* Loading animation */
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .refresh-btn.loading .fas {
+        animation: spin 1s linear infinite;
+    }
 
     .articles-grid {
         width: 100%;
@@ -227,12 +401,55 @@
         <div class="separator"></div>
     </div>
 
+    <div class="search-filter-container">
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="ابحث عن مقال بالعنوان أو المحتوى...">
+            <i class="fas fa-search search-icon"></i>
+            <button class="search-clear" id="search-clear">&times;</button>
+        </div>
+
+        <!-- Filter Tags (will be populated dynamically) -->
+        <div class="filter-tags" id="filter-tags"></div>
+        
+        <!-- Advanced Filters -->
+        <div class="articles-filters">
+            <div class="filter-group">
+                <label for="category-filter">التصنيف</label>
+                <select id="category-filter">
+                    <option value="all">جميع التصنيفات</option>
+                    {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="sort-options">الترتيب</label>
+                <select id="sort-options">
+                    <option value="newest">الأحدث</option>
+                    <option value="oldest">الأقدم</option>
+                    <option value="alphabetical">أبجدي (أ-ي)</option>
+                    <option value="popular">الأكثر مشاهدة</option>
+                </select>
+            </div>
+            
+            <button id="refresh-articles-btn" class="refresh-btn" title="تحديث المقالات">
+                <i class="fas fa-sync-alt"></i> تحديث
+            </button>
+        </div>
+    </div>
+
     <div id="articles-grid" class="articles-grid">
         <!-- Articles will be populated here -->
         <div class="loading-indicator">
             <div class="spinner"></div>
             <p>جاري تحميل المقالات...</p>
         </div>
+    </div>
+
+    <div id="pagination" class="pagination">
+        <!-- Pagination will be generated dynamically -->
     </div>
 </div>
 {% endblock %}
@@ -244,11 +461,40 @@
         
         // Get elements
         const articlesGrid = document.getElementById('articles-grid');
+        const searchInput = document.getElementById('search-input');
+        const searchClear = document.getElementById('search-clear');
+        const filterTags = document.getElementById('filter-tags');
+        const categoryFilter = document.getElementById('category-filter');
+        const sortOptions = document.getElementById('sort-options');
+        const pagination = document.getElementById('pagination');
+        const refreshBtn = document.getElementById('refresh-articles-btn');
+        
         console.log('وجد العنصر articlesGrid:', articlesGrid);
+        
+        // State
+        let allBooks = [];
+        let filteredBooks = [];
+        let currentPage = 1;
+        let booksPerPage = 9;
+        let currentSort = 'newest';
+        let currentCategory = 'all';
+        let searchQuery = '';
         
         // Function to fetch books and display them as articles
         async function fetchBooksAsArticles() {
             console.log('بدء تنفيذ fetchBooksAsArticles');
+            
+            // Show loading state
+            articlesGrid.innerHTML = `
+                <div class="loading-indicator">
+                    <div class="spinner"></div>
+                    <p>جاري تحميل المقالات...</p>
+                </div>
+            `;
+            
+            if (refreshBtn) {
+                refreshBtn.classList.add('loading');
+            }
             
             try {
                 // Add timestamp to prevent caching
@@ -264,7 +510,10 @@
                 
                 if (data.books && data.books.length > 0) {
                     console.log('عدد الكتب المستلمة:', data.books.length);
-                    displayBooks(data.books);
+                    allBooks = data.books;
+                    
+                    // Apply filters and sorting
+                    applyFiltersAndSort();
                 } else {
                     console.log('لا توجد كتب مستلمة');
                     showNoArticlesMessage();
@@ -272,7 +521,232 @@
             } catch (error) {
                 console.error('خطأ في جلب البيانات:', error);
                 showErrorMessage(error.message);
+            } finally {
+                if (refreshBtn) {
+                    refreshBtn.classList.remove('loading');
+                }
             }
+        }
+        
+        // Filter and sort books based on current criteria
+        function applyFiltersAndSort() {
+            // First filter by category
+            filteredBooks = allBooks.filter(book => {
+                if (currentCategory === 'all') return true;
+                return book.category === currentCategory;
+            });
+            
+            // Then filter by search query if any
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                filteredBooks = filteredBooks.filter(book => {
+                    return (
+                        book.title.toLowerCase().includes(query) ||
+                        book.description.toLowerCase().includes(query) ||
+                        book.category.toLowerCase().includes(query) ||
+                        book.language.toLowerCase().includes(query)
+                    );
+                });
+            }
+            
+            // Sort the filtered books
+            switch (currentSort) {
+                case 'newest':
+                    // Sort by id descending (newer first)
+                    filteredBooks.sort((a, b) => b.id - a.id);
+                    break;
+                case 'oldest':
+                    // Sort by id ascending (older first)
+                    filteredBooks.sort((a, b) => a.id - b.id);
+                    break;
+                case 'alphabetical':
+                    // Sort alphabetically by title
+                    filteredBooks.sort((a, b) => a.title.localeCompare(b.title, 'ar'));
+                    break;
+                case 'popular':
+                    // For now, we'll use a simple rule: higher IDs are more popular
+                    filteredBooks.sort((a, b) => b.id - a.id);
+                    break;
+            }
+            
+            // Update the UI with the results
+            updateFilterTags();
+            renderPagination();
+            displayCurrentPageBooks();
+        }
+        
+        // Display only the books for the current page
+        function displayCurrentPageBooks() {
+            const startIndex = (currentPage - 1) * booksPerPage;
+            const endIndex = startIndex + booksPerPage;
+            const currentPageBooks = filteredBooks.slice(startIndex, endIndex);
+            
+            if (currentPageBooks.length === 0) {
+                showNoArticlesMessage();
+                return;
+            }
+            
+            displayBooks(currentPageBooks);
+        }
+        
+        // Create pagination controls
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = '';
+            
+            // Previous button
+            paginationHTML += `
+                <button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" 
+                    ${currentPage === 1 ? 'disabled' : 'onclick="changePage(' + (currentPage - 1) + ')"'}>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+            
+            // Page buttons
+            if (totalPages <= 5) {
+                // If 5 or fewer pages, show all
+                for (let i = 1; i <= totalPages; i++) {
+                    paginationHTML += `
+                        <button class="pagination-btn ${currentPage === i ? 'active' : ''}" 
+                            onclick="changePage(${i})">
+                            ${i}
+                        </button>
+                    `;
+                }
+            } else {
+                // If more than 5 pages, show intelligently
+                if (currentPage <= 3) {
+                    // If near start, show 1, 2, 3, ..., totalPages
+                    for (let i = 1; i <= 3; i++) {
+                        paginationHTML += `
+                            <button class="pagination-btn ${currentPage === i ? 'active' : ''}" 
+                                onclick="changePage(${i})">
+                                ${i}
+                            </button>
+                        `;
+                    }
+                    paginationHTML += '<span class="pagination-ellipsis">...</span>';
+                    paginationHTML += `
+                        <button class="pagination-btn" onclick="changePage(${totalPages})">
+                            ${totalPages}
+                        </button>
+                    `;
+                } else if (currentPage >= totalPages - 2) {
+                    // If near end, show 1, ..., totalPages-2, totalPages-1, totalPages
+                    paginationHTML += `
+                        <button class="pagination-btn" onclick="changePage(1)">1</button>
+                        <span class="pagination-ellipsis">...</span>
+                    `;
+                    for (let i = totalPages - 2; i <= totalPages; i++) {
+                        paginationHTML += `
+                            <button class="pagination-btn ${currentPage === i ? 'active' : ''}" 
+                                onclick="changePage(${i})">
+                                ${i}
+                            </button>
+                        `;
+                    }
+                } else {
+                    // If in middle, show 1, ..., currentPage-1, currentPage, currentPage+1, ..., totalPages
+                    paginationHTML += `
+                        <button class="pagination-btn" onclick="changePage(1)">1</button>
+                        <span class="pagination-ellipsis">...</span>
+                    `;
+                    for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+                        paginationHTML += `
+                            <button class="pagination-btn ${currentPage === i ? 'active' : ''}" 
+                                onclick="changePage(${i})">
+                                ${i}
+                            </button>
+                        `;
+                    }
+                    paginationHTML += '<span class="pagination-ellipsis">...</span>';
+                    paginationHTML += `
+                        <button class="pagination-btn" onclick="changePage(${totalPages})">
+                            ${totalPages}
+                        </button>
+                    `;
+                }
+            }
+            
+            // Next button
+            paginationHTML += `
+                <button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+                    ${currentPage === totalPages ? 'disabled' : 'onclick="changePage(' + (currentPage + 1) + ')"'}>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            `;
+            
+            pagination.innerHTML = paginationHTML;
+            
+            // Add global changePage function
+            window.changePage = function(page) {
+                currentPage = page;
+                displayCurrentPageBooks();
+                renderPagination();
+                window.scrollTo({
+                    top: document.querySelector('.articles-header').offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            };
+        }
+        
+        // Update filter tags based on current filters
+        function updateFilterTags() {
+            filterTags.innerHTML = '';
+            
+            // Add category tag if not 'all'
+            if (currentCategory !== 'all') {
+                const tag = document.createElement('div');
+                tag.className = 'filter-tag';
+                tag.innerHTML = `
+                    <span>التصنيف: ${currentCategory}</span>
+                    <span class="filter-tag-remove" data-filter-type="category" data-filter-value="all">&times;</span>
+                `;
+                filterTags.appendChild(tag);
+            }
+            
+            // Add search tag if there's a search query
+            if (searchQuery) {
+                const tag = document.createElement('div');
+                tag.className = 'filter-tag';
+                tag.innerHTML = `
+                    <span>بحث: ${searchQuery}</span>
+                    <span class="filter-tag-remove" data-filter-type="search" data-filter-value="">&times;</span>
+                `;
+                filterTags.appendChild(tag);
+            }
+            
+            // Add event listeners to tag remove buttons
+            document.querySelectorAll('.filter-tag-remove').forEach(button => {
+                button.addEventListener('click', function() {
+                    const filterType = this.getAttribute('data-filter-type');
+                    const filterValue = this.getAttribute('data-filter-value');
+                    
+                    if (filterType === 'category') {
+                        currentCategory = filterValue;
+                        categoryFilter.value = filterValue;
+                    } else if (filterType === 'search') {
+                        searchQuery = filterValue;
+                        searchInput.value = filterValue;
+                    }
+                    
+                    currentPage = 1;
+                    applyFiltersAndSort();
+                });
+            });
+            
+            // Show results count
+            const countTag = document.createElement('div');
+            countTag.className = 'filter-tag';
+            countTag.style.marginRight = 'auto';
+            countTag.innerHTML = `<span>النتائج: ${filteredBooks.length} مقال</span>`;
+            filterTags.appendChild(countTag);
         }
         
         // Function to display books as articles
@@ -438,8 +912,61 @@
             `;
         }
         
+        // Set up event listeners for search and filters
+        function setupEventListeners() {
+            // Search input
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    searchQuery = this.value.trim();
+                    // Only search if query has 2+ characters or is empty
+                    if (searchQuery.length >= 2 || searchQuery === '') {
+                        currentPage = 1;
+                        applyFiltersAndSort();
+                    }
+                });
+            }
+            
+            // Search clear button
+            if (searchClear) {
+                searchClear.addEventListener('click', function() {
+                    searchInput.value = '';
+                    searchQuery = '';
+                    currentPage = 1;
+                    applyFiltersAndSort();
+                });
+            }
+            
+            // Category filter
+            if (categoryFilter) {
+                categoryFilter.addEventListener('change', function() {
+                    currentCategory = this.value;
+                    currentPage = 1;
+                    applyFiltersAndSort();
+                });
+            }
+            
+            // Sort options
+            if (sortOptions) {
+                sortOptions.addEventListener('change', function() {
+                    currentSort = this.value;
+                    currentPage = 1;
+                    applyFiltersAndSort();
+                });
+            }
+            
+            // Refresh button
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', function() {
+                    fetchBooksAsArticles();
+                });
+            }
+        }
+        
         // Start fetching and displaying articles
         fetchBooksAsArticles();
+        
+        // Set up event listeners
+        setupEventListeners();
     });
 </script>
 {% endblock %}
