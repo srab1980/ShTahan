@@ -806,20 +806,25 @@
             filterTags.appendChild(countTag);
         }
         
-        // Function to display books as articles
-        function displayBooks(books) {
-            console.log('عرض الكتب كمقالات');
+        // Function to display articles
+        function displayBooks(articles) {
+            console.log('عرض المقالات');
             
-            // Loop through books and create article cards
-            books.forEach(book => {
-                console.log('إنشاء بطاقة للكتاب:', book.title);
+            // Loop through articles and create article cards
+            articles.forEach(article => {
+                console.log('إنشاء بطاقة للمقال:', article.title);
                 
                 const card = document.createElement('div');
                 card.className = 'article-card';
                 
-                // Create a date for display (use book ID for ordering)
-                const displayDate = new Date();
-                displayDate.setDate(displayDate.getDate() - book.id); // Just for display
+                // Parse the created_at date if available, otherwise use current date
+                let displayDate;
+                if (article.created_at) {
+                    displayDate = new Date(article.created_at);
+                } else {
+                    displayDate = new Date();
+                    displayDate.setDate(displayDate.getDate() - article.id); // Fallback if no created_at
+                }
                 
                 const formattedDate = new Intl.DateTimeFormat('ar-SA', {
                     year: 'numeric', 
@@ -827,27 +832,28 @@
                     day: 'numeric'
                 }).format(displayDate);
                 
-                // Create summary from description
-                const summary = book.description.length > 150 
-                    ? book.description.substring(0, 150) + '...' 
-                    : book.description;
+                // Use article summary instead of description
+                const summary = article.summary;
+                
+                // Default image if not available
+                const imageUrl = article.image || '/static/img/article-placeholder.jpg';
                 
                 // Create thumbnail URL with max-width to prevent stretching
                 const thumbnailStyle = 'max-height: 100%; width: auto; max-width: 100%;';
                 
                 card.innerHTML = `
                     <div class="article-image">
-                        <img src="${book.cover}" alt="${book.title}" loading="lazy" style="${thumbnailStyle}">
+                        <img src="${imageUrl}" alt="${article.title}" loading="lazy" style="${thumbnailStyle}">
                     </div>
                     <div class="article-details">
-                        <h3 class="article-title">${book.title}</h3>
+                        <h3 class="article-title">${article.title}</h3>
                         <div class="article-meta">
                             <span><i class="fas fa-calendar-alt"></i> ${formattedDate}</span>
-                            <span><i class="fas fa-tag"></i> ${book.category}</span>
+                            <span><i class="fas fa-tag"></i> ${article.category || 'عام'}</span>
                         </div>
                         <div class="article-summary">${summary}</div>
                         <div class="article-actions">
-                            <a href="javascript:void(0);" class="article-action-btn view-btn" onclick="openBookModal(${book.id})">
+                            <a href="javascript:void(0);" class="article-action-btn view-btn" onclick="openArticleModal(${article.id})">
                                 عرض المقال <i class="fas fa-newspaper"></i>
                             </a>
                         </div>
@@ -857,21 +863,26 @@
                 articlesGrid.appendChild(card);
             });
             
-            // Define the openBookModal function in the global scope
-            window.openBookModal = function(bookId) {
-                console.log('فتح نافذة الكتاب:', bookId);
+            // Define the openArticleModal function in the global scope
+            window.openArticleModal = function(articleId) {
+                console.log('فتح نافذة المقال:', articleId);
                 
-                const book = books.find(b => b.id === bookId);
-                if (!book) return;
+                const article = articles.find(a => a.id === articleId);
+                if (!article) return;
                 
                 // Create modal element
                 const modalElement = document.createElement('div');
                 modalElement.className = 'modal';
-                modalElement.id = 'book-modal';
+                modalElement.id = 'article-modal';
                 
-                // Format date for display
-                const displayDate = new Date();
-                displayDate.setDate(displayDate.getDate() - book.id); // Just for display
+                // Parse the created_at date if available, otherwise use current date
+                let displayDate;
+                if (article.created_at) {
+                    displayDate = new Date(article.created_at);
+                } else {
+                    displayDate = new Date();
+                    displayDate.setDate(displayDate.getDate() - article.id); // Fallback if no created_at
+                }
                 
                 const formattedDate = new Intl.DateTimeFormat('ar-SA', {
                     year: 'numeric', 
@@ -879,20 +890,22 @@
                     day: 'numeric'
                 }).format(displayDate);
                 
+                // Default image if not available
+                const imageUrl = article.image || '/static/img/article-placeholder.jpg';
+                
                 modalElement.innerHTML = `
                     <div class="modal-content">
                         <span class="modal-close">&times;</span>
-                        <h2>${book.title}</h2>
+                        <h2>${article.title}</h2>
                         <div class="article-meta">
                             <span><i class="fas fa-calendar-alt"></i> ${formattedDate}</span>
-                            <span><i class="fas fa-tag"></i> ${book.category}</span>
-                            <span><i class="fas fa-language"></i> ${book.language}</span>
+                            <span><i class="fas fa-tag"></i> ${article.category || 'عام'}</span>
                         </div>
                         <div class="article-image-container">
-                            <img src="${book.cover}" alt="${book.title}" style="max-width: 100%; height: auto; margin: 1rem 0; border-radius: 8px;">
+                            <img src="${imageUrl}" alt="${article.title}" style="max-width: 100%; height: auto; margin: 1rem 0; border-radius: 8px;">
                         </div>
                         <div class="article-content">
-                            ${book.description}
+                            ${article.content}
                         </div>
                     </div>
                 `;
