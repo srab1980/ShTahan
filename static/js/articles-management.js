@@ -29,6 +29,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const articleImageUpload = document.getElementById('articleImageUpload');
     const imageProgress = document.getElementById('imageProgress');
     
+    // Thumbnail elements
+    const thumbnailUpload = document.getElementById('thumbnailUpload');
+    const thumbnailUploadBtn = document.getElementById('thumbnailUploadBtn');
+    const thumbnailPreview = document.getElementById('thumbnailPreview');
+    const thumbnailUrl = document.getElementById('thumbnailUrl');
+    const thumbnailProgress = document.getElementById('thumbnailProgress');
+    
     // Log DOM elements to debug potential issues
     console.log('Article modal element:', articleModal);
     console.log('Save button element:', saveBtn);
@@ -53,6 +60,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (articleImageUpload) {
         articleImageUpload.addEventListener('change', handleImageUpload);
+    }
+    
+    // Thumbnail upload event listeners
+    if (thumbnailUploadBtn) {
+        thumbnailUploadBtn.addEventListener('click', function() {
+            if (thumbnailUpload) {
+                thumbnailUpload.click();
+            }
+        });
+    }
+    
+    if (thumbnailUpload) {
+        thumbnailUpload.addEventListener('change', handleThumbnailUpload);
     }
     
     // Image upload button handler
@@ -333,6 +353,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 summaryInput.value = data.article.summary;
                 contentInput.value = data.article.content;
                 
+                // Set thumbnail image if available
+                if (data.article.image && thumbnailPreview && thumbnailUrl) {
+                    thumbnailPreview.src = data.article.image;
+                    thumbnailUrl.value = data.article.image;
+                } else if (thumbnailPreview) {
+                    thumbnailPreview.src = '/static/img/article-placeholder.jpg';
+                    if (thumbnailUrl) thumbnailUrl.value = '';
+                }
+                
                 // Set modal title
                 modalTitle.textContent = 'تعديل المقال';
                 
@@ -364,6 +393,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const title = titleInput.value.trim();
             const summary = summaryInput.value.trim();
             const content = contentInput.value.trim();
+            const image = thumbnailUrl ? thumbnailUrl.value.trim() : '';
             
             // Validate form data
             if (!title || !summary || !content) {
@@ -375,7 +405,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const articleData = {
                 title,
                 summary,
-                content
+                content,
+                image
             };
             
             // Determine if this is an add or edit operation
@@ -498,6 +529,84 @@ document.addEventListener('DOMContentLoaded', function() {
             // Hide progress bar
             if (imageProgress) {
                 imageProgress.style.display = 'none';
+            }
+        }
+    }
+    
+    /**
+     * Handle thumbnail image upload
+     */
+    async function handleThumbnailUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        // Validate file
+        if (!file.type.match('image.*')) {
+            showNotification('يرجى اختيار ملف صورة صالح', 'error');
+            return;
+        }
+        
+        // Show progress bar
+        if (thumbnailProgress) {
+            thumbnailProgress.style.display = 'block';
+            thumbnailProgress.querySelector('.progress-bar').style.width = '0%';
+        }
+        
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const response = await fetch('/api/upload/article-image', {
+                method: 'POST',
+                body: formData,
+                // Using XHR to track upload progress
+                xhr: function() {
+                    const xhr = new XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', function(e) {
+                        if (e.lengthComputable && thumbnailProgress) {
+                            const percentComplete = (e.loaded / e.total) * 100;
+                            thumbnailProgress.querySelector('.progress-bar').style.width = percentComplete + '%';
+                        }
+                    }, false);
+                    return xhr;
+                }
+            });
+            
+            const result = await response.json();
+            
+            // Set progress to 100%
+            if (thumbnailProgress) {
+                thumbnailProgress.querySelector('.progress-bar').style.width = '100%';
+            }
+            
+            if (result.file_url) {
+                // Update thumbnail preview and hidden input
+                if (thumbnailPreview) {
+                    thumbnailPreview.src = result.file_url;
+                }
+                
+                if (thumbnailUrl) {
+                    thumbnailUrl.value = result.file_url;
+                }
+                
+                showNotification('تم رفع الصورة المصغرة بنجاح', 'success');
+            } else {
+                showNotification(`خطأ: ${result.error || 'حدث خطأ أثناء رفع الصورة المصغرة'}`, 'error');
+            }
+            
+            // Hide progress bar after a delay
+            setTimeout(() => {
+                if (thumbnailProgress) {
+                    thumbnailProgress.style.display = 'none';
+                }
+            }, 1000);
+        } catch (error) {
+            console.error('Error uploading thumbnail:', error);
+            showNotification('حدث خطأ أثناء رفع الصورة المصغرة', 'error');
+            
+            // Hide progress bar
+            if (thumbnailProgress) {
+                thumbnailProgress.style.display = 'none';
             }
         }
     }
