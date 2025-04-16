@@ -476,29 +476,14 @@
         <div class="filter-tags" id="filter-tags"></div>
         
         <!-- Advanced Filters -->
+        <!-- تم نقل أنماط الفلاتر إلى ملف mobile.css -->
         <style>
-            /* تصميم الفلاتر */
-            .articles-filters {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 1rem;
-                margin-top: 1rem;
-                margin-bottom: 1rem;
-                width: 100%;
-            }
-            
-            .article-filter-group {
-                display: flex;
-                flex-direction: column;
-                min-width: 0; /* لمنع تجاوز العرض */
-            }
-            
+            /* أنماط المظهر الأساسية للفلاتر، أما التخطيط فموجود في ملف mobile.css */
             .article-filter-group label {
                 font-weight: bold;
                 margin-bottom: 0.5rem;
                 color: #1a2a3a;
                 text-align: right;
-                white-space: nowrap;
             }
             
             .article-filter-group select {
@@ -507,7 +492,6 @@
                 border-radius: 6px;
                 background-color: white;
                 direction: rtl;
-                width: 100%;
             }
             
             .article-filter-group select:focus {
@@ -515,8 +499,6 @@
                 outline: none;
                 box-shadow: 0 0 0 2px rgba(26, 42, 58, 0.2);
             }
-            
-            /* ملاحظة: تم نقل تعديلات الأجهزة المحمولة إلى ملف mobile.css */
         </style>
         
         <div class="articles-filters">

@@ -2,44 +2,61 @@
  * ملف أنماط CSS للأجهزة المحمولة - تصميم مبسط للفلاتر
  */
 
+/* أنماط أساسية للفلاتر */
+.articles-filters {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin: 15px 0 !important;
+    justify-content: space-between !important;
+}
+
+.article-filter-group {
+    flex: 1 !important;
+    min-width: 0 !important;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+}
+
+.article-filter-group label {
+    display: block !important;
+    margin-bottom: 5px !important;
+    white-space: nowrap !important;
+}
+
+.article-filter-group select {
+    width: 100% !important;
+    padding: 8px !important;
+}
+
 /* تعديلات الفلاتر للأجهزة المحمولة */
 @media (max-width: 768px) {
-    /* تخطيط عمودي للفلاتر */
+    /* تحويل الاتجاه من أفقي إلى عمودي */
     .articles-filters {
-        display: block !important; 
+        flex-direction: column !important;
+        gap: 15px !important;
         padding: 10px !important;
     }
     
-    /* تنسيق عناصر الفلاتر للجوال */
+    /* تنسيق عناصر الفلاتر للجوال بعرض كامل */
     .article-filter-group {
-        display: block !important;
         width: 100% !important;
-        margin-bottom: 15px !important;
+        margin-bottom: 5px !important;
     }
     
-    /* أنماط تسميات الفلاتر للجوال */
+    /* تكبير العناصر قليلاً للمس أسهل */
     .article-filter-group label {
-        display: block !important;
-        margin-bottom: 5px !important;
         font-size: 16px !important;
         font-weight: bold !important;
     }
     
-    /* أنماط قوائم الاختيار للجوال */
     .article-filter-group select {
-        width: 100% !important;
         padding: 10px !important;
         font-size: 16px !important;
-        margin-bottom: 5px !important;
         border: 1px solid #ccc !important;
         border-radius: 5px !important;
-        background-color: white !important;
-    }
-    
-    /* تعطيل خاصية الشبكة تماماً */
-    .articles-filters {
-        display: block !important;
-        grid-template-columns: none !important;
     }
 }
 
@@ -53,14 +70,4 @@
         padding: 8px !important;
         font-size: 14px !important;
     }
-}
-
-/* أنماط عامة مختارة */
-.article-filter-group {
-    position: relative !important;
-}
-
-/* إعادة تعريف أنماط الفلاتر للتوافق  */
-.articles-filters {
-    display: grid !important;
 }
