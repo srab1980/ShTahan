@@ -25,15 +25,13 @@ def create_article_image(filename, text, width=800, height=450):
     
     # رسم مستطيل خلفي للنص
     padding = 20
-    d.rectangle(
-        [
-            position[0] - padding, 
-            position[1] - padding, 
-            position[0] + text_width + padding, 
-            position[1] + text_height + padding
-        ], 
-        fill=(212, 175, 55)  # لون ذهبي
+    rectangle_position = (
+        position[0] - padding, 
+        position[1] - padding, 
+        position[0] + text_width + padding, 
+        position[1] + text_height + padding
     )
+    d.rectangle(rectangle_position, fill=(212, 175, 55))  # لون ذهبي
     
     # كتابة النص
     d.text(position, text, fill='white', font=font)
