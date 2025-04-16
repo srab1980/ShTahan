@@ -506,16 +506,6 @@
             
             <div class="inline-filters">
                 <div class="filter-item">
-                    <label for="language-filter">اللغة</label>
-                    <select id="language-filter">
-                        <option value="all">جميع اللغات</option>
-                        <option value="العربية">العربية</option>
-                        <option value="الإنجليزية">الإنجليزية</option>
-                        <option value="التركية">التركية</option>
-                    </select>
-                </div>
-                
-                <div class="filter-item">
                     <label for="category-filter">التصنيف</label>
                     <select id="category-filter">
                         <option value="all">جميع التصنيفات</option>
@@ -562,7 +552,7 @@
         const searchInput = document.getElementById('search-input');
         const searchClear = document.getElementById('search-clear');
         const filterTags = document.getElementById('filter-tags');
-        const languageFilter = document.getElementById('language-filter');
+        // لقد أزلنا عنصر فلتر اللغة
         const categoryFilter = document.getElementById('category-filter');
         const sortOptions = document.getElementById('sort-options');
         const pagination = document.getElementById('pagination');
@@ -577,7 +567,7 @@
         let booksPerPage = 9;
         let currentSort = 'newest';
         let currentCategory = 'all';
-        let currentLanguage = 'all';
+        // تم إزالة متغير currentLanguage لأننا لا نستخدم فلتر اللغة بعد الآن
         let searchQuery = '';
         
         // Function to fetch articles from the database
@@ -630,15 +620,10 @@
         
         // Filter and sort books based on current criteria
         function applyFiltersAndSort() {
-            // First filter by category and language
+            // مرشح الفئة فقط
             filteredBooks = allBooks.filter(book => {
-                // Check category filter
+                // مرشح الفئة
                 if (currentCategory !== 'all' && book.category !== currentCategory) {
-                    return false;
-                }
-                
-                // Check language filter
-                if (currentLanguage !== 'all' && book.language !== currentLanguage) {
                     return false;
                 }
                 
@@ -817,16 +802,7 @@
         function updateFilterTags() {
             filterTags.innerHTML = '';
             
-            // Add language tag if not 'all'
-            if (currentLanguage !== 'all') {
-                const tag = document.createElement('div');
-                tag.className = 'filter-tag';
-                tag.innerHTML = `
-                    <span>اللغة: ${currentLanguage}</span>
-                    <span class="filter-tag-remove" data-filter-type="language" data-filter-value="all">&times;</span>
-                `;
-                filterTags.appendChild(tag);
-            }
+            // لقد أزلنا شيفرة فلتر اللغة هنا
             
             // Add category tag if not 'all'
             if (currentCategory !== 'all') {
@@ -859,9 +835,6 @@
                     if (filterType === 'category') {
                         currentCategory = filterValue;
                         categoryFilter.value = filterValue;
-                    } else if (filterType === 'language') {
-                        currentLanguage = filterValue;
-                        languageFilter.value = filterValue;
                     } else if (filterType === 'search') {
                         searchQuery = filterValue;
                         searchInput.value = filterValue;
@@ -1078,14 +1051,7 @@
                 });
             }
             
-            // Language filter
-            if (languageFilter) {
-                languageFilter.addEventListener('change', function() {
-                    currentLanguage = this.value;
-                    currentPage = 1;
-                    applyFiltersAndSort();
-                });
-            }
+            // تم إزالة مستمع حدث فلتر اللغة
             
             // Category filter
             if (categoryFilter) {
