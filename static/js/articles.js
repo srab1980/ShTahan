@@ -161,11 +161,21 @@ document.addEventListener('DOMContentLoaded', function() {
             articleCard.className = 'article-card';
             articleCard.dataset.id = article.id;
             
+            // Use the image field for thumbnail if available, otherwise use a placeholder
+            const thumbnailSrc = article.image && article.image.trim() !== '' 
+                ? article.image 
+                : '/static/img/article-placeholder.jpg';
+                
             articleCard.innerHTML = `
-                <h3>${article.title}</h3>
-                <p>${article.summary}</p>
-                <div class="article-actions">
-                    <a href="javascript:void(0);" class="btn btn-secondary read-more" data-article-id="${article.id}">اقرأ المزيد</a>
+                <div class="article-image">
+                    <img src="${thumbnailSrc}" alt="${article.title}" loading="lazy" onerror="this.src='/static/img/article-placeholder.jpg'">
+                </div>
+                <div class="article-details">
+                    <h3 class="article-title">${article.title}</h3>
+                    <p class="article-summary">${article.summary}</p>
+                    <div class="article-actions">
+                        <a href="javascript:void(0);" class="btn btn-secondary read-more" data-article-id="${article.id}">اقرأ المزيد</a>
+                    </div>
                 </div>
             `;
             
@@ -378,6 +388,11 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.id = 'article-modal';
         modal.className = 'modal';
         
+        // Get the image to show at the top of the article
+        const thumbnailSrc = article.image && article.image.trim() !== '' 
+            ? article.image 
+            : '/static/img/article-placeholder.jpg';
+            
         modal.innerHTML = `
             <div class="modal-content">
                 <span class="close-modal">&times;</span>
@@ -385,6 +400,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h2>${article.title}</h2>
                     <div class="article-meta">
                         <span class="article-date">${article.created_at}</span>
+                    </div>
+                    <div class="article-featured-image">
+                        <img src="${thumbnailSrc}" alt="${article.title}" onerror="this.src='/static/img/article-placeholder.jpg'" style="max-width: 100%; border-radius: 8px; margin: 15px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    </div>
+                    <div class="article-summary" style="font-weight: bold; margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px; line-height: 1.6;">
+                        ${article.summary}
                     </div>
                     <div class="article-content">
                         ${article.content}
