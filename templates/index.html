@@ -393,15 +393,15 @@
     </section>
 
     <!-- Articles Section -->
-    <section id="articles" class="section">
-        <div class="container">
+    <section id="articles" class="section" style="width: 100vw; max-width: 100%; padding: 60px 0; overflow-x: hidden;">
+        <div style="width: 100%; max-width: 100%; margin: 0 auto; padding: 0;">
             <div class="section-title">
                 <h2>المقالات</h2>
                 <div class="separator"></div>
             </div>
             
             <!-- Full Width Banner for All Articles -->
-            <div style="background-color: #1a3c6b; color: white; padding: 20px; margin: 30px 0; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-align: center;">
+            <div style="background-color: #1a3c6b; color: white; padding: 20px; margin: 30px auto; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-align: center; max-width: 1400px;">
                 <h3 style="margin: 0 0 15px 0; font-size: 1.5rem; color: #d4af37;">مقالات الشيخ مصطفى الطحان</h3>
                 <p style="margin-bottom: 20px; font-size: 1.1rem;">مجموعة متنوعة من المقالات الفكرية والتربوية والدعوية والإصلاحية</p>
                 <a href="/articles" style="display: inline-block; background-color: #d4af37; color: #1a3c6b; padding: 15px 40px; margin: 0 5px; border-radius: 50px; text-decoration: none; font-size: 1.2rem; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 4px 8px rgba(0,0,0,0.2);" onmouseover="this.style.backgroundColor='#e5c766'; this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 12px rgba(0,0,0,0.3)';" onmouseout="this.style.backgroundColor='#d4af37'; this.style.transform='scale(1)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.2)';">
@@ -412,7 +412,7 @@
 
             </div>
             
-            <div style="padding: 20px 0; width: 100%;">
+            <div style="padding: 20px 0; width: 100%; max-width: 1800px; margin: 0 auto;">
                 <style>
                     .articles-wrapper {
                         width: 100%;
@@ -425,24 +425,26 @@
                         justify-content: center;
                         flex-wrap: wrap;
                         width: 100%;
-                        margin-bottom: 40px;
+                        margin-bottom: 50px;
                     }
                     .article-item {
-                        flex: 0 0 calc(33% - 30px);
-                        min-width: 300px;
-                        margin: 15px;
+                        flex: 0 0 calc(33% - 40px);
+                        width: calc(33% - 40px);
+                        min-width: 320px;
+                        max-width: 500px;
+                        margin: 20px;
                         background-color: white;
-                        border-radius: 8px;
+                        border-radius: 10px;
                         overflow: hidden;
-                        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+                        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
                         transition: transform 0.3s, box-shadow 0.3s;
                     }
                     .article-item:hover {
-                        transform: translateY(-5px);
-                        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+                        transform: translateY(-7px);
+                        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
                     }
                     .article-image {
-                        height: 250px;
+                        height: 280px;
                         overflow: hidden;
                     }
                     .article-image img {
@@ -451,36 +453,36 @@
                         object-fit: cover;
                     }
                     .article-placeholder {
-                        height: 250px;
+                        height: 280px;
                         display: flex;
                         align-items: center;
                         justify-content: center;
                         background-color: #1a3c6b;
                     }
                     .article-content {
-                        padding: 25px;
+                        padding: 30px;
                         text-align: right;
                     }
                     .article-title {
-                        font-size: 1.4rem;
+                        font-size: 1.5rem;
                         margin-bottom: 15px;
                         color: #1a3c6b;
                     }
                     .article-summary {
-                        font-size: 1rem;
-                        color: #666;
-                        margin-bottom: 20px;
+                        font-size: 1.1rem;
+                        color: #555;
+                        margin-bottom: 25px;
                         line-height: 1.6;
-                        max-height: 80px;
+                        max-height: 85px;
                         overflow: hidden;
                     }
                     .read-more-btn {
                         display: inline-block;
-                        padding: 10px 25px;
+                        padding: 12px 30px;
                         background-color: #d4af37;
                         color: white;
                         text-decoration: none;
-                        border-radius: 25px;
+                        border-radius: 30px;
                         font-size: 1.1rem;
                         transition: background-color 0.3s;
                     }
@@ -488,15 +490,17 @@
                         background-color: #c29b29;
                     }
                     
-                    @media (max-width: 1200px) {
+                    @media (max-width: 1400px) {
                         .article-item {
-                            flex: 0 0 calc(50% - 30px);
+                            flex: 0 0 calc(50% - 40px);
+                            width: calc(50% - 40px);
                         }
                     }
                     @media (max-width: 768px) {
                         .article-item {
-                            flex: 0 0 calc(100% - 30px);
-                            max-width: 500px;
+                            flex: 0 0 calc(100% - 40px);
+                            width: calc(100% - 40px);
+                            max-width: 550px;
                         }
                     }
                 </style>
