@@ -476,117 +476,71 @@
         
         <!-- Advanced Filters -->
         <style>
-            /* Mobile-first approach */
-            .filter-row {
-                display: flex;
-                align-items: center;
-                margin-bottom: 10px;
+            /* أسلوب تبسيطي للفلاتر */
+            .mobile-filter-item {
+                margin-bottom: 15px;
                 width: 100%;
             }
             
-            .filter-label {
-                min-width: 80px;
+            .mobile-filter-label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: 500;
+                color: #444;
                 text-align: right;
-                padding-left: 8px;
-                flex-shrink: 0;
             }
             
-            .filter-select {
-                flex: 1;
+            .mobile-filter-select {
                 width: 100%;
-                padding: 8px;
+                padding: 10px;
                 border: 1px solid #ddd;
                 border-radius: 6px;
-                direction: rtl;
                 background-color: white;
-                font-size: 14px;
+                font-size: 15px;
+                direction: rtl;
             }
             
-            /* تعديلات للشاشات المتوسطة والكبيرة */
-            @media screen and (min-width: 769px) {
-                .filter-row {
-                    margin-bottom: 15px;
-                }
-                
-                .filter-label {
-                    min-width: 80px;
-                    padding-left: 10px;
-                }
-                
-                .filter-select {
-                    font-size: 16px;
-                }
-            }
-            
-            /* تعديلات للشاشات الصغيرة جداً */
             @media screen and (max-width: 480px) {
-                .filter-container {
-                    padding: 0 5px;
-                }
-                
-                .filter-row {
-                    margin-bottom: 8px;
-                }
-                
-                .filter-label {
-                    min-width: 60px;
-                    font-size: 13px;
-                    width: 20%;
-                }
-                
-                .filter-select {
-                    padding: 6px;
-                    font-size: 13px;
-                    max-width: 80%;
-                }
-                
-                .filter-input {
-                    width: 80%;
+                .mobile-filter-select {
+                    padding: 8px;
+                    font-size: 14px;
                 }
             }
         </style>
         
-        <div class="filter-container">
-            <div class="filter-row">
-                <div class="filter-label">
-                    <label for="language-filter">اللغة</label>
-                </div>
-                <div class="filter-input">
-                    <select id="language-filter" class="filter-select">
-                        <option value="all">جميع اللغات</option>
-                        <option value="العربية">العربية</option>
-                        <option value="الإنجليزية">الإنجليزية</option>
-                        <option value="التركية">التركية</option>
-                    </select>
-                </div>
+        <!-- تصميم مختلف للفلاتر يناسب الجوال -->
+        <div style="margin-top: 15px; margin-bottom: 15px;">
+            <!-- فلتر اللغة -->
+            <div class="mobile-filter-item">
+                <label class="mobile-filter-label" for="language-filter">اللغة</label>
+                <select id="language-filter" class="mobile-filter-select">
+                    <option value="all">جميع اللغات</option>
+                    <option value="العربية">العربية</option>
+                    <option value="الإنجليزية">الإنجليزية</option>
+                    <option value="التركية">التركية</option>
+                </select>
             </div>
             
-            <div class="filter-row">
-                <div class="filter-label">
-                    <label for="category-filter">التصنيف</label>
-                </div>
-                <div class="filter-input">
-                    <select id="category-filter" class="filter-select">
-                        <option value="all">جميع التصنيفات</option>
-                        {% for category in categories %}
-                        <option value="{{ category }}">{{ category }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+            <!-- فلتر التصنيف -->
+            <div class="mobile-filter-item">
+                <label class="mobile-filter-label" for="category-filter">التصنيف</label>
+                <select id="category-filter" class="mobile-filter-select">
+                    <option value="all">جميع التصنيفات</option>
+                    {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+                </select>
             </div>
             
-            <div class="filter-row">
-                <div class="filter-label">
-                    <label for="sort-options">الترتيب</label>
-                </div>
-                <div class="filter-input">
-                    <select id="sort-options" class="filter-select">
-                        <option value="newest">الأحدث</option>
-                        <option value="oldest">الأقدم</option>
-                        <option value="alphabetical">أبجدي (أ-ي)</option>
-                        <option value="popular">الأكثر مشاهدة</option>
-                    </select>
-                </div>
+            <!-- فلتر الترتيب -->
+            <div class="mobile-filter-item">
+                <label class="mobile-filter-label" for="sort-options">الترتيب</label>
+                <select id="sort-options" class="mobile-filter-select">
+                    <option value="newest">الأحدث</option>
+                    <option value="oldest">الأقدم</option>
+                    <option value="alphabetical">أبجدي (أ-ي)</option>
+                    <option value="popular">الأكثر مشاهدة</option>
+                </select>
             </div>
         </div>
     </div>
