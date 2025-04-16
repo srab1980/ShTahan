@@ -471,6 +471,16 @@
         <!-- Advanced Filters -->
         <div class="books-filters">
             <div class="filter-group">
+                <label for="language-filter">اللغة</label>
+                <select id="language-filter">
+                    <option value="all">جميع اللغات</option>
+                    <option value="العربية">العربية</option>
+                    <option value="الإنجليزية">الإنجليزية</option>
+                    <option value="التركية">التركية</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
                 <label for="category-filter">التصنيف</label>
                 <select id="category-filter">
                     <option value="all">جميع التصنيفات</option>
@@ -530,6 +540,7 @@
         let booksPerPage = 9;
         let currentSort = 'newest';
         let currentCategory = 'all';
+        let currentLanguage = 'all';
         let searchQuery = '';
         
         // Function to fetch articles from the database
@@ -582,10 +593,19 @@
         
         // Filter and sort books based on current criteria
         function applyFiltersAndSort() {
-            // First filter by category
+            // First filter by category and language
             filteredBooks = allBooks.filter(book => {
-                if (currentCategory === 'all') return true;
-                return book.category === currentCategory;
+                // Check category filter
+                if (currentCategory !== 'all' && book.category !== currentCategory) {
+                    return false;
+                }
+                
+                // Check language filter
+                if (currentLanguage !== 'all' && book.language !== currentLanguage) {
+                    return false;
+                }
+                
+                return true;
             });
             
             // Then filter by search query if any
