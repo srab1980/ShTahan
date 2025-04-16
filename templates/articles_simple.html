@@ -122,40 +122,7 @@
         line-height: 1;
     }
     
-    /* Advanced filters */
-    .articles-filters, .books-filters {
-        display: flex;
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        gap: 1rem;
-        align-items: center;
-        justify-content: space-between;
-        margin: 0 auto;
-        width: 100%;
-    }
-    
-    .filter-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.3rem;
-        flex: 1;
-        min-width: 150px;
-        width: 33%;
-        max-width: 33%;
-    }
-    
-    .filter-group label {
-        font-size: 0.9rem;
-        color: #495057;
-    }
-    
-    .filter-group select {
-        padding: 0.6rem;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        background-color: white;
-        direction: rtl;
-    }
+    /* تم حذف التعريفات المتداخلة وترك التعريفات الموجودة في الأقسام اللاحقة */
     
     /* Refresh button */
     .refresh-btn {
@@ -461,7 +428,7 @@
         </button>
     </div>
     
-    <h2 class="content-subtitle">كتب ومؤلفات الشيخ مصطفى الطحان</h2>
+    <h2 class="content-subtitle">مقالات الشيخ مصطفى الطحان</h2>
     
     <div class="search-filter-container">
         <!-- Search Bar -->
@@ -512,14 +479,35 @@
                 box-shadow: 0 0 0 2px rgba(26, 42, 58, 0.2);
             }
             
-            /* تعديلات للأجهزة المحمولة */
-            @media (max-width: 768px) {
+            /* تعديلات للأجهزة المحمولة - مع إعطاء أولوية عالية */
+            @media screen and (max-width: 768px) {
                 .books-filters {
-                    flex-direction: column;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    width: 100% !important;
                 }
                 
                 .filter-group {
-                    width: 100%;
+                    display: block !important;
+                    width: 100% !important;
+                    margin-bottom: 15px !important;
+                }
+                
+                .filter-group select {
+                    width: 100% !important;
+                    padding: 8px !important;
+                    margin-bottom: 5px !important;
+                }
+            }
+            
+            /* تعديلات إضافية للشاشات الأصغر */
+            @media screen and (max-width: 480px) {
+                .books-filters {
+                    padding: 0 !important;
+                }
+                
+                .filter-group {
+                    margin-bottom: 10px !important;
                 }
             }
         </style>
