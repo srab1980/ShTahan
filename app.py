@@ -219,6 +219,12 @@ def password_reset_form():
     # Serve the password reset form
     return render_template('password_reset_form.html')
 
+@app.route('/change-password-form')
+@login_required
+def change_password_form():
+    # Serve the change password form for authenticated users
+    return render_template('change_password_form.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # For GET requests, redirect to the login form
@@ -361,6 +367,32 @@ def password_reset_confirm():
     
     # Update the user's password
     user.set_password(data['password'])
+    db.session.commit()
+    
+    return jsonify({'message': 'تم تغيير كلمة المرور بنجاح'}), 200
+
+@app.route('/api/change-password', methods=['POST'])
+@login_required
+def change_password():
+    data = request.json
+    
+    if not all(key in data for key in ['current_password', 'new_password']):
+        return jsonify({'error': 'كلمة المرور الحالية والجديدة مطلوبة'}), 400
+    
+    # Validate password length
+    if len(data['new_password']) < 8:
+        return jsonify({'error': 'يجب أن تحتوي كلمة المرور الجديدة على 8 أحرف على الأقل'}), 400
+    
+    # Check if current password is valid
+    if not current_user.check_password(data['current_password']):
+        return jsonify({'error': 'كلمة المرور الحالية غير صحيحة'}), 401
+    
+    # Check if new password is different from current
+    if data['current_password'] == data['new_password']:
+        return jsonify({'error': 'كلمة المرور الجديدة يجب أن تكون مختلفة عن كلمة المرور الحالية'}), 400
+    
+    # Update password
+    current_user.set_password(data['new_password'])
     db.session.commit()
     
     return jsonify({'message': 'تم تغيير كلمة المرور بنجاح'}), 200
