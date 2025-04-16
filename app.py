@@ -8,7 +8,7 @@ from flask import Flask, render_template, request, jsonify, url_for, send_from_d
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import func, desc
+from sqlalchemy import func, desc, func as sqlafunc
 from functools import wraps
 
 # Configure logging
@@ -113,7 +113,9 @@ def generate_unique_filename(filename):
 
 @app.route('/')
 def index():
-    return render_template('index.html', now=datetime.now())
+    # جلب أحدث 6 مقالات للصفحة الرئيسية
+    latest_articles = Article.query.order_by(Article.created_at.desc()).limit(6).all()
+    return render_template('index.html', articles=latest_articles, now=datetime.now())
 
 @app.route('/admin')
 @login_required
@@ -514,9 +516,34 @@ def delete_book(book_id):
 # Articles API Endpoints
 @app.route('/api/articles', methods=['GET'])
 def get_articles():
-    # إضافة رأس التحكم بالتخزين المؤقت (Cache-Control) للمقالات
-    # تخزين البيانات لمدة 5 دقائق (300 ثانية) للتحسين من سرعة التحميل
-    articles = Article.query.all()
+    """Get articles from database with filtering options"""
+    # Handle query parameters
+    sort_by = request.args.get('sort_by', 'latest')  # 'latest' or 'popular'
+    limit = request.args.get('limit', type=int)  # Optional limit
+    category = request.args.get('category')  # Optional category filter
+    
+    # Start with base query
+    query = Article.query
+    
+    # Apply category filter if provided
+    if category:
+        query = query.filter_by(category=category)
+    
+    # Apply sorting
+    if sort_by == 'popular':
+        # Simplified approach - just get latest articles for now
+        # In future we can implement more complex sorting with activities
+        query = query.order_by(Article.created_at.desc())
+    else:
+        # Default sort by latest
+        query = query.order_by(Article.created_at.desc())
+    
+    # Apply limit if provided
+    if limit:
+        query = query.limit(limit)
+    
+    # Execute query and return results
+    articles = query.all()
     response = jsonify({'articles': [article.to_dict() for article in articles]})
     response.headers['Cache-Control'] = 'public, max-age=300'
     return response
