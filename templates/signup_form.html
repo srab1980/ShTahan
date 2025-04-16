@@ -3,42 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول - موقع الشيخ مصطفى الطحان</title>
+    <title>إنشاء حساب جديد - موقع الشيخ مصطفى الطحان</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
+        .signup-container {
+            max-width: 500px;
+            margin: 50px auto;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             background-color: #fff;
         }
         
-        .login-header {
+        .signup-header {
             text-align: center;
             margin-bottom: 30px;
         }
         
-        .login-header h1 {
+        .signup-header h1 {
             color: #1a2a3a;
             margin-bottom: 10px;
         }
         
-        .login-form .form-group {
+        .signup-form .form-group {
             margin-bottom: 20px;
         }
         
-        .login-form label {
+        .signup-form label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
             color: #1a2a3a;
         }
         
-        .login-form input {
+        .signup-form input {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
@@ -46,7 +46,7 @@
             font-size: 16px;
         }
         
-        .login-form button {
+        .signup-form button {
             width: 100%;
             padding: 12px;
             background-color: #1a2a3a;
@@ -58,18 +58,30 @@
             transition: background-color 0.3s;
         }
         
-        .login-form button:hover {
+        .signup-form button:hover {
             background-color: #d4af37;
         }
         
-        .login-footer {
-            text-align: center;
-            margin-top: 20px;
+        .form-info {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
         }
         
-        .login-footer a {
-            color: #d4af37;
-            text-decoration: none;
+        .password-requirements {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .password-requirements ul {
+            margin-top: 5px;
+            padding-right: 20px;
+        }
+        
+        .signup-footer {
+            text-align: center;
+            margin-top: 20px;
         }
         
         .auth-links {
@@ -95,6 +107,13 @@
             display: none;
         }
         
+        .success-message {
+            color: #2ecc71;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+        }
+        
         .back-to-home {
             display: block;
             text-align: center;
@@ -109,35 +128,58 @@
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
-            <h1>تسجيل الدخول</h1>
-            <p>الرجاء إدخال بيانات الدخول للوصول إلى لوحة التحكم</p>
+    <div class="signup-container">
+        <div class="signup-header">
+            <h1>إنشاء حساب جديد</h1>
+            <p>الرجاء إدخال المعلومات المطلوبة لإنشاء حساب جديد</p>
         </div>
         
-        <form class="login-form" id="loginForm">
+        <form class="signup-form" id="signupForm">
             <div class="form-group">
                 <label for="username">اسم المستخدم</label>
                 <input type="text" id="username" name="username" required>
+                <div class="form-info">يجب أن يكون اسم المستخدم فريدًا وأن يتكون من 3-20 حرفًا.</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">البريد الإلكتروني</label>
+                <input type="email" id="email" name="email" required>
             </div>
             
             <div class="form-group">
                 <label for="password">كلمة المرور</label>
                 <input type="password" id="password" name="password" required>
+                <div class="password-requirements">
+                    يجب أن تحتوي كلمة المرور على:
+                    <ul>
+                        <li>8 أحرف على الأقل</li>
+                        <li>حرف كبير واحد على الأقل</li>
+                        <li>حرف صغير واحد على الأقل</li>
+                        <li>رقم واحد على الأقل</li>
+                    </ul>
+                </div>
             </div>
             
-            <button type="submit">تسجيل الدخول</button>
+            <div class="form-group">
+                <label for="confirmPassword">تأكيد كلمة المرور</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            
+            <button type="submit">إنشاء حساب</button>
             
             <div class="error-message" id="errorMessage">
-                اسم المستخدم أو كلمة المرور غير صحيحة
+                حدث خطأ أثناء إنشاء الحساب. الرجاء المحاولة مرة أخرى.
+            </div>
+            
+            <div class="success-message" id="successMessage">
+                تم إنشاء الحساب بنجاح! سيتم توجيهك لصفحة تسجيل الدخول.
             </div>
         </form>
         
-        <div class="login-footer">
-            <p>هذه الصفحة مخصصة للمسؤولين والمحررين فقط</p>
+        <div class="signup-footer">
             <div class="auth-links">
-                <a href="/signup-form" class="auth-link">إنشاء حساب جديد</a> | 
-                <a href="/password-reset-form" class="auth-link">نسيت كلمة المرور؟</a>
+                <span>لديك حساب بالفعل؟</span>
+                <a href="/login-form" class="auth-link">تسجيل الدخول</a>
             </div>
         </div>
         
@@ -146,6 +188,6 @@
         </a>
     </div>
 
-    <script src="/static/js/login.js"></script>
+    <script src="/static/js/signup.js"></script>
 </body>
 </html>
