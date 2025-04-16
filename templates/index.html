@@ -393,15 +393,15 @@
     </section>
 
     <!-- Articles Section -->
-    <section id="articles" class="section">
-        <div class="container">
+    <section id="articles" class="section" style="width: 100%; padding: 60px 0; max-width: 100%; overflow-x: hidden;">
+        <div style="width: 100%; max-width: 100%">
             <div class="section-title">
                 <h2>المقالات</h2>
                 <div class="separator"></div>
             </div>
             
             <!-- Banner for Articles -->
-            <div style="background-color: #1a3c6b; color: white; padding: 20px; margin: 30px auto; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-align: center;">
+            <div style="background-color: #1a3c6b; color: white; padding: 20px; margin: 30px 20px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-align: center;">
                 <h3 style="margin: 0 0 15px 0; font-size: 1.5rem; color: #d4af37;">مقالات الشيخ مصطفى الطحان</h3>
                 <p style="margin-bottom: 20px; font-size: 1.1rem;">مجموعة متنوعة من المقالات الفكرية والتربوية والدعوية والإصلاحية</p>
                 <a href="/articles" style="display: inline-block; background-color: #d4af37; color: #1a3c6b; padding: 12px 30px; margin: 0 5px; border-radius: 30px; text-decoration: none; font-size: 1.1rem; font-weight: bold; transition: all 0.3s ease; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
@@ -412,62 +412,64 @@
 
             <!-- Articles Section - Using Table For Guaranteed Layout -->
             {% if articles %}
-            <table style="width: 100%; border-collapse: separate; border-spacing: 20px; direction: rtl;">
-                <tr>
-                    {% for article in articles[:3] %}
-                    <td style="width: 33.33%; vertical-align: top; padding: 0; background-color: white; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
-                        <div style="width: 100%; overflow: hidden;">
-                            {% if article.image %}
-                            <div style="height: 200px; overflow: hidden;">
-                                <img src="{{ article.image }}" alt="{{ article.title }}" style="width: 100%; height: 100%; object-fit: cover;">
-                            </div>
-                            {% else %}
-                            <div style="height: 200px; background-color: #1a3c6b; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-newspaper" style="font-size: 40px; color: #d4af37;"></i>
-                            </div>
-                            {% endif %}
-                            <div style="text-align: center; padding: 0;">
-                                <div style="background-color: #d4af37; color: white; padding: 5px 0; font-size: 1.2rem; font-weight: bold;">
-                                    {{ loop.index }}
+            <div style="width: 100%; padding: 0 20px;">
+                <table cellspacing="20" cellpadding="0" border="0" dir="rtl" style="width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 20px;">
+                    <tr>
+                        {% for article in articles[:3] %}
+                        <td valign="top" style="width: 33.33%; padding: 0; background-color: white; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                            <div style="width: 100%; overflow: hidden;">
+                                {% if article.image %}
+                                <div style="height: 200px; overflow: hidden;">
+                                    <img src="{{ article.image }}" alt="{{ article.title }}" style="width: 100%; height: 100%; object-fit: cover;">
                                 </div>
-                                <div style="padding: 15px;">
-                                    <h3 style="font-size: 1.2rem; margin-bottom: 10px; color: #1a3c6b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ article.title }}</h3>
-                                    <p style="color: #777; font-size: 0.9rem; margin-bottom: 15px;">تاريخ النشر {{ article.created_at.strftime('%Y-%m-%d') }}</p>
-                                    <a href="/articles#{{ article.id }}" style="display: inline-block; background-color: #d4af37; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-size: 0.9rem;">قراءة المقال</a>
+                                {% else %}
+                                <div style="height: 200px; background-color: #1a3c6b; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-newspaper" style="font-size: 40px; color: #d4af37;"></i>
                                 </div>
-                            </div>
-                        </div>
-                    </td>
-                    {% endfor %}
-                </tr>
-                <tr>
-                    {% for article in articles[3:6] %}
-                    <td style="width: 33.33%; vertical-align: top; padding: 0; background-color: white; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
-                        <div style="width: 100%; overflow: hidden;">
-                            {% if article.image %}
-                            <div style="height: 200px; overflow: hidden;">
-                                <img src="{{ article.image }}" alt="{{ article.title }}" style="width: 100%; height: 100%; object-fit: cover;">
-                            </div>
-                            {% else %}
-                            <div style="height: 200px; background-color: #1a3c6b; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-newspaper" style="font-size: 40px; color: #d4af37;"></i>
-                            </div>
-                            {% endif %}
-                            <div style="text-align: center; padding: 0;">
-                                <div style="background-color: #d4af37; color: white; padding: 5px 0; font-size: 1.2rem; font-weight: bold;">
-                                    {{ loop.index + 3 }}
-                                </div>
-                                <div style="padding: 15px;">
-                                    <h3 style="font-size: 1.2rem; margin-bottom: 10px; color: #1a3c6b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ article.title }}</h3>
-                                    <p style="color: #777; font-size: 0.9rem; margin-bottom: 15px;">تاريخ النشر {{ article.created_at.strftime('%Y-%m-%d') }}</p>
-                                    <a href="/articles#{{ article.id }}" style="display: inline-block; background-color: #d4af37; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-size: 0.9rem;">قراءة المقال</a>
+                                {% endif %}
+                                <div style="text-align: center; padding: 0;">
+                                    <div style="background-color: #d4af37; color: white; padding: 5px 0; font-size: 1.2rem; font-weight: bold;">
+                                        {{ loop.index }}
+                                    </div>
+                                    <div style="padding: 15px;">
+                                        <h3 style="font-size: 1.2rem; margin-bottom: 10px; color: #1a3c6b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ article.title }}</h3>
+                                        <p style="color: #777; font-size: 0.9rem; margin-bottom: 15px;">تاريخ النشر {{ article.created_at.strftime('%Y-%m-%d') }}</p>
+                                        <a href="/articles#{{ article.id }}" style="display: inline-block; background-color: #d4af37; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-size: 0.9rem;">قراءة المقال</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </td>
-                    {% endfor %}
-                </tr>
-            </table>
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for article in articles[3:6] %}
+                        <td valign="top" style="width: 33.33%; padding: 0; background-color: white; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+                            <div style="width: 100%; overflow: hidden;">
+                                {% if article.image %}
+                                <div style="height: 200px; overflow: hidden;">
+                                    <img src="{{ article.image }}" alt="{{ article.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                {% else %}
+                                <div style="height: 200px; background-color: #1a3c6b; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-newspaper" style="font-size: 40px; color: #d4af37;"></i>
+                                </div>
+                                {% endif %}
+                                <div style="text-align: center; padding: 0;">
+                                    <div style="background-color: #d4af37; color: white; padding: 5px 0; font-size: 1.2rem; font-weight: bold;">
+                                        {{ loop.index + 3 }}
+                                    </div>
+                                    <div style="padding: 15px;">
+                                        <h3 style="font-size: 1.2rem; margin-bottom: 10px; color: #1a3c6b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ article.title }}</h3>
+                                        <p style="color: #777; font-size: 0.9rem; margin-bottom: 15px;">تاريخ النشر {{ article.created_at.strftime('%Y-%m-%d') }}</p>
+                                        <a href="/articles#{{ article.id }}" style="display: inline-block; background-color: #d4af37; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-size: 0.9rem;">قراءة المقال</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        {% endfor %}
+                    </tr>
+                </table>
+            </div>
             {% else %}
             <div style="text-align: center; padding: 50px 0; color: #666;">
                 <i class="fas fa-newspaper" style="font-size: 40px; color: #d4af37; margin-bottom: 15px; display: block;"></i>
@@ -480,10 +482,11 @@
                 @media (max-width: 768px) {
                     table {
                         display: block;
+                        width: 100%;
                     }
-                    tr {
+                    tbody, tr {
                         display: block;
-                        margin-bottom: 20px;
+                        width: 100%;
                     }
                     td {
                         display: block;
