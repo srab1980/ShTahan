@@ -209,6 +209,16 @@ def login_form():
     # Always serve the login form through this route, regardless of authentication status
     return render_template('login_form.html')
 
+@app.route('/signup-form')
+def signup_form():
+    # Serve the signup form
+    return render_template('signup_form.html')
+
+@app.route('/password-reset-form')
+def password_reset_form():
+    # Serve the password reset form
+    return render_template('password_reset_form.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # For GET requests, redirect to the login form
@@ -249,6 +259,111 @@ def login():
 def logout():
     logout_user()
     return redirect('/')
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    data = request.json
+    
+    # Validate required fields
+    if not all(key in data for key in ['username', 'email', 'password']):
+        return jsonify({'error': 'يرجى تقديم جميع المعلومات المطلوبة'}), 400
+    
+    # Validate password length
+    if len(data['password']) < 8:
+        return jsonify({'error': 'يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل'}), 400
+    
+    # Check if username or email already exists
+    if User.query.filter_by(username=data['username']).first():
+        return jsonify({'error': 'اسم المستخدم موجود بالفعل'}), 400
+    
+    if User.query.filter_by(email=data['email']).first():
+        return jsonify({'error': 'البريد الإلكتروني موجود بالفعل'}), 400
+    
+    # Create new user (as regular user by default)
+    new_user = User(
+        username=data['username'],
+        email=data['email'],
+        role='user',  # Default role for new signups
+        active=True   # Active by default
+    )
+    
+    new_user.set_password(data['password'])
+    
+    db.session.add(new_user)
+    db.session.commit()
+    
+    return jsonify({
+        'message': 'تم إنشاء الحساب بنجاح', 
+        'user': {
+            'id': new_user.id,
+            'username': new_user.username,
+            'role': new_user.role
+        }
+    }), 201
+
+# Password reset endpoints
+@app.route('/password-reset/request', methods=['POST'])
+def password_reset_request():
+    data = request.json
+    
+    if 'email' not in data:
+        return jsonify({'error': 'البريد الإلكتروني مطلوب'}), 400
+    
+    user = User.query.filter_by(email=data['email']).first()
+    
+    if not user:
+        # For security reasons, we still return success even if email doesn't exist
+        # This prevents user enumeration attacks
+        return jsonify({'message': 'إذا كان البريد الإلكتروني موجوداً في نظامنا، فستتم إرسال تعليمات إعادة تعيين كلمة المرور.'}), 200
+    
+    # In a real application, you would:
+    # 1. Generate a secure token
+    # 2. Store the token and expiry in the database
+    # 3. Send an email with reset link
+    
+    # For this demo, we'll simulate success
+    return jsonify({'message': 'تم إرسال تعليمات إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.'}), 200
+
+@app.route('/password-reset/verify', methods=['POST'])
+def password_reset_verify():
+    data = request.json
+    
+    if not all(key in data for key in ['email', 'code']):
+        return jsonify({'error': 'البريد الإلكتروني ورمز التحقق مطلوبان'}), 400
+    
+    # In a real application, you would:
+    # 1. Verify the token against what's stored in the database
+    # 2. Check if it's expired
+    
+    # For this demo, we'll simulate success if code is '123456'
+    if data['code'] == '123456':
+        return jsonify({'message': 'تم التحقق من الرمز بنجاح'}), 200
+    else:
+        return jsonify({'error': 'رمز التحقق غير صالح أو منتهي الصلاحية'}), 400
+
+@app.route('/password-reset/reset', methods=['POST'])
+def password_reset_confirm():
+    data = request.json
+    
+    if not all(key in data for key in ['email', 'password']):
+        return jsonify({'error': 'البريد الإلكتروني وكلمة المرور الجديدة مطلوبان'}), 400
+    
+    # Validate password length
+    if len(data['password']) < 8:
+        return jsonify({'error': 'يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل'}), 400
+    
+    user = User.query.filter_by(email=data['email']).first()
+    
+    if not user:
+        return jsonify({'error': 'المستخدم غير موجود'}), 404
+    
+    # In a real application, you would verify the token again
+    
+    # Update the user's password
+    user.set_password(data['password'])
+    db.session.commit()
+    
+    return jsonify({'message': 'تم تغيير كلمة المرور بنجاح'}), 200
 
 @app.route('/api/auth-status')
 def auth_status():
