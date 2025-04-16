@@ -113,7 +113,7 @@ def generate_unique_filename(filename):
 
 @app.route('/')
 def index():
-    # جلب أحدث 6 مقالات للصفحة الرئيسية
+    # جلب أحدث 6 مقالات للصفحة الرئيسية (3 مقالات في كل صف، صفين فقط)
     latest_articles = Article.query.order_by(Article.created_at.desc()).limit(6).all()
     return render_template('index.html', articles=latest_articles, now=datetime.now())
 
