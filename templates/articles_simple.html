@@ -3,7 +3,6 @@
 {% block title %}مقالات الشيخ مصطفى الطحان{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="/static/css/mobile.css">
 <style>
     .articles-container {
         margin-top: 6rem;
@@ -476,17 +475,30 @@
         <div class="filter-tags" id="filter-tags"></div>
         
         <!-- Advanced Filters -->
-        <!-- تم نقل أنماط الفلاتر إلى ملف mobile.css -->
         <style>
-            /* أنماط المظهر الأساسية للفلاتر، أما التخطيط فموجود في ملف mobile.css */
-            .article-filter-group label {
+            /* نفس أنماط الفلاتر من صفحة الكتب التي تعمل بشكل صحيح */
+            .books-filters {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                gap: 1rem;
+            }
+            
+            .filter-group {
+                display: flex;
+                flex-direction: column;
+                min-width: 200px;
+                flex: 1;
+            }
+            
+            .filter-group label {
                 font-weight: bold;
                 margin-bottom: 0.5rem;
                 color: #1a2a3a;
                 text-align: right;
             }
             
-            .article-filter-group select {
+            .filter-group select {
                 padding: 0.5rem;
                 border: 1px solid #ddd;
                 border-radius: 6px;
@@ -494,15 +506,27 @@
                 direction: rtl;
             }
             
-            .article-filter-group select:focus {
+            .filter-group select:focus {
                 border-color: #1a2a3a;
                 outline: none;
                 box-shadow: 0 0 0 2px rgba(26, 42, 58, 0.2);
             }
+            
+            /* تعديلات للأجهزة المحمولة */
+            @media (max-width: 768px) {
+                .books-filters {
+                    flex-direction: column;
+                }
+                
+                .filter-group {
+                    width: 100%;
+                }
+            }
         </style>
         
-        <div class="articles-filters">
-            <div class="article-filter-group">
+        <!-- تغيير اسم الفلتر class ليتوافق مع صفحة الكتب الناجحة -->
+        <div class="books-filters">
+            <div class="filter-group">
                 <label for="language-filter">اللغة</label>
                 <select id="language-filter">
                     <option value="all">جميع اللغات</option>
@@ -512,7 +536,7 @@
                 </select>
             </div>
             
-            <div class="article-filter-group">
+            <div class="filter-group">
                 <label for="category-filter">التصنيف</label>
                 <select id="category-filter">
                     <option value="all">جميع التصنيفات</option>
@@ -522,7 +546,7 @@
                 </select>
             </div>
             
-            <div class="article-filter-group">
+            <div class="filter-group">
                 <label for="sort-options">الترتيب</label>
                 <select id="sort-options">
                     <option value="newest">الأحدث</option>
