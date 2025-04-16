@@ -412,90 +412,148 @@
 
             </div>
             
-            <div class="articles-container" style="width: 100%; padding: 20px 0; text-align: center;">
-                <table style="margin: 0 auto; border-collapse: separate; border-spacing: 25px; width: 100%; max-width: 1600px;">
-                    <tbody>
-                        {% if articles %}
-                        <!-- الصف الأول - 3 مقالات -->
-                        <tr>
-                            {% for article in articles[:3] %}
-                            <td style="width: 33.33%; vertical-align: top; padding: 0; background-color: white; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
-                                <div style="transition: transform 0.3s, box-shadow 0.3s;" 
-                                     onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 20px rgba(0,0,0,0.15)';" 
-                                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 10px rgba(0,0,0,0.1)'">
-                                    {% if article.image %}
-                                    <div style="height: 220px; overflow: hidden;">
-                                        <img src="{{ article.image }}" alt="{{ article.title }}" style="width: 100%; height: 100%; object-fit: cover;">
-                                    </div>
-                                    {% else %}
-                                    <div style="height: 220px; background-color: #1a3c6b; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fas fa-newspaper" style="font-size: 40px; color: #d4af37;"></i>
-                                    </div>
-                                    {% endif %}
-                                    <div style="padding: 20px; text-align: right;">
-                                        <h3 style="font-size: 1.3rem; margin-bottom: 15px; color: #1a3c6b;">{{ article.title }}</h3>
-                                        <p style="font-size: 1rem; color: #666; margin-bottom: 20px; line-height: 1.5; max-height: 75px; overflow: hidden;">{{ article.summary }}</p>
-                                        <a href="/articles#{{ article.id }}" style="display: inline-block; padding: 10px 20px; background-color: #d4af37; color: white; text-decoration: none; border-radius: 20px; font-size: 1rem; transition: background-color 0.3s;">قراءة المزيد</a>
-                                    </div>
-                                </div>
-                            </td>
-                            {% endfor %}
-                        </tr>
-                        
-                        <!-- الصف الثاني - 3 مقالات أخرى (مسافة 35px بين الصفوف) -->
-                        <tr style="height: 35px;"></tr>
-                        <tr>
-                            {% for article in articles[3:6] %}
-                            <td style="width: 33.33%; vertical-align: top; padding: 0; background-color: white; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
-                                <div style="transition: transform 0.3s, box-shadow 0.3s;" 
-                                     onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 20px rgba(0,0,0,0.15)';" 
-                                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 10px rgba(0,0,0,0.1)'">
-                                    {% if article.image %}
-                                    <div style="height: 220px; overflow: hidden;">
-                                        <img src="{{ article.image }}" alt="{{ article.title }}" style="width: 100%; height: 100%; object-fit: cover;">
-                                    </div>
-                                    {% else %}
-                                    <div style="height: 220px; background-color: #1a3c6b; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fas fa-newspaper" style="font-size: 40px; color: #d4af37;"></i>
-                                    </div>
-                                    {% endif %}
-                                    <div style="padding: 20px; text-align: right;">
-                                        <h3 style="font-size: 1.3rem; margin-bottom: 15px; color: #1a3c6b;">{{ article.title }}</h3>
-                                        <p style="font-size: 1rem; color: #666; margin-bottom: 20px; line-height: 1.5; max-height: 75px; overflow: hidden;">{{ article.summary }}</p>
-                                        <a href="/articles#{{ article.id }}" style="display: inline-block; padding: 10px 20px; background-color: #d4af37; color: white; text-decoration: none; border-radius: 20px; font-size: 1rem; transition: background-color 0.3s;">قراءة المزيد</a>
-                                    </div>
-                                </div>
-                            </td>
-                            {% endfor %}
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="3" style="text-align: center; padding: 30px; color: #666;">
-                                <i class="fas fa-newspaper" style="font-size: 40px; color: #d4af37; margin-bottom: 15px; display: block;"></i>
-                                <h3 style="font-size: 1.4rem; margin-bottom: 10px;">لا توجد مقالات متاحة حاليًا</h3>
-                                <p style="font-size: 1.1rem; color: #777;">سيتم إضافة مقالات جديدة قريبًا</p>
-                            </td>
-                        </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+            <div style="padding: 20px 0; width: 100%;">
                 <style>
+                    .articles-wrapper {
+                        width: 100%;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                    }
+                    .articles-row {
+                        display: flex;
+                        justify-content: center;
+                        flex-wrap: wrap;
+                        width: 100%;
+                        margin-bottom: 40px;
+                    }
+                    .article-item {
+                        flex: 0 0 calc(33% - 30px);
+                        min-width: 300px;
+                        margin: 15px;
+                        background-color: white;
+                        border-radius: 8px;
+                        overflow: hidden;
+                        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+                        transition: transform 0.3s, box-shadow 0.3s;
+                    }
+                    .article-item:hover {
+                        transform: translateY(-5px);
+                        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+                    }
+                    .article-image {
+                        height: 250px;
+                        overflow: hidden;
+                    }
+                    .article-image img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+                    .article-placeholder {
+                        height: 250px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background-color: #1a3c6b;
+                    }
+                    .article-content {
+                        padding: 25px;
+                        text-align: right;
+                    }
+                    .article-title {
+                        font-size: 1.4rem;
+                        margin-bottom: 15px;
+                        color: #1a3c6b;
+                    }
+                    .article-summary {
+                        font-size: 1rem;
+                        color: #666;
+                        margin-bottom: 20px;
+                        line-height: 1.6;
+                        max-height: 80px;
+                        overflow: hidden;
+                    }
+                    .read-more-btn {
+                        display: inline-block;
+                        padding: 10px 25px;
+                        background-color: #d4af37;
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 25px;
+                        font-size: 1.1rem;
+                        transition: background-color 0.3s;
+                    }
+                    .read-more-btn:hover {
+                        background-color: #c29b29;
+                    }
+                    
+                    @media (max-width: 1200px) {
+                        .article-item {
+                            flex: 0 0 calc(50% - 30px);
+                        }
+                    }
                     @media (max-width: 768px) {
-                        .articles-container table {
-                            display: block;
-                            width: 100%;
-                        }
-                        .articles-container tbody, .articles-container tr {
-                            display: block;
-                            width: 100%;
-                        }
-                        .articles-container td {
-                            display: block;
-                            width: auto !important;
-                            margin-bottom: 20px;
+                        .article-item {
+                            flex: 0 0 calc(100% - 30px);
+                            max-width: 500px;
                         }
                     }
                 </style>
+                
+                {% if articles %}
+                <div class="articles-wrapper">
+                    <!-- الصف الأول - المقالات الثلاثة الأولى -->
+                    <div class="articles-row">
+                        {% for article in articles[:3] %}
+                            <div class="article-item">
+                                {% if article.image %}
+                                <div class="article-image">
+                                    <img src="{{ article.image }}" alt="{{ article.title }}">
+                                </div>
+                                {% else %}
+                                <div class="article-placeholder">
+                                    <i class="fas fa-newspaper" style="font-size: 50px; color: #d4af37;"></i>
+                                </div>
+                                {% endif %}
+                                <div class="article-content">
+                                    <h3 class="article-title">{{ article.title }}</h3>
+                                    <p class="article-summary">{{ article.summary }}</p>
+                                    <a href="/articles#{{ article.id }}" class="read-more-btn">قراءة المزيد</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- الصف الثاني - المقالات الثلاثة التالية -->
+                    <div class="articles-row">
+                        {% for article in articles[3:6] %}
+                            <div class="article-item">
+                                {% if article.image %}
+                                <div class="article-image">
+                                    <img src="{{ article.image }}" alt="{{ article.title }}">
+                                </div>
+                                {% else %}
+                                <div class="article-placeholder">
+                                    <i class="fas fa-newspaper" style="font-size: 50px; color: #d4af37;"></i>
+                                </div>
+                                {% endif %}
+                                <div class="article-content">
+                                    <h3 class="article-title">{{ article.title }}</h3>
+                                    <p class="article-summary">{{ article.summary }}</p>
+                                    <a href="/articles#{{ article.id }}" class="read-more-btn">قراءة المزيد</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 50px 0; color: #666;">
+                    <i class="fas fa-newspaper" style="font-size: 60px; color: #d4af37; margin-bottom: 20px; display: block;"></i>
+                    <h3 style="font-size: 1.6rem; margin-bottom: 15px;">لا توجد مقالات متاحة حاليًا</h3>
+                    <p style="font-size: 1.2rem; color: #777;">سيتم إضافة مقالات جديدة قريبًا</p>
+                </div>
+                {% endif %}
             </div>
         </div>
     </section>
