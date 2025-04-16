@@ -52,6 +52,9 @@
                         <li><a href="/#articles">المقالات</a></li>
                         <li><a href="/#gallery">معرض الصور</a></li>
                         <li><a href="/#contact">تواصل معنا</a></li>
+                        <li id="change-password-menu-item" style="display: none;">
+                            <a href="/change-password-form"><i class="fas fa-key"></i> تغيير كلمة المرور</a>
+                        </li>
                         <li class="auth-item" id="login-button-container">
                             <!-- سيتم تحميل زر تسجيل الدخول هنا بشكل مستقل -->
                         </li>
@@ -140,7 +143,13 @@
     }
 
     .user-menu:hover .user-menu-dropdown {
-        display: block;
+        display: block !important;
+    }
+    
+    /* تحسين تفاعلية القائمة المنسدلة */
+    .user-menu-toggle:focus + .user-menu-dropdown,
+    .user-menu-dropdown:hover {
+        display: block !important;
     }
 
     .user-menu-item {
@@ -280,6 +289,9 @@
 
                     // تحديث عنصر تسجيل الدخول بناءً على حالة المستخدم
                     if (data.authenticated) {
+                        // المستخدم مسجل دخول - إظهار رابط تغيير كلمة المرور في القائمة الرئيسية
+                        document.getElementById('change-password-menu-item').style.display = 'block';
+                        
                         // المستخدم مسجل دخول
                         let userMenuDropdownItems = '';
 
@@ -311,6 +323,9 @@
                             </div>
                         `;
                     } else {
+                        // المستخدم غير مسجل دخول - إخفاء رابط تغيير كلمة المرور
+                        document.getElementById('change-password-menu-item').style.display = 'none';
+                        
                         // المستخدم غير مسجل دخول
                         loginButtonContainer.innerHTML = `
                             <a href="/login-form?check_auth=false" class="nav-link auth-link">
