@@ -901,6 +901,25 @@ def get_user_activities():
     activities = UserActivity.query.filter_by(user_id=current_user.id).order_by(UserActivity.created_at.desc()).limit(50).all()
     return jsonify({'activities': [activity.to_dict() for activity in activities], 'authenticated': True})
 
+@app.route('/api/admin/recent-activities')
+@login_required
+@editor_required
+def get_recent_activities():
+    """Get recent activities for all users - for admin dashboard"""
+    # Fetch the 15 most recent activities from all users
+    activities = UserActivity.query.order_by(UserActivity.created_at.desc()).limit(15).all()
+    
+    # Fetch user information for each activity
+    activity_list = []
+    for activity in activities:
+        user = User.query.get(activity.user_id)
+        if user:
+            activity_dict = activity.to_dict()
+            activity_dict['username'] = user.username
+            activity_list.append(activity_dict)
+    
+    return jsonify({'activities': activity_list})
+
 @app.route('/api/user/record-activity', methods=['POST'])
 def record_user_activity():
     """Record a new user activity"""

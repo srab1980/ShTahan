@@ -88,8 +88,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // For now, set to 0 or hide this stat
             document.getElementById('messagesCount').textContent = "0";
             
-            // Generate some recent activity (in a real app, this would come from an API)
-            generateRecentActivity(booksData.books, articlesData.articles, galleryData.images);
+            // Load real user activities from the API
+            loadRecentActivities();
         } catch (error) {
             console.error('Error loading dashboard stats:', error);
         }
@@ -188,6 +188,78 @@ document.addEventListener('DOMContentLoaded', function() {
             
             activityList.appendChild(activityItem);
         });
+    }
+    
+    /**
+     * Load recent activities from the API
+     */
+    async function loadRecentActivities() {
+        try {
+            const activityList = document.getElementById('activityList');
+            
+            // Fetch recent activities from the API
+            const response = await fetch('/api/admin/recent-activities');
+            const data = await response.json();
+            
+            // Clear existing items
+            activityList.innerHTML = '';
+            
+            // If no activities, show a message
+            if (!data.activities || data.activities.length === 0) {
+                const emptyItem = document.createElement('li');
+                emptyItem.className = 'activity-item';
+                emptyItem.innerHTML = '<p>لا توجد نشاطات حديثة</p>';
+                activityList.appendChild(emptyItem);
+                return;
+            }
+            
+            // Add activities to the list
+            data.activities.forEach(activity => {
+                const activityItem = document.createElement('li');
+                activityItem.className = 'activity-item';
+                
+                // Format timestamp
+                const timestamp = new Date(activity.created_at);
+                const timeAgo = formatTimeAgo(timestamp);
+                
+                // Get icon based on activity type
+                let icon = 'fas fa-star';
+                let actionText = 'قام بنشاط';
+                
+                if (activity.activity_type.includes('book')) {
+                    icon = 'fas fa-book';
+                    actionText = activity.activity_type === 'view_book' ? 'شاهد كتاب' : 'قام بتنزيل كتاب';
+                } else if (activity.activity_type.includes('article')) {
+                    icon = 'fas fa-newspaper';
+                    actionText = 'قرأ مقال';
+                } else if (activity.activity_type.includes('gallery')) {
+                    icon = 'fas fa-image';
+                    actionText = 'شاهد صورة';
+                } else if (activity.activity_type === 'login') {
+                    icon = 'fas fa-sign-in-alt';
+                    actionText = 'قام بتسجيل الدخول';
+                }
+                
+                activityItem.innerHTML = `
+                    <div class="activity-icon">
+                        <i class="${icon}"></i>
+                    </div>
+                    <div class="activity-details">
+                        <h4>${activity.username}</h4>
+                        <p>${actionText}: ${activity.content_title || ''}</p>
+                    </div>
+                    <div class="activity-time">${timeAgo}</div>
+                `;
+                
+                activityList.appendChild(activityItem);
+            });
+        } catch (error) {
+            console.error('Error loading recent activities:', error);
+            
+            // Show error message
+            const activityList = document.getElementById('activityList');
+            activityList.innerHTML = '<li class="activity-item"><p>تعذر تحميل النشاطات الأخيرة</p></li>';
+        }
     }
     
     /**
