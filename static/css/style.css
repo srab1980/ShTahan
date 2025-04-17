@@ -231,10 +231,8 @@ img {
 }
 
 .btn-login {
-    background-color: var(--gold-color);
-    color: var(--white-color) !important;
+    color: var(--gold-color) !important;
     padding: 8px 16px;
-    border-radius: 4px;
     margin-right: 0;
     transition: all 0.2s ease;
     border: none;
@@ -253,7 +251,7 @@ img {
 }
 
 .btn-login:hover {
-    background-color: #d4af37;
+    color: var(--main-color) !important;
 }
 
 .menu-toggle {
