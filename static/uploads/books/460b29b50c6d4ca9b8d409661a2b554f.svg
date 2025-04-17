@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600">
+  <!-- خلفية الكتاب -->
+  <rect x="0" y="0" width="400" height="600" fill="#2a3a1a" />
+  
+  <!-- زخرفة الإطار الذهبي -->
+  <rect x="10" y="10" width="380" height="580" fill="none" stroke="#d4af37" stroke-width="3" />
+  
+  <!-- عنوان الكتاب -->
+  <text x="200" y="200" font-family="Arial, sans-serif" font-size="48" text-anchor="middle" fill="#d4af37">المبادرة</text>
+  
+  <!-- رمز الكتاب -->
+  <g transform="translate(200, 320) scale(2)">
+    <path d="M12 5v8.75c0 .97-.78 1.75-1.75 1.75h-6.5c-.97 0-1.75-.78-1.75-1.75v-8.75h10zm0-1h-10v-1c0-.55.45-1 1-1h8c.55 0 1 .45 1 1v1zm-4.5 2c-.28 0-.5.22-.5.5v5c0 .28.22.5.5.5s.5-.22.5-.5v-5c0-.28-.22-.5-.5-.5z" fill="#d4af37" />
+  </g>
+  
+  <!-- رمز سهم -->
+  <g transform="translate(200, 400)">
+    <polyline points="-30,0 30,0" stroke="#d4af37" stroke-width="6" />
+    <polyline points="15,-15 30,0 15,15" stroke="#d4af37" stroke-width="6" fill="none" />
+  </g>
+</svg>
