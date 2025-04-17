@@ -695,7 +695,7 @@
                 
                 bookCard.innerHTML = `
                     <div class="book-cover">
-                        <img src="${book.cover}" alt="${book.title}" loading="lazy" onerror="this.src='/static/img/default-book-cover.svg'; this.onerror=null; console.error('فشل تحميل الصورة من الرابط:', '${book.cover}')">
+                        <img src="${book.cover}" alt="${book.title}" loading="lazy">
                     </div>
                     <div class="book-details">
                         <h3 class="book-title">${title}</h3>
@@ -1034,7 +1034,7 @@
                     <div class="modal-body">
                         <div class="book-detail-grid">
                             <div class="book-detail-image">
-                                <img src="${book.cover}" alt="${book.title}" class="book-detail-cover" onerror="this.src='/static/img/default-book-cover.svg'; this.onerror=null;">
+                                <img src="${book.cover}" alt="${book.title}" class="book-detail-cover">
                             </div>
                             <div class="book-detail-info">
                                 <div class="book-detail-meta">
