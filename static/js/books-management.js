@@ -67,6 +67,27 @@ document.addEventListener('DOMContentLoaded', function() {
         coverUpload.addEventListener('change', handleCoverUpload);
     }
     
+    // Add event listener for cover URL input
+    const coverUrlInput = document.getElementById('cover');
+    if (coverUrlInput) {
+        coverUrlInput.addEventListener('input', function() {
+            const url = this.value.trim();
+            if (url) {
+                // Show preview
+                if (coverPreview) {
+                    coverPreview.innerHTML = `
+                        <img src="${url}" alt="Cover Preview" style="max-width: 100%; max-height: 150px; border-radius: 5px;" onerror="this.style.display='none'">
+                    `;
+                }
+            } else {
+                // Clear preview
+                if (coverPreview) {
+                    coverPreview.innerHTML = '';
+                }
+            }
+        });
+    }
+    
     if (pdfUpload) {
         pdfUpload.addEventListener('change', handlePdfUpload);
     }
