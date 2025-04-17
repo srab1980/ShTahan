@@ -311,11 +311,22 @@
                             </a>
                         `;
 
+                        // Add control panel link for admin/editor
+                        if (data.role === 'admin' || data.role === 'editor') {
+                            userMenuDropdownItems = `
+                                <a href="/admin" class="user-menu-item">
+                                    <i class="fas fa-cogs"></i> لوحة التحكم
+                                </a>
+                                ${userMenuDropdownItems}
+                            `;
+                        }
+                        
                         loginButtonContainer.innerHTML = `
                             <div class="user-menu nav-link">
                                 <a href="#" class="user-menu-toggle">
                                     <i class="fas fa-user-circle"></i> 
                                     <span>${data.username}</span>
+                                    ${(data.role === 'admin' || data.role === 'editor') ? '<span class="role-badge">' + data.role + '</span>' : ''}
                                 </a>
                                 <div class="user-menu-dropdown">
                                     ${userMenuDropdownItems}
