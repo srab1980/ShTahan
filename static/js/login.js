@@ -52,14 +52,30 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             
             if (response.ok) {
-                // Successful login, redirect based on user role
-                if (data.user && data.user.role === 'admin') {
-                    window.location.href = '/admin';
-                } else if (data.user && data.user.role === 'editor') {
-                    window.location.href = '/admin';
+                // Show success notification
+                const notification = document.createElement('div');
+                notification.className = 'notification success show';
+                notification.style.position = 'fixed';
+                notification.style.top = '20px';
+                notification.style.right = '20px';
+                notification.style.padding = '15px';
+                notification.style.backgroundColor = '#28a745';
+                notification.style.color = 'white';
+                notification.style.borderRadius = '4px';
+                notification.style.zIndex = '9999';
+                
+                if (data.user && (data.user.role === 'admin' || data.user.role === 'editor')) {
+                    notification.textContent = `مرحباً ${data.user.username}! تم تسجيل دخولك بنجاح`;
                 } else {
-                    window.location.href = '/';
+                    notification.textContent = 'تم تسجيل دخولك بنجاح';
                 }
+                
+                document.body.appendChild(notification);
+                
+                // Redirect after delay
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1500);
             } else {
                 // Show error message
                 errorMessage.textContent = data.error || 'Invalid username or password';
