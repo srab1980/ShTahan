@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
             row.innerHTML = `
                 <td>
                     <img src="${book.cover}" alt="${book.title}" class="book-cover-thumbnail" 
-                        onerror="this.src='/static/img/default-book-cover.jpg'; this.onerror=null;">
+                        onerror="this.src='/static/img/default-book-cover.svg'; this.onerror=null;">
                 </td>
                 <td>${book.title}</td>
                 <td>${book.language}</td>
@@ -298,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <body>
                         <div class="book-container">
                             <div class="book-cover">
-                                <img src="${book.cover}" alt="${book.title}" onerror="this.src='/static/img/default-book-cover.jpg'; this.onerror=null;">
+                                <img src="${book.cover}" alt="${book.title}" onerror="this.src='/static/img/default-book-cover.svg'; this.onerror=null;">
                             </div>
                             <div class="book-info">
                                 <h1>${book.title}</h1>
@@ -411,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (coverPreview) {
                     coverPreview.innerHTML = `
                         <img src="${book.cover}" alt="${book.title}" style="max-width: 100%; max-height: 150px; border-radius: 5px;" 
-                            onerror="this.src='/static/img/default-book-cover.jpg'; this.onerror=null;">
+                            onerror="this.src='/static/img/default-book-cover.svg'; this.onerror=null;">
                     `;
                 }
                 
@@ -594,7 +594,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Show preview
                 if (coverPreview) {
                     coverPreview.innerHTML = `
-                        <img src="${result.file_url}" alt="Cover Preview" style="max-width: 100%; max-height: 150px; border-radius: 5px;">
+                        <img src="${result.file_url}" alt="Cover Preview" style="max-width: 100%; max-height: 150px; border-radius: 5px;"
+                            onerror="this.src='/static/img/default-book-cover.svg'; this.onerror=null;">
                     `;
                 }
                 
