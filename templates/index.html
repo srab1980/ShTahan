@@ -703,7 +703,14 @@
                         // المستخدم مسجل دخول
                         let userMenuDropdownItems = '';
                         
-                        // لا نضيف رابط رحلتي التعليمية هنا أبداً - فهو موجود في القائمة الرئيسية
+                        // إضافة رابط لوحة التحكم للمدير أو المحرر
+                        if (data.role === 'admin' || data.role === 'editor') {
+                            userMenuDropdownItems += `
+                                <a href="/admin-dashboard" class="user-menu-item admin-link">
+                                    <i class="fas fa-tachometer-alt"></i> لوحة التحكم
+                                </a>
+                            `;
+                        }
                         
                         // إضافة رابط تسجيل الخروج دائماً
                         userMenuDropdownItems += `
@@ -717,12 +724,76 @@
                                 <a href="#" class="user-menu-toggle">
                                     <i class="fas fa-user-circle"></i> 
                                     <span>${data.username}</span>
+                                    ${(data.role === 'admin' || data.role === 'editor') ? '<small style="display: block; font-size: 0.7rem; opacity: 0.8;">' + (data.role === 'admin' ? 'مدير' : 'محرر') + '</small>' : ''}
                                 </a>
                                 <div class="user-menu-dropdown">
                                     ${userMenuDropdownItems}
                                 </div>
                             </div>
                         `;
+                        
+                        // إضافة نمط CSS للقائمة المنسدلة
+                        if (!document.getElementById('user-menu-styles')) {
+                            const styleEl = document.createElement('style');
+                            styleEl.id = 'user-menu-styles';
+                            styleEl.textContent = `
+                                .user-menu {
+                                    position: relative;
+                                }
+                                .user-menu-toggle {
+                                    display: flex;
+                                    align-items: center;
+                                    color: #fff;
+                                    text-decoration: none;
+                                    padding: 5px 10px;
+                                    border-radius: 4px;
+                                    transition: background-color 0.3s;
+                                }
+                                .user-menu-toggle:hover {
+                                    background-color: rgba(255, 255, 255, 0.1);
+                                }
+                                .user-menu-toggle i {
+                                    font-size: 1.2rem;
+                                    margin-left: 5px;
+                                }
+                                .user-menu-dropdown {
+                                    position: absolute;
+                                    top: 100%;
+                                    left: 0;
+                                    background-color: white;
+                                    border-radius: 4px;
+                                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                                    min-width: 180px;
+                                    z-index: 1000;
+                                    display: none;
+                                    overflow: hidden;
+                                }
+                                .user-menu:hover .user-menu-dropdown {
+                                    display: block;
+                                }
+                                .user-menu-item {
+                                    display: block;
+                                    padding: 10px 15px;
+                                    color: #333;
+                                    text-decoration: none;
+                                    transition: background-color 0.3s;
+                                    text-align: right;
+                                }
+                                .user-menu-item:hover {
+                                    background-color: #f5f5f5;
+                                }
+                                .admin-link {
+                                    border-bottom: 1px solid #eee;
+                                }
+                                .admin-link i {
+                                    color: #0f2d3e;
+                                }
+                                .logout-link i {
+                                    color: #dc3545;
+                                }
+                            `;
+                            document.head.appendChild(styleEl);
+                        }
                     } else {
                         // المستخدم غير مسجل دخول
                         loginContainer.innerHTML = `
