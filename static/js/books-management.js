@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (coverPreview) {
                     coverPreview.innerHTML = `
                         <img src="${url}" alt="Cover Preview" style="max-width: 100%; max-height: 150px; border-radius: 5px;" 
-                            onerror="this.src='/static/img/default-book-cover.jpg'; this.onerror=null; console.error('فشل تحميل الصورة من الرابط:', '${url}')">
+                            onerror="this.src='/static/img/default-book-cover.svg'; this.onerror=null; console.error('فشل تحميل الصورة من الرابط:', '${url}')">
                     `;
                     
                     // تسجيل محاولة تحميل الصورة
