@@ -8,7 +8,7 @@ These models are used by Flask-SQLAlchemy to interact with the database.
 from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from app import db
+from database import db
 import json
 
 
@@ -206,7 +206,7 @@ class User(UserMixin, db.Model):
         username (str): The user's unique username.
         email (str): The user's unique email address.
         password_hash (str): The hashed password for the user.
-        role (str): The user's role ('admin', 'editor', or 'user').
+        role (str): The user's role ('admin', 'editor', 'user').
         created_at (datetime): The timestamp when the user account was created.
         last_login (datetime): The timestamp of the user's last login.
         active (bool): Whether the user's account is active.
