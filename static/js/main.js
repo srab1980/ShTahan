@@ -1,144 +1,107 @@
 /**
- * Main JavaScript file for Sheikh Mustafa Al-Tahhan website
+ * @file Main JavaScript file for the Sheikh Mustafa Al-Tahhan website.
+ * @description This file handles global site functionality, including mobile navigation,
+ * smooth scrolling, header effects, and the contact form.
  */
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Login Button Functionality - Direct JavaScript redirect to login page
-    const loginButton = document.getElementById('loginButton');
-    if (loginButton) {
-        loginButton.addEventListener('click', function() {
-            window.location.href = '/login';
-        });
+/**
+ * Toggles the mobile navigation menu.
+ * @param {HTMLElement} menuToggle - The button element that toggles the menu.
+ * @param {HTMLElement} navMenu - The navigation menu element.
+ * @param {HTMLElement} navigation - The main navigation container.
+ */
+function toggleMobileMenu(menuToggle, navMenu, navigation) {
+    const expanded = navMenu.classList.toggle('active');
+    navigation.classList.toggle('active');
+    menuToggle.setAttribute('aria-expanded', expanded);
+    const icon = menuToggle.querySelector('i');
+    if (expanded) {
+        icon.classList.replace('fa-bars', 'fa-times');
+        document.body.style.overflow = 'hidden';
+    } else {
+        icon.classList.replace('fa-times', 'fa-bars');
+        document.body.style.overflow = '';
     }
-    
-    // Enhanced Mobile menu toggle with animation and improved accessibility
+    console.log("Menu state toggled:", expanded ? "open" : "closed");
+}
+
+/**
+ * Closes the mobile navigation menu.
+ * @param {HTMLElement} menuToggle - The button element that toggles the menu.
+ * @param {HTMLElement} navMenu - The navigation menu element.
+ * @param {HTMLElement} navigation - The main navigation container.
+ */
+function closeMobileMenu(menuToggle, navMenu, navigation) {
+    navMenu.classList.remove('active');
+    navigation.classList.remove('active');
+    menuToggle.setAttribute('aria-expanded', 'false');
+    const icon = menuToggle.querySelector('i');
+    if (icon) {
+        icon.classList.replace('fa-times', 'fa-bars');
+    }
+    document.body.style.overflow = '';
+    console.log("Menu closed");
+}
+
+/**
+ * Initializes the mobile menu functionality.
+ */
+function setupMobileMenu() {
     const menuToggle = document.querySelector('.menu-toggle');
     const navMenu = document.querySelector('.nav-menu');
     const navigation = document.querySelector('.navigation');
-    
-    if (menuToggle && navMenu && navigation) {
-        console.log("Mobile menu elements found, setting up interactions");
-        
-        // Toggle menu on hamburger click
-        menuToggle.addEventListener('click', function(e) {
-            e.stopPropagation(); // Prevent event bubbling
-            
-            // Toggle classes on both menu and navigation for layered effects
-            navMenu.classList.toggle('active');
-            navigation.classList.toggle('active');
-            
-            // Update ARIA attributes for accessibility
-            const expanded = navMenu.classList.contains('active');
-            menuToggle.setAttribute('aria-expanded', expanded);
-            
-            // Change icon based on menu state
-            const icon = menuToggle.querySelector('i');
-            if (expanded) {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-                document.body.style.overflow = 'hidden'; // Prevent scrolling when menu is open
-            } else {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-                document.body.style.overflow = ''; // Restore scrolling
-            }
-            
-            console.log("Menu state toggled:", expanded ? "open" : "closed");
-        });
-    } else {
+
+    if (!menuToggle || !navMenu || !navigation) {
         console.warn("Mobile menu elements not found in document");
+        return;
     }
-    
-    // Close menu when clicking outside
-    document.addEventListener('click', function(event) {
-        // Check if the navigation exists and menu is open
-        if (navigation && navMenu && navMenu.classList.contains('active')) {
-            // Check if click is outside the navigation and menu toggle
-            const isClickInside = navigation.contains(event.target) || 
-                                menuToggle.contains(event.target);
-            
+
+    menuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMobileMenu(menuToggle, navMenu, navigation);
+    });
+
+    document.addEventListener('click', (event) => {
+        if (navMenu.classList.contains('active')) {
+            const isClickInside = navigation.contains(event.target) || menuToggle.contains(event.target);
             if (!isClickInside) {
-                // Close the menu
-                navMenu.classList.remove('active');
-                navigation.classList.remove('active');
-                menuToggle.setAttribute('aria-expanded', 'false');
-                
-                // Reset icon
-                const icon = menuToggle.querySelector('i');
-                if (icon) {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-                
-                // Restore scrolling
-                document.body.style.overflow = '';
-                
-                console.log("Menu closed by outside click");
+                closeMobileMenu(menuToggle, navMenu, navigation);
             }
         }
     });
-    
-    // Close menu when clicking on a nav link (for better mobile experience)
+
     const navLinks = document.querySelectorAll('.nav-menu a');
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
-            // Only for mobile menu state
             if (window.innerWidth <= 991 && navMenu.classList.contains('active')) {
-                // Close the menu
-                navMenu.classList.remove('active');
-                navigation.classList.remove('active');
-                
-                if (menuToggle) {
-                    menuToggle.setAttribute('aria-expanded', 'false');
-                    const icon = menuToggle.querySelector('i');
-                    if (icon) {
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                    }
-                }
-                
-                // Restore scrolling
-                document.body.style.overflow = '';
-                
-                console.log("Menu closed by nav link click");
-                
-                // If it's an on-page link, handle the smooth scroll manually
+                closeMobileMenu(menuToggle, navMenu, navigation);
                 if (link.getAttribute('href').startsWith('#')) {
                     e.preventDefault();
                     const targetId = link.getAttribute('href');
-                    const targetElement = document.getElementById(targetId.substring(1));
-                    
+                    const targetElement = document.querySelector(targetId);
                     if (targetElement) {
-                        // Small delay to allow menu closing animation to complete
                         setTimeout(() => {
-                            window.scrollTo({
-                                top: targetElement.offsetTop - 70,
-                                behavior: 'smooth'
-                            });
+                            window.scrollTo({ top: targetElement.offsetTop - 70, behavior: 'smooth' });
                         }, 300);
                     }
                 }
             }
         });
     });
-    
-    // Enhanced smooth scrolling for navigation links - ONLY for within-page links
+}
+
+/**
+ * Initializes smooth scrolling for on-page anchor links.
+ */
+function setupSmoothScrolling() {
     document.querySelectorAll('a[href^="#"]:not([href="#"])').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            // Only handle desktop clicks here - mobile is handled in the section above
+        anchor.addEventListener('click', function (e) {
             if (window.innerWidth > 991) {
                 e.preventDefault();
-                
                 try {
-                    const targetId = this.getAttribute('href');
-                    const sectionId = targetId.substring(1);
-                    const targetElement = document.getElementById(sectionId);
-                    
+                    const targetElement = document.querySelector(this.getAttribute('href'));
                     if (targetElement) {
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 70,
-                            behavior: 'smooth'
-                        });
+                        window.scrollTo({ top: targetElement.offsetTop - 70, behavior: 'smooth' });
                     }
                 } catch (error) {
                     console.error('Smooth scroll error:', error);
@@ -146,47 +109,63 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
-    // Refined header scroll behavior
+}
+
+/**
+ * Initializes the header scroll effect.
+ * The header becomes more compact when the user scrolls down.
+ */
+function setupHeaderScrollEffect() {
     const header = document.getElementById('header');
-    
     if (header) {
-        let lastScrollY = window.scrollY;
-        
         window.addEventListener('scroll', () => {
-            const currentScrollY = window.scrollY;
-            
-            // Compact header on scroll down
-            if (currentScrollY > 100) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-            
-            lastScrollY = currentScrollY;
+            header.classList.toggle('scrolled', window.scrollY > 100);
         });
     }
-    
-    // Contact form submission
+}
+
+/**
+ * Initializes the contact form submission logic.
+ */
+function setupContactForm() {
     const contactForm = document.getElementById('contact-form');
-    
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const message = document.getElementById('message').value;
-            
+
             if (!name || !email || !message) {
                 alert('يرجى ملء جميع الحقول المطلوبة');
                 return;
             }
-            
-            // In a real application, you would send this data to the server
-            // For this demo, we'll just show a success message
             alert('تم إرسال رسالتك بنجاح، سنتواصل معك قريبًا');
             contactForm.reset();
         });
     }
+}
+
+/**
+ * Initializes the login button functionality.
+ */
+function setupLoginButton() {
+    const loginButton = document.getElementById('loginButton');
+    if (loginButton) {
+        loginButton.addEventListener('click', () => {
+            window.location.href = '/login';
+        });
+    }
+}
+
+/**
+ * Main DOMContentLoaded event listener.
+ * Initializes all the site's functionalities.
+ */
+document.addEventListener('DOMContentLoaded', function () {
+    setupLoginButton();
+    setupMobileMenu();
+    setupSmoothScrolling();
+    setupHeaderScrollEffect();
+    setupContactForm();
 });

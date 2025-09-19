@@ -1,9 +1,27 @@
+"""
+A script to create initial users (admin, editor, and user) for the application.
+
+This script is intended to be run from the command line to populate the
+database with a default set of users with different roles. It ensures that
+users are not duplicated if they already exist.
+"""
 from app import app, db
 from werkzeug.security import generate_password_hash
 from models import User
 from datetime import datetime
 
 def create_users():
+    """Creates a default set of users if they don't already exist.
+
+    This function creates three users:
+    - 'admin' with the 'admin' role.
+    - 'editor' with the 'editor' role.
+    - 'user' with the 'user' role.
+
+    The function connects to the database within the Flask application context
+    and commits the new users. It prints messages to the console indicating
+    which users were created.
+    """
     with app.app_context():
         # Create admin user
         existing_admin = User.query.filter_by(username='admin').first()

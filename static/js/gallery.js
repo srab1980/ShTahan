@@ -1,75 +1,59 @@
 /**
- * Gallery module for Sheikh Mustafa Al-Tahhan website
- * Handles gallery image display for public-facing pages
+ * @file Manages the public-facing image gallery.
+ * @description Fetches and displays gallery images, with a simple lightbox effect.
  */
 
-document.addEventListener('DOMContentLoaded', function() {
-    // References to DOM elements
+/**
+ * Renders gallery images into a grid container.
+ * @param {Array<Object>} images - An array of image objects from the API.
+ * @param {HTMLElement} container - The grid container element for the images.
+ */
+function renderGallery(images, container) {
+    if (!container) return;
+    container.innerHTML = '';
+    if (!images || images.length === 0) {
+        container.innerHTML = '<p>لا توجد صور في المعرض.</p>';
+        return;
+    }
+    images.forEach((image, index) => {
+        const item = document.createElement('div');
+        item.className = 'gallery-item';
+        item.innerHTML = `
+            <img src="${image.url}" alt="${image.caption}" loading="${index < 3 ? 'eager' : 'lazy'}" data-full-src="${image.url}">
+            <div class="gallery-caption">${image.caption}</div>`;
+        item.addEventListener('click', (e) => openLightbox(e.currentTarget.querySelector('img')));
+        container.appendChild(item);
+    });
+}
+
+/**
+ * Opens a simple lightbox to display the full-size image.
+ * @param {HTMLImageElement} imgElement - The image element that was clicked.
+ */
+function openLightbox(imgElement) {
+    const src = imgElement.dataset.fullSrc;
+    const lightbox = document.createElement('div');
+    lightbox.id = 'lightbox';
+    lightbox.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:1000;';
+    lightbox.innerHTML = `<img src="${src}" style="max-width:90%;max-height:90%;"><span style="position:absolute;top:20px;right:30px;font-size:30px;color:white;cursor:pointer;">&times;</span>`;
+    lightbox.addEventListener('click', () => lightbox.remove());
+    document.body.appendChild(lightbox);
+}
+
+/**
+ * Fetches gallery images from the API and initializes the gallery.
+ */
+async function initGallery() {
     const galleryGrid = document.getElementById('gallery-grid');
-    const gallerySection = document.getElementById('gallery');
-    
-    // Store gallery images
-    let galleryImages = [];
-    
-    // Fetch gallery images from API
-    async function fetchGalleryImages() {
-        try {
-            const response = await fetch('/api/gallery');
-            const data = await response.json();
-            galleryImages = data.images;
-            renderGallerySlider(galleryImages);
-        } catch (error) {
-            console.error('Error fetching gallery images:', error);
-            if (galleryGrid) {
-                galleryGrid.innerHTML = '<p style="grid-column: span 3; text-align: center; color: red;">حدث خطأ في تحميل الصور</p>';
-            }
-        }
+    if (!galleryGrid) return;
+    try {
+        const response = await fetch('/api/gallery');
+        const data = await response.json();
+        renderGallery(data.images, galleryGrid);
+    } catch (error) {
+        console.error('Error fetching gallery images:', error);
+        galleryGrid.innerHTML = '<p>حدث خطأ في تحميل الصور.</p>';
     }
-    
-    // Render gallery images in a grid
-    function renderGallerySlider(images) {
-        if (!galleryGrid) return;
-        
-        if (images.length === 0) {
-            if (galleryGrid) {
-                galleryGrid.innerHTML = '<p style="grid-column: span 3; text-align: center;">لا توجد صور في المعرض</p>';
-            }
-            return;
-        }
-        
-        // Clear existing content
-        galleryGrid.innerHTML = '';
-        
-        // Create gallery items
-        images.forEach((image, index) => {
-            const galleryItem = document.createElement('div');
-            galleryItem.className = 'gallery-item';
-            galleryItem.dataset.id = image.id;
-            
-            galleryItem.innerHTML = `
-                <img src="${image.url}" alt="${image.caption}" loading="${index < 3 ? 'eager' : 'lazy'}">
-                <div class="gallery-caption">${image.caption}</div>
-            `;
-            
-            galleryGrid.appendChild(galleryItem);
-            
-            // Add event listener for image click (lightbox functionality could be added here)
-            const img = galleryItem.querySelector('img');
-            if (img) {
-                img.addEventListener('click', openLightbox);
-            }
-        });
-    }
-    
-    // Show lightbox with the clicked image - for future implementation
-    function openLightbox(e) {
-        // Future lightbox implementation can go here
-        console.log('Image clicked:', e.target.src);
-        
-        // For now, just open the image in a new tab
-        window.open(e.target.src, '_blank');
-    }
-    
-    // Initialize the gallery
-    fetchGalleryImages();
-});
+}
+
+document.addEventListener('DOMContentLoaded', initGallery);
