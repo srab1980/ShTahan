@@ -23,6 +23,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 # Create Flask app
 app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False
 app.secret_key = os.environ.get("SESSION_SECRET", "default_secret_key")
 
 # Configure proper response headers
