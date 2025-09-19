@@ -709,7 +709,13 @@ def update_user(user_id):
     user.username = data.get('username', user.username)
     user.email = data.get('email', user.email)
     user.role = data.get('role', user.role)
-    user.active = data.get('active', user.active)
+
+    if 'active' in data:
+        if isinstance(data['active'], bool):
+            user.active = data['active']
+        else:
+            return jsonify({'error': "The 'active' field must be a boolean value (true or false)."}), 400
+
     if 'password' in data and data['password']:
         user.set_password(data['password'])
 
