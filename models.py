@@ -1,5 +1,9 @@
 """
-Database models for Sheikh Mustafa Al-Tahhan website
+Database models for the Sheikh Mustafa Al-Tahhan website.
+
+This module defines the SQLAlchemy data models for the application, including
+Book, Article, GalleryImage, ContactMessage, UserActivity, and User.
+These models are used by Flask-SQLAlchemy to interact with the database.
 """
 from datetime import datetime
 from flask_login import UserMixin
@@ -7,8 +11,20 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 import json
 
+
 class Book(db.Model):
-    """Model for books and publications"""
+    """Represents a book or publication in the database.
+
+    Attributes:
+        id (int): The primary key for the book.
+        title (str): The title of the book.
+        language (str): The language the book is written in.
+        category (str): The category the book belongs to.
+        cover (str): The URL to the book's cover image.
+        download (str): The URL to the downloadable file (e.g., PDF).
+        description (str): A short description of the book.
+        created_at (datetime): The timestamp when the book was added.
+    """
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     language = db.Column(db.String(50), nullable=False)
@@ -19,7 +35,11 @@ class Book(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
-        """Convert model to dictionary"""
+        """Serializes the Book object to a dictionary.
+
+        Returns:
+            dict: A dictionary representation of the book.
+        """
         return {
             'id': self.id,
             'title': self.title,
@@ -30,8 +50,19 @@ class Book(db.Model):
             'description': self.description
         }
 
+
 class Article(db.Model):
-    """Model for articles"""
+    """Represents an article in the database.
+
+    Attributes:
+        id (int): The primary key for the article.
+        title (str): The title of the article.
+        summary (str): A short summary of the article.
+        content (str): The full content of the article (HTML).
+        category (str): The category the article belongs to.
+        image (str): The URL to the article's featured image.
+        created_at (datetime): The timestamp when the article was created.
+    """
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     summary = db.Column(db.Text, nullable=False)
@@ -39,9 +70,13 @@ class Article(db.Model):
     category = db.Column(db.String(50), nullable=True)
     image = db.Column(db.String(500), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
     def to_dict(self):
-        """Convert model to dictionary"""
+        """Serializes the Article object to a dictionary.
+
+        Returns:
+            dict: A dictionary representation of the article.
+        """
         return {
             'id': self.id,
             'title': self.title,
@@ -52,31 +87,56 @@ class Article(db.Model):
             'created_at': self.created_at.strftime('%Y-%m-%d')
         }
 
+
 class GalleryImage(db.Model):
-    """Model for gallery images"""
+    """Represents an image in the gallery.
+
+    Attributes:
+        id (int): The primary key for the gallery image.
+        url (str): The URL of the image file.
+        caption (str): A caption or description for the image.
+        created_at (datetime): The timestamp when the image was added.
+    """
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(500), nullable=False)
     caption = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
     def to_dict(self):
-        """Convert model to dictionary"""
+        """Serializes the GalleryImage object to a dictionary.
+
+        Returns:
+            dict: A dictionary representation of the gallery image.
+        """
         return {
             'id': self.id,
             'url': self.url,
             'caption': self.caption
         }
 
+
 class ContactMessage(db.Model):
-    """Model for contact form messages"""
+    """Represents a message submitted through the contact form.
+
+    Attributes:
+        id (int): The primary key for the message.
+        name (str): The name of the person who sent the message.
+        email (str): The email address of the sender.
+        message (str): The content of the message.
+        created_at (datetime): The timestamp when the message was received.
+    """
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     message = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
     def to_dict(self):
-        """Convert model to dictionary"""
+        """Serializes the ContactMessage object to a dictionary.
+
+        Returns:
+            dict: A dictionary representation of the contact message.
+        """
         return {
             'id': self.id,
             'name': self.name,
@@ -85,21 +145,38 @@ class ContactMessage(db.Model):
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S')
         }
 
+
 class UserActivity(db.Model):
-    """Model for tracking user activity and interactions"""
+    """Represents a recorded user activity or interaction.
+
+    Attributes:
+        id (int): The primary key for the activity log.
+        user_id (int): The foreign key of the user who performed the activity.
+        activity_type (str): The type of activity (e.g., 'view_book').
+        content_id (int): The ID of the content related to the activity.
+        content_type (str): The type of content (e.g., 'book', 'article').
+        content_title (str): The title of the related content.
+        activity_data (str): Optional JSON metadata for the activity.
+        created_at (datetime): The timestamp when the activity occurred.
+        user (User): The relationship to the User model.
+    """
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    activity_type = db.Column(db.String(50), nullable=False)  # 'view_book', 'download_book', 'view_article', etc.
-    content_id = db.Column(db.Integer, nullable=True)  # ID of the related content (book, article, etc.)
-    content_type = db.Column(db.String(50), nullable=True)  # 'book', 'article', 'gallery', etc.
-    content_title = db.Column(db.String(255), nullable=True)  # Title or name of the content
-    activity_data = db.Column(db.Text, nullable=True)  # Optional JSON metadata
+    activity_type = db.Column(db.String(50), nullable=False)
+    content_id = db.Column(db.Integer, nullable=True)
+    content_type = db.Column(db.String(50), nullable=True)
+    content_title = db.Column(db.String(255), nullable=True)
+    activity_data = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
     user = db.relationship('User', backref=db.backref('activities', lazy=True))
-    
+
     def to_dict(self):
-        """Convert model to dictionary"""
+        """Serializes the UserActivity object to a dictionary.
+
+        Returns:
+            dict: A dictionary representation of the user activity.
+        """
         result = {
             'id': self.id,
             'user_id': self.user_id,
@@ -109,58 +186,113 @@ class UserActivity(db.Model):
             'content_title': self.content_title,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S')
         }
-        
+
         if self.activity_data:
             try:
                 result['activity_data'] = json.loads(self.activity_data)
             except json.JSONDecodeError:
                 result['activity_data'] = None
-                
+
         return result
 
+
 class User(UserMixin, db.Model):
-    """Model for users with role-based access control"""
+    """Represents a user of the application.
+
+    This model includes authentication, roles, and user preferences.
+
+    Attributes:
+        id (int): The primary key for the user.
+        username (str): The user's unique username.
+        email (str): The user's unique email address.
+        password_hash (str): The hashed password for the user.
+        role (str): The user's role ('admin', 'editor', or 'user').
+        created_at (datetime): The timestamp when the user account was created.
+        last_login (datetime): The timestamp of the user's last login.
+        active (bool): Whether the user's account is active.
+        preferences (str): A JSON string for storing user preferences.
+    """
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
-    role = db.Column(db.String(20), nullable=False, default='user')  # 'admin', 'editor', or 'user'
+    role = db.Column(db.String(20), nullable=False, default='user')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime, nullable=True)
     active = db.Column(db.Boolean, default=True)
-    preferences = db.Column(db.Text, nullable=True)  # JSON string storing user preferences
-    
+    preferences = db.Column(db.Text, nullable=True)
+
     def set_password(self, password):
-        """Set password hash"""
+        """Hashes and sets the user's password.
+
+        Args:
+            password (str): The plaintext password to hash.
+        """
         self.password_hash = generate_password_hash(password)
-    
+
     def check_password(self, password):
-        """Check password against hash"""
+        """Checks if a given password matches the user's hashed password.
+
+        Args:
+            password (str): The plaintext password to check.
+
+        Returns:
+            bool: True if the password is correct, False otherwise.
+        """
         return check_password_hash(self.password_hash, password)
-    
+
     def is_admin(self):
-        """Check if user is an admin"""
+        """Checks if the user has the 'admin' role.
+
+        Returns:
+            bool: True if the user is an admin, False otherwise.
+        """
         return self.role == 'admin'
-    
+
     def is_editor(self):
-        """Check if user is an editor"""
+        """Checks if the user has 'editor' or 'admin' role.
+
+        Returns:
+            bool: True if the user is an editor or admin, False otherwise.
+        """
         return self.role == 'editor' or self.role == 'admin'
-    
+
     def get_preferences(self):
-        """Get user preferences as dictionary"""
+        """Retrieves user preferences as a dictionary.
+
+        Returns:
+            dict: The user's preferences, or an empty dictionary if none are set
+                  or if there is a JSON decoding error.
+        """
         if not self.preferences:
             return {}
         try:
             return json.loads(self.preferences)
         except json.JSONDecodeError:
             return {}
-    
+
     def set_preferences(self, preferences_dict):
-        """Set user preferences from dictionary"""
+        """Saves a dictionary of user preferences as a JSON string.
+
+        Args:
+            preferences_dict (dict): The dictionary of preferences to save.
+        """
         self.preferences = json.dumps(preferences_dict)
-    
-    def record_activity(self, activity_type, content_id=None, content_type=None, content_title=None, metadata=None):
-        """Record user activity"""
+
+    def record_activity(self, activity_type, content_id=None, content_type=None,
+                        content_title=None, metadata=None):
+        """Creates and records a new UserActivity for this user.
+
+        Args:
+            activity_type (str): The type of activity.
+            content_id (int, optional): The ID of related content.
+            content_type (str, optional): The type of related content.
+            content_title (str, optional): The title of related content.
+            metadata (dict, optional): Extra data to store as a JSON string.
+
+        Returns:
+            UserActivity: The newly created UserActivity object.
+        """
         activity = UserActivity(
             user_id=self.id,
             activity_type=activity_type,
@@ -171,9 +303,15 @@ class User(UserMixin, db.Model):
         )
         db.session.add(activity)
         return activity
-    
+
     def to_dict(self):
-        """Convert model to dictionary (excluding password)"""
+        """Serializes the User object to a dictionary.
+
+        Excludes the password hash for security.
+
+        Returns:
+            dict: A dictionary representation of the user.
+        """
         result = {
             'id': self.id,
             'username': self.username,
@@ -183,12 +321,12 @@ class User(UserMixin, db.Model):
             'last_login': self.last_login.strftime('%Y-%m-%d %H:%M:%S') if self.last_login else None,
             'active': self.active
         }
-        
+
         # Include preferences if available
         if self.preferences:
             try:
                 result['preferences'] = json.loads(self.preferences)
             except json.JSONDecodeError:
                 result['preferences'] = {}
-                
+
         return result

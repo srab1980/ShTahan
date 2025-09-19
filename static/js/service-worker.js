@@ -1,155 +1,104 @@
 /**
- * Service Worker for Sheikh Mustafa Al-Tahhan website
- * Provides offline capabilities and faster loading
+ * @file Service Worker for the website, providing offline capabilities and caching.
+ * @description Implements caching strategies (Cache First) and handles push notifications.
  */
 
-const CACHE_NAME = 'tahhan-site-cache-v1';
-const OFFLINE_PAGE = '/static/offline.html';
-const OFFLINE_IMAGE = '/static/img/offline-image.png';
-
-// Assets to cache immediately on service worker install
+const CACHE_NAME = 'tahhan-site-cache-v2';
+const OFFLINE_URL = '/static/offline.html';
 const STATIC_ASSETS = [
-  '/',
-  '/static/css/style.css',
-  '/static/js/main.js',
-  '/static/js/books.js',
-  '/static/js/articles.js',
-  '/static/js/gallery.js',
-  '/static/js/contact.js',
-  '/static/js/scroll-animations.js',
-  '/static/js/back-to-top.js',
-  '/static/img/profile/Mustafa_tahhan.jpg',
-  OFFLINE_PAGE,
-  OFFLINE_IMAGE
+    '/',
+    OFFLINE_URL,
+    '/static/css/style.css',
+    '/static/js/main.js',
+    // Add other critical assets here
 ];
 
-// Install event - cache static assets
+/**
+ * Handles the 'install' event of the service worker.
+ * Caches essential static assets for offline use.
+ */
 self.addEventListener('install', event => {
-  console.log('[Service Worker] Installing Service Worker');
-  
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[Service Worker] Caching static assets');
-        return cache.addAll(STATIC_ASSETS);
-      })
-      .catch(error => {
-        console.error('[Service Worker] Install failed:', error);
-      })
-  );
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then(cache => cache.addAll(STATIC_ASSETS))
+            .catch(err => console.error('Service Worker installation failed:', err))
+    );
 });
 
-// Activate event - cleanup old caches
+/**
+ * Handles the 'activate' event.
+ * Cleans up old caches to ensure the user has the latest version.
+ */
 self.addEventListener('activate', event => {
-  console.log('[Service Worker] Activating Service Worker');
-  
-  event.waitUntil(
-    caches.keys()
-      .then(cacheNames => {
-        return Promise.all(
-          cacheNames
-            .filter(cacheName => cacheName !== CACHE_NAME)
-            .map(cacheName => {
-              console.log('[Service Worker] Removing old cache:', cacheName);
-              return caches.delete(cacheName);
-            })
-        );
-      })
-  );
-  
-  return self.clients.claim();
+    event.waitUntil(
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames.filter(name => name !== CACHE_NAME)
+                         .map(name => caches.delete(name))
+            );
+        })
+    );
+    self.clients.claim();
 });
 
-// Fetch event - serve from cache or network
+/**
+ * Handles the 'fetch' event.
+ * Implements a Cache First strategy, falling back to the network.
+ * If the network fails for navigation, it serves a custom offline page.
+ */
 self.addEventListener('fetch', event => {
-  console.log('[Service Worker] Fetching resource:', event.request.url);
-  
-  event.respondWith(
-    caches.match(event.request)
-      .then(cachedResponse => {
-        // Return cached response if found
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-        
-        // Otherwise try to fetch from network
-        return fetch(event.request)
-          .then(response => {
-            // Check if we received a valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-            
-            // Clone the response
-            const responseToCache = response.clone();
-            
-            // Cache the fetched response for future use
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-            
-            return response;
-          })
-          .catch(error => {
-            console.error('[Service Worker] Fetch failed:', error);
-            
-            // For navigation requests, return the offline page
-            if (event.request.mode === 'navigate') {
-              return caches.match(OFFLINE_PAGE);
-            }
-            
-            // For image requests, return a placeholder image
-            if (event.request.destination === 'image') {
-              return caches.match(OFFLINE_IMAGE);
-            }
-            
-            // For other requests, just return an error response
-            return new Response('Network error occurred', {
-              status: 503,
-              statusText: 'Service Unavailable',
-              headers: new Headers({
-                'Content-Type': 'text/plain'
-              })
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request).catch(() => caches.match(OFFLINE_URL))
+        );
+        return;
+    }
+
+    event.respondWith(
+        caches.match(event.request).then(cachedResponse => {
+            return cachedResponse || fetch(event.request).then(networkResponse => {
+                if (networkResponse && networkResponse.status === 200) {
+                    const responseToCache = networkResponse.clone();
+                    caches.open(CACHE_NAME).then(cache => {
+                        cache.put(event.request, responseToCache);
+                    });
+                }
+                return networkResponse;
             });
-          });
-      })
-  );
+        })
+    );
 });
 
-// Push notification event handler
+/**
+ * Handles the 'push' event for web push notifications.
+ * @param {PushEvent} event - The push event.
+ */
 self.addEventListener('push', event => {
-  console.log('[Service Worker] Push notification received:', event);
-  
-  const title = 'موقع الشيخ مصطفى الطحان';
-  const options = {
-    body: event.data.text() || 'تم تحديث المحتوى',
-    icon: '/static/img/icons/icon-192x192.png',
-    badge: '/static/img/icons/badge-96x96.png',
-    dir: 'rtl',
-    lang: 'ar'
-  };
-  
-  event.waitUntil(
-    self.registration.showNotification(title, options)
-  );
+    const data = event.data ? event.data.json() : { title: 'موقع الشيخ مصطفى الطحان', body: 'تم تحديث المحتوى' };
+    const options = {
+        body: data.body,
+        icon: '/static/img/icons/icon-192x192.png',
+        badge: '/static/img/icons/badge-96x96.png',
+    };
+    event.waitUntil(self.registration.showNotification(data.title, options));
 });
 
-// Notification click event handler
+/**
+ * Handles the 'notificationclick' event.
+ * Focuses on an existing window or opens a new one when a notification is clicked.
+ */
 self.addEventListener('notificationclick', event => {
-  console.log('[Service Worker] Notification clicked:', event);
-  
-  event.notification.close();
-  
-  // Open or focus main window when notification is clicked
-  event.waitUntil(
-    clients.matchAll({ type: 'window' })
-      .then(windowClients => {
-        if (windowClients.length > 0) {
-          return windowClients[0].focus();
-        } else {
-          return clients.openWindow('/');
-        }
-      })
-  );
+    event.notification.close();
+    event.waitUntil(
+        clients.matchAll({ type: 'window' }).then(windowClients => {
+            for (let client of windowClients) {
+                if (client.url === '/' && 'focus' in client) {
+                    return client.focus();
+                }
+            }
+            if (clients.openWindow) {
+                return clients.openWindow('/');
+            }
+        })
+    );
 });

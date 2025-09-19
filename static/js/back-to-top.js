@@ -1,25 +1,37 @@
 /**
- * Scroll To Top Button Module for Sheikh Mustafa Al-Tahhan website
- * Handles the back to top button functionality using a simple anchor approach
+ * @file Manages the "Back to Top" button functionality.
+ * @description Shows a button that smoothly scrolls the page to the top when clicked.
  */
-document.addEventListener('DOMContentLoaded', function() {
-    // Get the button element
+
+/**
+ * Initializes the "Back to Top" button.
+ * Sets up an event listener to scroll the window to the top smoothly.
+ */
+function initBackToTop() {
     const scrollToTopBtn = document.getElementById('scroll-to-top');
-    
+
     if (!scrollToTopBtn) {
         console.error('Scroll to top button not found');
         return;
     }
-    
-    // Add click event listener
-    scrollToTopBtn.addEventListener('click', function(e) {
+
+    // Show or hide the button based on scroll position
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+            scrollToTopBtn.classList.add('show');
+        } else {
+            scrollToTopBtn.classList.remove('show');
+        }
+    });
+
+    // Scroll to top on click
+    scrollToTopBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        console.log('Scroll to top button clicked');
         window.scrollTo({
             top: 0,
             behavior: 'smooth'
         });
     });
-    
-    console.log('Scroll to top button initialized');
-});
+}
+
+document.addEventListener('DOMContentLoaded', initBackToTop);

@@ -1,12 +1,26 @@
 """
-إنشاء صور وهمية للمقالات
+A script to generate placeholder images for articles.
+
+This script uses the Pillow library to create simple images with text,
+which can be used as placeholders for article thumbnails. The script is
+primarily in Arabic but is documented in English for consistency.
 """
 import os
 from PIL import Image, ImageDraw, ImageFont
 import random
 
 def create_article_image(filename, text, width=800, height=450):
-    """إنشاء صورة وهمية لمقال"""
+    """Creates a placeholder image for an article.
+
+    Generates an image with a random background color and centered text.
+    The text has a golden rectangle behind it for better visibility.
+
+    Args:
+        filename (str): The path where the image will be saved.
+        text (str): The text to write on the image.
+        width (int, optional): The width of the image. Defaults to 800.
+        height (int, optional): The height of the image. Defaults to 450.
+    """
     # إنشاء صورة جديدة بالأبعاد المحددة
     img = Image.new('RGB', (width, height), color=(random.randint(26, 58), random.randint(60, 108), random.randint(140, 200)))
     
@@ -41,7 +55,7 @@ def create_article_image(filename, text, width=800, height=450):
     print(f"تم إنشاء الصورة: {filename}")
 
 def main():
-    """الدالة الرئيسية لإنشاء الصور"""
+    """Main function to create a set of placeholder article images."""
     # التأكد من وجود مجلد الصور
     img_dir = 'static/img/articles'
     os.makedirs(img_dir, exist_ok=True)
