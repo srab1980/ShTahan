@@ -14,21 +14,12 @@ from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 from flask import Flask, render_template, request, jsonify, url_for, send_from_directory, redirect, flash, session, make_response
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import func, desc, func as sqlafunc
 from functools import wraps
+from database import db
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
-
-# Create base class for SQLAlchemy models
-class Base(DeclarativeBase):
-    """Base class for SQLAlchemy models."""
-    pass
-
-# Initialize SQLAlchemy
-db = SQLAlchemy(model_class=Base)
 
 # Create Flask app
 app = Flask(__name__)
