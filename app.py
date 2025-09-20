@@ -129,6 +129,51 @@ def index():
     latest_articles = Article.query.order_by(Article.created_at.desc()).limit(6).all()
     return render_template('index.html', articles=latest_articles, now=datetime.now())
 
+
+@app.route('/search')
+def search():
+    """Renders the search results page.
+
+    Performs a full-text search across books and articles based on the 'q'
+    query parameter. Results are ranked by relevance.
+    """
+    query = request.args.get('q', '').strip()
+
+    if not query:
+        # If the query is empty, render the page with no results.
+        return render_template('search_results.html', results=[], query='', total_results=0)
+
+    # Use to_tsquery to format the search term for the 'arabic' language config
+    # The `websearch_to_tsquery` is often better for user-facing search
+    # as it handles operators and multiple terms gracefully.
+    ts_query = func.websearch_to_tsquery('arabic', query)
+
+    # --- Search Books ---
+    book_results = db.session.query(
+        Book,
+        func.ts_rank(Book.__ts_vector__, ts_query).label('rank')
+    ).filter(Book.__ts_vector__.match(ts_query, postgresql_regconfig='arabic')).order_by(desc('rank')).all()
+
+    # --- Search Articles ---
+    article_results = db.session.query(
+        Article,
+        func.ts_rank(Article.__ts_vector__, ts_query).label('rank')
+    ).filter(Article.__ts_vector__.match(ts_query, postgresql_regconfig='arabic')).order_by(desc('rank')).all()
+
+    # --- Combine and format results ---
+    results = []
+    for book, rank in book_results:
+        results.append({'type': 'كتاب', 'item': book.to_dict(), 'rank': rank, 'url': url_for('books_page') + f'#book-{book.id}'})
+
+    for article, rank in article_results:
+        # For articles, we can link to the specific article page if one exists
+        results.append({'type': 'مقال', 'item': article.to_dict(), 'rank': rank, 'url': url_for('articles_page') + f'#article-{article.id}'})
+
+    # Sort combined results by rank
+    results.sort(key=lambda x: x['rank'], reverse=True)
+
+    return render_template('search_results.html', results=results, query=query, total_results=len(results))
+
 @app.route('/admin')
 @login_required
 def admin_dashboard():

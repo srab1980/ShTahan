@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}نتائج البحث عن "{{ query }}"{% endblock %}
+
+{% block styles %}
+<style>
+    .search-results-container {
+        padding: 40px 0;
+        background-color: #f8f9fa;
+    }
+    .search-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .search-header h1 {
+        font-size: 2.5rem;
+        color: #1a3c6b;
+    }
+    .search-header p {
+        font-size: 1.2rem;
+        color: #555;
+    }
+    .search-result-item {
+        background-color: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: box-shadow 0.3s ease;
+    }
+    .search-result-item:hover {
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .result-type {
+        font-size: 0.9rem;
+        font-weight: bold;
+        color: #fff;
+        background-color: #1a3c6b;
+        padding: 3px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+    .result-title a {
+        font-size: 1.5rem;
+        color: #333;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .result-title a:hover {
+        color: #1a3c6b;
+    }
+    .result-snippet {
+        color: #666;
+        margin-top: 10px;
+        line-height: 1.6;
+    }
+    .no-results {
+        text-align: center;
+        padding: 50px;
+    }
+    .no-results i {
+        font-size: 4rem;
+        color: #ccc;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="search-results-container">
+    <div class="container">
+        <div class="search-header">
+            <h1>نتائج البحث</h1>
+            {% if query %}
+                <p>أنت تبحث عن: <strong>"{{ query }}"</strong></p>
+                <p>{{ total_results }} نتيجة وجدت</p>
+            {% endif %}
+        </div>
+
+        {% if results %}
+            <div class="results-list">
+                {% for result in results %}
+                    <div class="search-result-item">
+                        <span class="result-type">{{ result.type }}</span>
+                        <h2 class="result-title">
+                            <a href="{{ result.url }}">{{ result.item.title }}</a>
+                        </h2>
+                        <div class="result-snippet">
+                            {% if result.type == 'مقال' %}
+                                {{ result.item.summary | truncate(150) }}
+                            {% elif result.type == 'كتاب' %}
+                                {{ result.item.description | truncate(150) }}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <h2>لم يتم العثور على نتائج</h2>
+                <p>حاول استخدام كلمات بحث مختلفة أو تحقق من الإملاء.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

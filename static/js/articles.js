@@ -51,6 +51,8 @@ function renderArticles(articles) {
         const articleCard = document.createElement('div');
         articleCard.className = 'article-card';
         articleCard.dataset.id = article.id;
+        // Add an id attribute for anchor linking
+        articleCard.id = `article-${article.id}`;
         const thumbnailSrc = article.image || '/static/img/article-placeholder.jpg';
         articleCard.innerHTML = `
             <div class="article-image">
@@ -74,6 +76,32 @@ function renderArticles(articles) {
             if (article) openArticleModal(article);
         });
     });
+
+    // After rendering, check for an anchor link to highlight a specific article
+    handleAnchorLink();
+}
+
+/**
+ * Checks for a URL hash and scrolls to/highlights the corresponding article.
+ */
+function handleAnchorLink() {
+    if (window.location.hash) {
+        const hash = window.location.hash;
+        try {
+            const element = document.querySelector(hash);
+            if (element) {
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    element.classList.add('highlight');
+                    setTimeout(() => {
+                        element.classList.remove('highlight');
+                    }, 2500); // Highlight for 2.5 seconds
+                }, 500); // Delay to allow for rendering
+            }
+        } catch (error) {
+            console.error("Error handling anchor link:", error);
+        }
+    }
 }
 
 /**
