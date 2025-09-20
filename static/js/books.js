@@ -23,7 +23,7 @@ function renderBooks(books, container) {
 
     const sortedBooks = [...books].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     const isHomepage = window.location.pathname === '/';
-    const booksToDisplay = isHomepage ? sortedBooks.slice(0, 8) : sortedBooks;
+    const booksToDisplay = isHomepage ? sortedBooks.slice(0, 4) : sortedBooks;
 
     booksToDisplay.forEach(book => {
         const bookCard = document.createElement('div');
@@ -32,7 +32,7 @@ function renderBooks(books, container) {
         // Add an id attribute for anchor linking
         bookCard.id = `book-${book.id}`;
         bookCard.innerHTML = `
-            <div class="book-cover"><img src="${book.cover}" alt="${book.title}"></div>
+            <div class="book-cover"><img src="${book.cover}" alt="${book.title}" loading="lazy"></div>
             <div class="book-details">
                 <h3>${book.title}</h3>
                 <div class="book-meta">
@@ -41,6 +41,9 @@ function renderBooks(books, container) {
                 </div>
                 <p class="book-description">${book.description}</p>
                 <div class="book-actions">
+                    <a href="/books#book-${book.id}" class="btn btn-primary">
+                        <i class="fas fa-eye"></i> عرض التفاصيل
+                    </a>
                     <a href="${book.download}" class="btn btn-secondary" target="_blank">
                         <i class="fas fa-download"></i> تحميل الكتاب
                     </a>
@@ -49,7 +52,7 @@ function renderBooks(books, container) {
         container.appendChild(bookCard);
     });
 
-    if (isHomepage && books.length > 8) {
+    if (isHomepage && books.length > 4) {
         const viewAllBtn = document.querySelector('.view-all-container a');
         if (viewAllBtn && !viewAllBtn.textContent.includes(`(${books.length})`)) {
             viewAllBtn.innerHTML = `<i class="fas fa-book"></i> عرض جميع الكتب (${books.length})`;
