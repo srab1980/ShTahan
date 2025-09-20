@@ -29,6 +29,8 @@ function renderBooks(books, container) {
         const bookCard = document.createElement('div');
         bookCard.className = 'book-card';
         bookCard.dataset.id = book.id;
+        // Add an id attribute for anchor linking
+        bookCard.id = `book-${book.id}`;
         bookCard.innerHTML = `
             <div class="book-cover"><img src="${book.cover}" alt="${book.title}"></div>
             <div class="book-details">
@@ -51,6 +53,31 @@ function renderBooks(books, container) {
         const viewAllBtn = document.querySelector('.view-all-container a');
         if (viewAllBtn && !viewAllBtn.textContent.includes(`(${books.length})`)) {
             viewAllBtn.innerHTML = `<i class="fas fa-book"></i> عرض جميع الكتب (${books.length})`;
+        }
+    }
+    // After rendering, check for an anchor link to highlight a specific book
+    handleAnchorLink();
+}
+
+/**
+ * Checks for a URL hash and scrolls to/highlights the corresponding book.
+ */
+function handleAnchorLink() {
+    if (window.location.hash) {
+        const hash = window.location.hash;
+        try {
+            const element = document.querySelector(hash);
+            if (element) {
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    element.classList.add('highlight');
+                    setTimeout(() => {
+                        element.classList.remove('highlight');
+                    }, 2500); // Highlight for 2.5 seconds
+                }, 500); // Delay to allow for rendering
+            }
+        } catch (error) {
+            console.error("Error handling anchor link:", error);
         }
     }
 }

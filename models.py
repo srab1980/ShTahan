@@ -10,21 +10,13 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import db
 import json
+from sqlalchemy import event, DDL, Index
+from sqlalchemy.dialects.postgresql import TSVECTOR
+import os
 
 
 class Book(db.Model):
-    """Represents a book or publication in the database.
-
-    Attributes:
-        id (int): The primary key for the book.
-        title (str): The title of the book.
-        language (str): The language the book is written in.
-        category (str): The category the book belongs to.
-        cover (str): The URL to the book's cover image.
-        download (str): The URL to the downloadable file (e.g., PDF).
-        description (str): A short description of the book.
-        created_at (datetime): The timestamp when the book was added.
-    """
+    """Represents a book or publication in the database."""
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     language = db.Column(db.String(50), nullable=False)
@@ -34,12 +26,13 @@ class Book(db.Model):
     description = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def to_dict(self):
-        """Serializes the Book object to a dictionary.
+    if 'postgresql' in os.environ.get('DATABASE_URL', ''):
+        __ts_vector__ = db.Column(TSVECTOR, nullable=True)
+        __table_args__ = (
+            Index('ix_book_ts_vector', __ts_vector__, postgresql_using='gin'),
+        )
 
-        Returns:
-            dict: A dictionary representation of the book.
-        """
+    def to_dict(self):
         return {
             'id': self.id,
             'title': self.title,
@@ -50,19 +43,25 @@ class Book(db.Model):
             'description': self.description
         }
 
+if 'postgresql' in os.environ.get('DATABASE_URL', ''):
+    book_trigger_sql = DDL("""
+        CREATE OR REPLACE FUNCTION book_ts_vector_trigger() RETURNS trigger AS $$
+        begin
+            new.__ts_vector__ :=
+                to_tsvector('arabic', new.title || ' ' || new.description);
+            return new;
+        end
+        $$ LANGUAGE plpgsql;
+
+        DROP TRIGGER IF EXISTS book_ts_vector_update ON book;
+        CREATE TRIGGER book_ts_vector_update BEFORE INSERT OR UPDATE
+            ON book FOR EACH ROW EXECUTE PROCEDURE book_ts_vector_trigger();
+    """)
+    event.listen(Book.__table__, 'after_create', book_trigger_sql)
+
 
 class Article(db.Model):
-    """Represents an article in the database.
-
-    Attributes:
-        id (int): The primary key for the article.
-        title (str): The title of the article.
-        summary (str): A short summary of the article.
-        content (str): The full content of the article (HTML).
-        category (str): The category the article belongs to.
-        image (str): The URL to the article's featured image.
-        created_at (datetime): The timestamp when the article was created.
-    """
+    """Represents an article in the database."""
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     summary = db.Column(db.Text, nullable=False)
@@ -71,12 +70,13 @@ class Article(db.Model):
     image = db.Column(db.String(500), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def to_dict(self):
-        """Serializes the Article object to a dictionary.
+    if 'postgresql' in os.environ.get('DATABASE_URL', ''):
+        __ts_vector__ = db.Column(TSVECTOR, nullable=True)
+        __table_args__ = (
+            Index('ix_article_ts_vector', __ts_vector__, postgresql_using='gin'),
+        )
 
-        Returns:
-            dict: A dictionary representation of the article.
-        """
+    def to_dict(self):
         return {
             'id': self.id,
             'title': self.title,
@@ -86,6 +86,22 @@ class Article(db.Model):
             'image': self.image,
             'created_at': self.created_at.strftime('%Y-%m-%d')
         }
+
+if 'postgresql' in os.environ.get('DATABASE_URL', ''):
+    article_trigger_sql = DDL("""
+        CREATE OR REPLACE FUNCTION article_ts_vector_trigger() RETURNS trigger AS $$
+        begin
+            new.__ts_vector__ :=
+                to_tsvector('arabic', new.title || ' ' || new.summary || ' ' || new.content);
+            return new;
+        end
+        $$ LANGUAGE plpgsql;
+
+        DROP TRIGGER IF EXISTS article_ts_vector_update ON article;
+        CREATE TRIGGER article_ts_vector_update BEFORE INSERT OR UPDATE
+            ON article FOR EACH ROW EXECUTE PROCEDURE article_ts_vector_trigger();
+    """)
+    event.listen(Article.__table__, 'after_create', article_trigger_sql)
 
 
 class GalleryImage(db.Model):
