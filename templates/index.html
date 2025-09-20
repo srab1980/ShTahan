@@ -386,7 +386,12 @@
             </div>
             
             <div class="books-grid" id="books-container">
-                <!-- Books will be loaded from books.json here -->
+                <!-- Books will be loaded dynamically here -->
+            </div>
+            <div class="view-all-container" style="text-align: center; margin-top: 30px;">
+                <a href="/books" class="btn btn-primary">
+                    <i class="fas fa-book"></i> عرض جميع الكتب
+                </a>
             </div>
 
         </div>
@@ -542,20 +547,20 @@
                     {% endif %}
                     
                     <div class="article-content">
-                        <h3 class="article-title">تزييف الحقائق {{ loop.index }}</h3>
+                        <h3 class="article-title">{{ article.title }}</h3>
                         
                         <div class="article-meta">
                             <div class="article-date-container">
                                 <i class="far fa-calendar-alt article-date-icon"></i>
-                                <span>{{ article.created_at.strftime('%d') }} شوال {{ article.created_at.strftime('%Y') }}هـ</span>
+                                <span>{{ article.created_at.strftime('%d %B %Y') }}</span>
                             </div>
                             <div class="article-tag">
                                 <i class="fas fa-tag article-tag-icon"></i>
-                                <span>عام</span>
+                                <span>{{ article.category }}</span>
                             </div>
                         </div>
                         
-                        <div class="article-subtitle">تزييف الحقائق {{ loop.index }}</div>
+                        <div class="article-subtitle">{{ article.summary }}</div>
                         
                         <a href="/articles#{{ article.id }}" class="article-btn">
                             <i class="fas fa-eye"></i>

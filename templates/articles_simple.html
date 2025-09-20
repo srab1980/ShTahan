@@ -561,18 +561,18 @@
         console.log('وجد العنصر articlesGrid:', articlesGrid);
         
         // State
-        let allBooks = [];
-        let filteredBooks = [];
+        let allArticles = [];
+        let filteredArticles = [];
         let currentPage = 1;
-        let booksPerPage = 9;
+        let articlesPerPage = 9;
         let currentSort = 'newest';
         let currentCategory = 'all';
         // تم إزالة متغير currentLanguage لأننا لا نستخدم فلتر اللغة بعد الآن
         let searchQuery = '';
         
         // Function to fetch articles from the database
-        async function fetchBooksAsArticles() {
-            console.log('بدء تنفيذ fetchBooksAsArticles');
+        async function fetchArticles() {
+            console.log('بدء تنفيذ fetchArticles');
             
             // Show loading state
             articlesGrid.innerHTML = `
@@ -600,7 +600,7 @@
                 
                 if (data.articles && data.articles.length > 0) {
                     console.log('عدد المقالات المستلمة:', data.articles.length);
-                    allBooks = data.articles;
+                    allArticles = data.articles;
                     
                     // Apply filters and sorting
                     applyFiltersAndSort();
@@ -618,12 +618,12 @@
             }
         }
         
-        // Filter and sort books based on current criteria
+        // Filter and sort articles based on current criteria
         function applyFiltersAndSort() {
             // مرشح الفئة فقط
-            filteredBooks = allBooks.filter(book => {
+            filteredArticles = allArticles.filter(article => {
                 // مرشح الفئة
-                if (currentCategory !== 'all' && book.category !== currentCategory) {
+                if (currentCategory !== 'all' && article.category !== currentCategory) {
                     return false;
                 }
                 
@@ -633,49 +633,49 @@
             // Then filter by search query if any
             if (searchQuery) {
                 const query = searchQuery.toLowerCase();
-                filteredBooks = filteredBooks.filter(book => {
+                filteredArticles = filteredArticles.filter(article => {
                     return (
-                        book.title.toLowerCase().includes(query) ||
-                        book.summary.toLowerCase().includes(query) ||
-                        book.content.toLowerCase().includes(query) ||
-                        (book.category && book.category.toLowerCase().includes(query))
+                        article.title.toLowerCase().includes(query) ||
+                        article.summary.toLowerCase().includes(query) ||
+                        article.content.toLowerCase().includes(query) ||
+                        (article.category && article.category.toLowerCase().includes(query))
                     );
                 });
             }
             
-            // Sort the filtered books
+            // Sort the filtered articles
             switch (currentSort) {
                 case 'newest':
                     // Sort by id descending (newer first)
-                    filteredBooks.sort((a, b) => b.id - a.id);
+                    filteredArticles.sort((a, b) => b.id - a.id);
                     break;
                 case 'oldest':
                     // Sort by id ascending (older first)
-                    filteredBooks.sort((a, b) => a.id - b.id);
+                    filteredArticles.sort((a, b) => a.id - b.id);
                     break;
                 case 'alphabetical':
                     // Sort alphabetically by title
-                    filteredBooks.sort((a, b) => a.title.localeCompare(b.title, 'ar'));
+                    filteredArticles.sort((a, b) => a.title.localeCompare(b.title, 'ar'));
                     break;
                 case 'popular':
                     // For now, we'll use a simple rule: higher IDs are more popular
-                    filteredBooks.sort((a, b) => b.id - a.id);
+                    filteredArticles.sort((a, b) => b.id - a.id);
                     break;
             }
             
             // Update the UI with the results
             updateFilterTags();
             renderPagination();
-            displayCurrentPageBooks();
+            displayCurrentPageArticles();
         }
         
-        // Display only the books for the current page
-        function displayCurrentPageBooks() {
-            const startIndex = (currentPage - 1) * booksPerPage;
-            const endIndex = startIndex + booksPerPage;
-            const currentPageBooks = filteredBooks.slice(startIndex, endIndex);
+        // Display only the articles for the current page
+        function displayCurrentPageArticles() {
+            const startIndex = (currentPage - 1) * articlesPerPage;
+            const endIndex = startIndex + articlesPerPage;
+            const currentPageArticles = filteredArticles.slice(startIndex, endIndex);
             
-            if (currentPageBooks.length === 0) {
+            if (currentPageArticles.length === 0) {
                 showNoArticlesMessage();
                 return;
             }
@@ -683,17 +683,17 @@
             // Clear loading indicator
             articlesGrid.innerHTML = '';
             
-            // Manually create and inject a div to contain all the books
+            // Manually create and inject a div to contain all the articles
             // This ensures full control over CSS Flexbox behavior
-            displayBooks(currentPageBooks);
+            displayArticles(currentPageArticles);
             
             // Add console log to debug
-            console.log(`عرض ${currentPageBooks.length} مقالات على الصفحة ${currentPage}`);
+            console.log(`عرض ${currentPageArticles.length} مقالات على الصفحة ${currentPage}`);
         }
         
         // Create pagination controls
         function renderPagination() {
-            const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
+            const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
             
             if (totalPages <= 1) {
                 pagination.innerHTML = '';
@@ -789,7 +789,7 @@
             // Add global changePage function
             window.changePage = function(page) {
                 currentPage = page;
-                displayCurrentPageBooks();
+                displayCurrentPageArticles();
                 renderPagination();
                 window.scrollTo({
                     top: document.querySelector('.articles-header').offsetTop - 100,
@@ -849,12 +849,12 @@
             const countTag = document.createElement('div');
             countTag.className = 'filter-tag';
             countTag.style.marginRight = 'auto';
-            countTag.innerHTML = `<span>النتائج: ${filteredBooks.length} مقال</span>`;
+            countTag.innerHTML = `<span>النتائج: ${filteredArticles.length} مقال</span>`;
             filterTags.appendChild(countTag);
         }
         
         // Function to display articles
-        function displayBooks(articles) {
+        function displayArticles(articles) {
             console.log('عرض المقالات');
             
             // Loop through articles and create article cards
@@ -1080,7 +1080,7 @@
         }
         
         // Start fetching and displaying articles
-        fetchBooksAsArticles();
+        fetchArticles();
         
         // Set up event listeners
         setupEventListeners();

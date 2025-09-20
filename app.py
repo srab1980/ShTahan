@@ -124,10 +124,11 @@ def generate_unique_filename(filename):
 def index():
     """Renders the homepage.
 
-    Fetches the 6 latest articles to display on the main page.
+    Fetches the 6 latest articles and 4 latest books to display on the main page.
     """
     latest_articles = Article.query.order_by(Article.created_at.desc()).limit(6).all()
-    return render_template('index.html', articles=latest_articles, now=datetime.now())
+    latest_books = Book.query.order_by(Book.created_at.desc()).limit(4).all()
+    return render_template('index.html', articles=latest_articles, books=latest_books, now=datetime.now())
 
 
 @app.route('/search')
