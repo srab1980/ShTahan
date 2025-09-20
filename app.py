@@ -21,56 +21,66 @@ from database import db
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Create Flask app
-app = Flask(__name__)
-app.config['JSON_AS_ASCII'] = False
-app.secret_key = os.environ.get("SESSION_SECRET", "default_secret_key")
+def create_app(config_name='production'):
+    """Create and configure the Flask application."""
+    app = Flask(__name__)
+    app.config['JSON_AS_ASCII'] = False
+    app.secret_key = os.environ.get("SESSION_SECRET", "default_secret_key")
 
-# Configure proper response headers
-@app.after_request
-def add_header(response):
-    """Adds headers to prevent caching of responses."""
-    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '-1'
-    return response
+    # Security configuration for session cookies
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['PERMANENT_SESSION_LIFETIME'] = 86400  # 1 day
 
-# Security configuration for session cookies
-app.config['SESSION_COOKIE_SECURE'] = True
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = 86400  # 1 day
+    # Configure database
+    if config_name == 'testing':
+        app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///test.db'
+    else:
+        app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "postgresql://neondb_owner:npg_HwBp7WMGd4ni@ep-flat-hall-a4pn3nar.us-east-1.aws.neon.tech/neondb?sslmode=require")
 
-# Configure database
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "postgresql://neondb_owner:npg_HwBp7WMGd4ni@ep-flat-hall-a4pn3nar.us-east-1.aws.neon.tech/neondb?sslmode=require")
-app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "pool_recycle": 300,
-    "pool_pre_ping": True,
-}
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+        "pool_recycle": 300,
+        "pool_pre_ping": True,
+    }
 
-# Configure file uploads
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
-os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'gallery'), exist_ok=True)
-os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'books'), exist_ok=True)
-os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'articles'), exist_ok=True)
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
+    # Configure file uploads
+    app.config['UPLOAD_FOLDER'] = 'static/uploads'
+    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'gallery'), exist_ok=True)
+    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'books'), exist_ok=True)
+    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'articles'), exist_ok=True)
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 
-# Initialize the app with the SQLAlchemy extension
-db.init_app(app)
+    # Initialize extensions
+    db.init_app(app)
 
-# Import models after initializing db
-from models import Book, Article, GalleryImage, ContactMessage, User, UserActivity
+    # Import models after initializing db
+    from models import Book, Article, GalleryImage, ContactMessage, User, UserActivity
 
-# Initialize Flask-Login
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
-login_manager.login_message = 'يرجى تسجيل الدخول للوصول إلى هذه الصفحة'
+    # Initialize Flask-Login
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = 'login'
+    login_manager.login_message = 'يرجى تسجيل الدخول للوصول إلى هذه الصفحة'
 
-@login_manager.user_loader
-def load_user(user_id):
-    """Loads a user from the database for Flask-Login."""
-    return User.query.get(int(user_id))
+    @login_manager.user_loader
+    def load_user(user_id):
+        """Loads a user from the database for Flask-Login."""
+        return User.query.get(int(user_id))
+
+    # Configure proper response headers
+    @app.after_request
+    def add_header(response):
+        """Adds headers to prevent caching of responses."""
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '-1'
+        return response
+
+    return app
+
+# Create Flask app for production
+app = create_app()
 
 # --- Authorization Decorators ---
 

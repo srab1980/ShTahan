@@ -33,14 +33,27 @@ class Book(db.Model):
         )
 
     def to_dict(self):
+        """
+        Serializes the Book object to a dictionary, ensuring the cover image
+        URL is always valid.
+        """
+        cover_url = self.cover
+        if not cover_url:
+            # If cover is empty or None, use a default image
+            cover_url = '/static/img/default/default-cover.jpg'
+        elif not cover_url.startswith('/static/uploads/'):
+            # If the path is relative, construct the full path
+            cover_url = f'/static/uploads/books/{os.path.basename(cover_url)}'
+
         return {
             'id': self.id,
             'title': self.title,
             'language': self.language,
             'category': self.category,
-            'cover': self.cover,
+            'cover': cover_url,
             'download': self.download,
-            'description': self.description
+            'description': self.description,
+            'created_at': self.created_at.isoformat()
         }
 
 if 'postgresql' in os.environ.get('DATABASE_URL', ''):
@@ -77,13 +90,25 @@ class Article(db.Model):
         )
 
     def to_dict(self):
+        """
+        Serializes the Article object to a dictionary, ensuring the image
+        URL is always valid.
+        """
+        image_url = self.image
+        if not image_url:
+            # If image is empty or None, use a default image
+            image_url = '/static/img/default/article-default.jpg'
+        elif not image_url.startswith('/static/uploads/'):
+            # If the path is relative, construct the full path
+            image_url = f'/static/uploads/articles/{os.path.basename(image_url)}'
+
         return {
             'id': self.id,
             'title': self.title,
             'summary': self.summary,
             'content': self.content,
             'category': self.category if self.category else 'عام',
-            'image': self.image,
+            'image': image_url,
             'created_at': self.created_at.strftime('%Y-%m-%d')
         }
 

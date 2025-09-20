@@ -6,29 +6,33 @@ import json
 # Add the parent directory to the sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from app import app, db
+from app import create_app, db
 from models import User, Book, Article, GalleryImage, ContactMessage
 
 class AppTestCase(unittest.TestCase):
     def setUp(self):
         """Set up a test client and a test database."""
-        app.config['TESTING'] = True
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-        app.config['WTF_CSRF_ENABLED'] = False
-        self.client = app.test_client()
-        with app.app_context():
+        self.app = create_app('testing')
+        self.app_context = self.app.app_context()
+        self.app_context.push()
+        self.client = self.app.test_client()
+        with self.app.app_context():
             db.create_all()
             self.create_users()
             self.create_book()
             self.create_article()
             self.create_gallery_image()
             self.create_contact_message()
+            db.session.commit()
 
     def tearDown(self):
         """Tear down the database."""
-        with app.app_context():
+        with self.app.app_context():
             db.session.remove()
             db.drop_all()
+        self.app_context.pop()
+        if os.path.exists('test.db'):
+            os.remove('test.db')
 
     def create_book(self):
         """Create a test book."""
@@ -41,7 +45,6 @@ class AppTestCase(unittest.TestCase):
             description='A book for testing.'
         )
         db.session.add(book)
-        db.session.commit()
 
     def create_article(self):
         """Create a test article."""
@@ -53,7 +56,6 @@ class AppTestCase(unittest.TestCase):
             image='http://example.com/article.jpg'
         )
         db.session.add(article)
-        db.session.commit()
 
     def create_gallery_image(self):
         """Create a test gallery image."""
@@ -62,7 +64,6 @@ class AppTestCase(unittest.TestCase):
             caption='A test gallery image.'
         )
         db.session.add(image)
-        db.session.commit()
 
     def create_contact_message(self):
         """Create a test contact message."""
@@ -72,7 +73,6 @@ class AppTestCase(unittest.TestCase):
             message='This is a test message.'
         )
         db.session.add(message)
-        db.session.commit()
 
     def create_users(self):
         """Create test users."""
@@ -85,7 +85,6 @@ class AppTestCase(unittest.TestCase):
         db.session.add(admin)
         db.session.add(editor)
         db.session.add(user)
-        db.session.commit()
 
     def login(self, username, password):
         """Helper function to log in a user."""
