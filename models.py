@@ -35,21 +35,17 @@ class Book(db.Model):
     def to_dict(self):
         """
         Serializes the Book object to a dictionary, ensuring the cover image
-        URL is always valid.
+        URL is always valid and points to the correct uploads directory.
         """
         cover_url = self.cover
         if not cover_url:
-            # Case 4: Empty or None
+            # If cover is empty or None, use a default image.
             cover_url = '/static/img/default/default-cover.jpg'
-        elif cover_url.startswith('http://') or cover_url.startswith('https://'):
-            # Case 1: Full external URL, do nothing
-            pass
-        elif cover_url.startswith('/static/'):
-            # Case 2: Correct internal path, do nothing
-            pass
-        else:
-            # Case 3: Relative path (just a filename)
-            cover_url = f'/static/uploads/books/{os.path.basename(cover_url)}'
+        elif not (cover_url.startswith('http://') or cover_url.startswith('https://')):
+            # For internal paths, always reconstruct the URL from the base filename
+            # to ensure it points to the correct 'uploads' directory.
+            filename = os.path.basename(cover_url)
+            cover_url = f'/static/uploads/books/{filename}'
 
         return {
             'id': self.id,
@@ -98,21 +94,17 @@ class Article(db.Model):
     def to_dict(self):
         """
         Serializes the Article object to a dictionary, ensuring the image
-        URL is always valid.
+        URL is always valid and points to the correct uploads directory.
         """
         image_url = self.image
         if not image_url:
-            # Case 4: Empty or None
+            # If image is empty or None, use a default image.
             image_url = '/static/img/default/article-default.jpg'
-        elif image_url.startswith('http://') or image_url.startswith('https://'):
-            # Case 1: Full external URL, do nothing
-            pass
-        elif image_url.startswith('/static/'):
-            # Case 2: Correct internal path, do nothing
-            pass
-        else:
-            # Case 3: Relative path (just a filename)
-            image_url = f'/static/uploads/articles/{os.path.basename(image_url)}'
+        elif not (image_url.startswith('http://') or image_url.startswith('https://')):
+            # For internal paths, always reconstruct the URL from the base filename
+            # to ensure it points to the correct 'uploads' directory.
+            filename = os.path.basename(image_url)
+            image_url = f'/static/uploads/articles/{filename}'
 
         return {
             'id': self.id,
@@ -156,14 +148,23 @@ class GalleryImage(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
-        """Serializes the GalleryImage object to a dictionary.
-
-        Returns:
-            dict: A dictionary representation of the gallery image.
         """
+        Serializes the GalleryImage object to a dictionary, ensuring the image
+        URL is always valid and points to the correct uploads directory.
+        """
+        image_url = self.url
+        if not image_url:
+            # If URL is empty, use a default (though this case is unlikely for a gallery).
+            # It's better to ensure uploads are validated.
+            image_url = '/static/img/default/default-cover.jpg'
+        elif not (image_url.startswith('http://') or image_url.startswith('https://')):
+            # For internal paths, always reconstruct the URL from the base filename.
+            filename = os.path.basename(image_url)
+            image_url = f'/static/uploads/gallery/{filename}'
+
         return {
             'id': self.id,
-            'url': self.url,
+            'url': image_url,
             'caption': self.caption
         }
 
