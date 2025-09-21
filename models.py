@@ -39,10 +39,16 @@ class Book(db.Model):
         """
         cover_url = self.cover
         if not cover_url:
-            # If cover is empty or None, use a default image
+            # Case 4: Empty or None
             cover_url = '/static/img/default/default-cover.jpg'
-        elif not cover_url.startswith('/static/uploads/'):
-            # If the path is relative, construct the full path
+        elif cover_url.startswith('http://') or cover_url.startswith('https://'):
+            # Case 1: Full external URL, do nothing
+            pass
+        elif cover_url.startswith('/static/'):
+            # Case 2: Correct internal path, do nothing
+            pass
+        else:
+            # Case 3: Relative path (just a filename)
             cover_url = f'/static/uploads/books/{os.path.basename(cover_url)}'
 
         return {
@@ -96,10 +102,16 @@ class Article(db.Model):
         """
         image_url = self.image
         if not image_url:
-            # If image is empty or None, use a default image
+            # Case 4: Empty or None
             image_url = '/static/img/default/article-default.jpg'
-        elif not image_url.startswith('/static/uploads/'):
-            # If the path is relative, construct the full path
+        elif image_url.startswith('http://') or image_url.startswith('https://'):
+            # Case 1: Full external URL, do nothing
+            pass
+        elif image_url.startswith('/static/'):
+            # Case 2: Correct internal path, do nothing
+            pass
+        else:
+            # Case 3: Relative path (just a filename)
             image_url = f'/static/uploads/articles/{os.path.basename(image_url)}'
 
         return {
