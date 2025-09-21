@@ -11,11 +11,11 @@ async function fetchArticles() {
     const articlesContainer = document.querySelector('.articles-container');
     if (!articlesContainer) return;
 
-    const cachedArticles = sessionStorage.getItem('cachedArticles');
-    if (cachedArticles) {
-        renderArticles(JSON.parse(cachedArticles));
-        return;
-    }
+    // const cachedArticles = sessionStorage.getItem('cachedArticles');
+    // if (cachedArticles) {
+    //     renderArticles(JSON.parse(cachedArticles));
+    //     return;
+    // }
 
     articlesContainer.innerHTML = '<div class="loader-container"><div class="loader-pulse"></div></div>';
     try {
