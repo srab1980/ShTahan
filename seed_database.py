@@ -49,12 +49,12 @@ def seed_gallery():
             return
 
         images = [
-            {"url": "static/img/gallery/gallery-1.jpg", "caption": "الشيخ مصطفى الطحان خلال مؤتمر دولي"},
-            {"url": "static/img/gallery/gallery-2.jpg", "caption": "حفل توقيع كتاب من تأليف الشيخ"},
-            {"url": "static/img/gallery/gallery-3.jpg", "caption": "الشيخ مصطفى الطحان في محاضرة ثقافية"},
-            {"url": "static/img/gallery/gallery-4.jpg", "caption": "مشاركة الشيخ في ندوة فكرية"},
-            {"url": "static/img/gallery/gallery-5.jpg", "caption": "لقاء مع طلاب العلم"},
-            {"url": "static/img/gallery/gallery-6.jpg", "caption": "جلسة نقاش مع علماء معاصرين"}
+            {"url": "static/img/gallery/gallery1.jpg", "caption": "الشيخ مصطفى الطحان خلال مؤتمر دولي"},
+            {"url": "static/img/gallery/gallery2.jpg", "caption": "حفل توقيع كتاب من تأليف الشيخ"},
+            {"url": "static/img/gallery/gallery3.jpg", "caption": "الشيخ مصطفى الطحان في محاضرة ثقافية"},
+            {"url": "static/img/gallery/gallery4.jpg", "caption": "مشاركة الشيخ في ندوة فكرية"},
+            {"url": "static/img/gallery/gallery5.jpg", "caption": "لقاء مع طلاب العلم"},
+            {"url": "static/img/gallery/gallery6.jpg", "caption": "جلسة نقاش مع علماء معاصرين"}
         ]
 
         for image_data in images:

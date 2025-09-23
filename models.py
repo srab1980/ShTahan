@@ -15,6 +15,170 @@ from sqlalchemy.dialects.postgresql import TSVECTOR
 import os
 
 
+def _normalize_media_url(path, subfolder, default_url):
+    """Normalize stored media paths to usable URLs.
+
+    The content database mixes uploaded assets, bundled static files, and in
+    some cases JSON-encoded or list-based references to those assets. This
+    helper gently canonicalizes any of those formats into a URL that the
+    frontend can render. When a corresponding local file cannot be found, the
+    provided ``default_url`` is returned so the UI never displays a broken
+    image placeholder.
+
+    Args:
+        path (Any): The original path stored in the database.
+        subfolder (str): The uploads subdirectory for the resource type.
+        default_url (str): A fallback URL when no valid path is provided.
+
+    Returns:
+        str: A normalized URL suitable for use by the frontend.
+    """
+
+    def _extract_media_value(raw):
+        """Extract a usable string path from heterogeneous inputs."""
+
+        if raw is None:
+            return ''
+
+        # Handle iterables (lists, tuples, sets) by taking the first
+        # non-empty value.
+        if isinstance(raw, (list, tuple, set)):
+            for item in raw:
+                extracted = _extract_media_value(item)
+                if extracted:
+                    return extracted
+            return ''
+
+        # Handle dictionaries that may wrap the actual URL.
+        if isinstance(raw, dict):
+            for key in ('url', 'path', 'src', 'image', 'cover'):
+                if key in raw:
+                    extracted = _extract_media_value(raw[key])
+                    if extracted:
+                        return extracted
+            return ''
+
+        # Convert bytes to string.
+        if isinstance(raw, bytes):
+            raw = raw.decode('utf-8', 'ignore')
+
+        text = str(raw).strip()
+        if not text:
+            return ''
+
+        # Remove wrapping quotes if the path is stored as a quoted string.
+        if (text.startswith(('"', "'")) and text.endswith(text[0])
+                and len(text) > 1):
+            text = text[1:-1].strip()
+
+        if not text:
+            return ''
+
+        # Attempt to decode JSON-wrapped values (e.g. '"/path"' or
+        # '["/path"]').
+        if text[0] in ('{', '['):
+            try:
+                parsed = json.loads(text)
+            except (json.JSONDecodeError, TypeError):
+                pass
+            else:
+                return _extract_media_value(parsed)
+
+        return text
+
+    normalized = _extract_media_value(path)
+    if not normalized:
+        return default_url
+
+    normalized = normalized.replace('\\', '/').strip()
+    if not normalized:
+        return default_url
+
+    # Allow externally hosted resources and data URIs as-is.
+    if normalized.startswith(('http://', 'https://', 'data:')):
+        return normalized
+
+    # Remove any relative directory traversals that may remain.
+    while True:
+        for prefix in ('../', '..\\', './', '.\\'):
+            if normalized.startswith(prefix):
+                normalized = normalized[len(prefix):]
+                break
+        else:
+            break
+    if not normalized:
+        return default_url
+
+    candidate_pairs = []
+
+    def add_candidate(url_path):
+        normalized_url = url_path.replace('\\', '/')
+        clean_url = '/' + normalized_url.lstrip('/')
+        candidate_pairs.append((clean_url, clean_url.lstrip('/')))
+
+    # Direct references into the static directory should be preserved if the
+    # asset exists locally.
+    if normalized.startswith('/static/'):
+        add_candidate(normalized)
+    elif normalized.startswith('static/'):
+        add_candidate(normalized)
+    elif normalized.startswith(('/uploads/', 'uploads/')):
+        add_candidate(f"static/{normalized.lstrip('/')}")
+    elif normalized.startswith(('/img/', 'img/')):
+        add_candidate(f"static/{normalized.lstrip('/')}")
+
+    filename = os.path.basename(normalized)
+    if filename:
+        fallback_dirs = [
+            os.path.join('static', 'uploads', subfolder, filename),
+            os.path.join('static', 'img', subfolder, filename),
+            os.path.join('static', 'uploads', filename),
+            os.path.join('static', 'img', filename),
+            os.path.join('static', filename),
+        ]
+        for rel_path in fallback_dirs:
+            add_candidate(rel_path)
+
+    # Return the first candidate that exists on disk.
+    for url_path, rel_path in candidate_pairs:
+        filesystem_path = rel_path.replace('/', os.sep)
+        if os.path.exists(filesystem_path):
+            return url_path
+
+    # Attempt a fuzzy match by comparing filename stems without separators.
+    if filename:
+        stem, ext = os.path.splitext(filename)
+        sanitized = ''.join(ch.lower() for ch in stem if ch.isalnum())
+        if sanitized:
+            search_directories = [
+                os.path.join('static', 'uploads', subfolder),
+                os.path.join('static', 'img', subfolder),
+                os.path.join('static', 'uploads'),
+                os.path.join('static', 'img'),
+            ]
+            for directory in search_directories:
+                if not os.path.isdir(directory):
+                    continue
+                try:
+                    entries = os.listdir(directory)
+                except OSError:
+                    continue
+                for entry in entries:
+                    entry_path = os.path.join(directory, entry)
+                    if not os.path.isfile(entry_path):
+                        continue
+                    entry_stem, entry_ext = os.path.splitext(entry)
+                    if ext and entry_ext.lower() != ext.lower():
+                        continue
+                    entry_sanitized = ''.join(
+                        ch.lower() for ch in entry_stem if ch.isalnum()
+                    )
+                    if entry_sanitized == sanitized:
+                        return '/' + entry_path.replace(os.sep, '/').lstrip('/')
+
+    return default_url
+
+
 class Book(db.Model):
     """Represents a book or publication in the database."""
     id = db.Column(db.Integer, primary_key=True)
@@ -37,15 +201,11 @@ class Book(db.Model):
         Serializes the Book object to a dictionary, ensuring the cover image
         URL is always valid and points to the correct uploads directory.
         """
-        cover_url = self.cover
-        if not cover_url:
-            # If cover is empty or None, use a default image.
-            cover_url = '/static/img/default/default-cover.jpg'
-        elif not (cover_url.startswith('http://') or cover_url.startswith('https://')):
-            # For internal paths, always reconstruct the URL from the base filename
-            # to ensure it points to the correct 'uploads' directory.
-            filename = os.path.basename(cover_url)
-            cover_url = f'/static/uploads/books/{filename}'
+        cover_url = _normalize_media_url(
+            self.cover,
+            'books',
+            '/static/img/default/default-cover.jpg'
+        )
 
         return {
             'id': self.id,
@@ -96,15 +256,11 @@ class Article(db.Model):
         Serializes the Article object to a dictionary, ensuring the image
         URL is always valid and points to the correct uploads directory.
         """
-        image_url = self.image
-        if not image_url:
-            # If image is empty or None, use a default image.
-            image_url = '/static/img/default/article-default.jpg'
-        elif not (image_url.startswith('http://') or image_url.startswith('https://')):
-            # For internal paths, always reconstruct the URL from the base filename
-            # to ensure it points to the correct 'uploads' directory.
-            filename = os.path.basename(image_url)
-            image_url = f'/static/uploads/articles/{filename}'
+        image_url = _normalize_media_url(
+            self.image,
+            'articles',
+            '/static/img/default/article-default.jpg'
+        )
 
         return {
             'id': self.id,
@@ -152,15 +308,11 @@ class GalleryImage(db.Model):
         Serializes the GalleryImage object to a dictionary, ensuring the image
         URL is always valid and points to the correct uploads directory.
         """
-        image_url = self.url
-        if not image_url:
-            # If URL is empty, use a default (though this case is unlikely for a gallery).
-            # It's better to ensure uploads are validated.
-            image_url = '/static/img/default/default-cover.jpg'
-        elif not (image_url.startswith('http://') or image_url.startswith('https://')):
-            # For internal paths, always reconstruct the URL from the base filename.
-            filename = os.path.basename(image_url)
-            image_url = f'/static/uploads/gallery/{filename}'
+        image_url = _normalize_media_url(
+            self.url,
+            'gallery',
+            '/static/img/default/default-cover.jpg'
+        )
 
         return {
             'id': self.id,
