@@ -15,6 +15,46 @@ from sqlalchemy.dialects.postgresql import TSVECTOR
 import os
 
 
+def _normalize_media_url(path, subfolder, default_url):
+    """Normalize stored media paths to usable URLs.
+
+    Args:
+        path (str | None): The original path stored in the database.
+        subfolder (str): The uploads subdirectory for the resource type.
+        default_url (str): A fallback URL when no valid path is provided.
+
+    Returns:
+        str: A normalized URL suitable for use by the frontend.
+    """
+
+    if not path:
+        return default_url
+
+    normalized = path.strip()
+    if not normalized:
+        return default_url
+
+    # Allow externally hosted resources as-is
+    if normalized.startswith(('http://', 'https://')):
+        return normalized
+
+    # Use forward slashes for consistency
+    normalized = normalized.replace('\\', '/')
+
+    # Ensure static assets keep their full path
+    if normalized.startswith('/static/'):
+        return normalized
+    if normalized.startswith('static/'):
+        return f'/{normalized}'
+
+    # Fall back to constructing the uploads path from the filename
+    filename = os.path.basename(normalized)
+    if not filename:
+        return default_url
+
+    return f'/static/uploads/{subfolder}/{filename}'
+
+
 class Book(db.Model):
     """Represents a book or publication in the database."""
     id = db.Column(db.Integer, primary_key=True)
@@ -37,15 +77,11 @@ class Book(db.Model):
         Serializes the Book object to a dictionary, ensuring the cover image
         URL is always valid and points to the correct uploads directory.
         """
-        cover_url = self.cover
-        if not cover_url:
-            # If cover is empty or None, use a default image.
-            cover_url = '/static/img/default/default-cover.jpg'
-        elif not (cover_url.startswith('http://') or cover_url.startswith('https://')):
-            # For internal paths, always reconstruct the URL from the base filename
-            # to ensure it points to the correct 'uploads' directory.
-            filename = os.path.basename(cover_url)
-            cover_url = f'/static/uploads/books/{filename}'
+        cover_url = _normalize_media_url(
+            self.cover,
+            'books',
+            '/static/img/default/default-cover.jpg'
+        )
 
         return {
             'id': self.id,
@@ -96,15 +132,11 @@ class Article(db.Model):
         Serializes the Article object to a dictionary, ensuring the image
         URL is always valid and points to the correct uploads directory.
         """
-        image_url = self.image
-        if not image_url:
-            # If image is empty or None, use a default image.
-            image_url = '/static/img/default/article-default.jpg'
-        elif not (image_url.startswith('http://') or image_url.startswith('https://')):
-            # For internal paths, always reconstruct the URL from the base filename
-            # to ensure it points to the correct 'uploads' directory.
-            filename = os.path.basename(image_url)
-            image_url = f'/static/uploads/articles/{filename}'
+        image_url = _normalize_media_url(
+            self.image,
+            'articles',
+            '/static/img/default/article-default.jpg'
+        )
 
         return {
             'id': self.id,
@@ -152,15 +184,11 @@ class GalleryImage(db.Model):
         Serializes the GalleryImage object to a dictionary, ensuring the image
         URL is always valid and points to the correct uploads directory.
         """
-        image_url = self.url
-        if not image_url:
-            # If URL is empty, use a default (though this case is unlikely for a gallery).
-            # It's better to ensure uploads are validated.
-            image_url = '/static/img/default/default-cover.jpg'
-        elif not (image_url.startswith('http://') or image_url.startswith('https://')):
-            # For internal paths, always reconstruct the URL from the base filename.
-            filename = os.path.basename(image_url)
-            image_url = f'/static/uploads/gallery/{filename}'
+        image_url = _normalize_media_url(
+            self.url,
+            'gallery',
+            '/static/img/default/default-cover.jpg'
+        )
 
         return {
             'id': self.id,
