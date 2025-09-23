@@ -15,6 +15,8 @@ from sqlalchemy.dialects.postgresql import TSVECTOR
 import os
 
 
+_PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+
 def _normalize_media_url(path, subfolder, default_url):
     """Normalize stored media paths to usable URLs.
 
@@ -142,7 +144,8 @@ def _normalize_media_url(path, subfolder, default_url):
     # Return the first candidate that exists on disk.
     for url_path, rel_path in candidate_pairs:
         filesystem_path = rel_path.replace('/', os.sep)
-        if os.path.exists(filesystem_path):
+        absolute_path = os.path.join(_PROJECT_ROOT, filesystem_path)
+        if os.path.exists(absolute_path):
             return url_path
 
     # Attempt a fuzzy match by comparing filename stems without separators.
@@ -157,15 +160,23 @@ def _normalize_media_url(path, subfolder, default_url):
                 os.path.join('static', 'img'),
             ]
             for directory in search_directories:
-                if not os.path.isdir(directory):
+                filesystem_directory = directory.replace('/', os.sep)
+                absolute_directory = os.path.join(
+                    _PROJECT_ROOT,
+                    filesystem_directory
+                )
+                if not os.path.isdir(absolute_directory):
                     continue
                 try:
-                    entries = os.listdir(directory)
+                    entries = os.listdir(absolute_directory)
                 except OSError:
                     continue
                 for entry in entries:
-                    entry_path = os.path.join(directory, entry)
-                    if not os.path.isfile(entry_path):
+                    absolute_entry_path = os.path.join(
+                        absolute_directory,
+                        entry
+                    )
+                    if not os.path.isfile(absolute_entry_path):
                         continue
                     entry_stem, entry_ext = os.path.splitext(entry)
                     if ext and entry_ext.lower() != ext.lower():
@@ -174,7 +185,8 @@ def _normalize_media_url(path, subfolder, default_url):
                         ch.lower() for ch in entry_stem if ch.isalnum()
                     )
                     if entry_sanitized == sanitized:
-                        return '/' + entry_path.replace(os.sep, '/').lstrip('/')
+                        relative_entry_path = os.path.join(directory, entry)
+                        return '/' + relative_entry_path.replace(os.sep, '/').lstrip('/')
 
     return default_url
 
